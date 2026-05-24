@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "热度详情",
+  "usingComponents": {
+    "hot-item": "/components/hot-item/index"
+  }
+}

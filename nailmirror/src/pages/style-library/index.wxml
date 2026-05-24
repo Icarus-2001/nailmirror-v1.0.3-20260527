@@ -1,0 +1,28 @@
+<view class="lib">
+  <view class="lib__search">
+    <input class="lib__input" placeholder="搜索款式 / 风格 / 材质" value="{{keyword}}" bindinput="onKeyword" bindconfirm="onSearch"/>
+    <view class="lib__filter" bindtap="onOpenFilter">🎛</view>
+  </view>
+
+  <scroll-view scroll-x class="lib__tabs">
+    <view wx:for="{{styleTabs}}" wx:key="id" class="lib__tab {{currentStyle === item.id ? 'lib__tab--on' : ''}}" data-id="{{item.id}}" bindtap="onTabTap">{{item.label}}</view>
+  </scroll-view>
+
+  <scroll-view scroll-x class="lib__tabs lib__tabs--sub" wx:if="{{useReal}}">
+    <view wx:for="{{colorTabs}}" wx:key="id" class="lib__tab lib__tab--sm {{currentColor === item.id ? 'lib__tab--on' : ''}}" data-id="{{item.id}}" bindtap="onColorTap">{{item.label}}</view>
+  </scroll-view>
+
+  <view class="lib__fallback" wx:if="{{fallback}}">未找到匹配款式，为你推荐热度榜 TOP</view>
+
+  <view class="lib__grid" wx:if="{{items.length > 0}}">
+    <view class="lib__col" wx:for="{{items}}" wx:key="id">
+      <style-card style="{{item}}"></style-card>
+    </view>
+  </view>
+
+  <empty-state wx:if="{{items.length === 0 && !loading}}" text="暂无匹配款式" hint="换个关键词或清空筛选试试"></empty-state>
+
+  <loading wx:if="{{loading}}" text="加载中"></loading>
+
+  <filter-drawer visible="{{drawerVisible}}" initial="{{filters}}" bind:close="onDrawerClose" bind:change="onFilterChange"></filter-drawer>
+</view>

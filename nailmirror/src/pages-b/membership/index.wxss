@@ -1,0 +1,7 @@
+.bm__plans { margin-top: 28rpx; display: flex; flex-direction: column; gap: 20rpx; }
+.bm__plan { background: var(--np-card); border-radius: 20rpx; padding: 32rpx 24rpx; border: 3rpx solid transparent; }
+.bm__plan--cur { border-color: var(--np-primary); }
+.bm__plan-name { font-size: 32rpx; font-weight: 600; }
+.bm__plan-price { font-size: 44rpx; color: var(--np-primary); font-weight: 700; margin: 14rpx 0; }
+.bm__plan-features { margin-bottom: 24rpx; }
+.bm__plan-feature { font-size: 26rpx; color: var(--np-text); padding: 6rpx 0; }

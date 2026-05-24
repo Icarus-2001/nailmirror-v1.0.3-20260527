@@ -1,0 +1,4 @@
+<view class="np-loading {{fullscreen ? 'np-loading--full' : ''}}" wx:if="{{visible}}">
+  <view class="np-loading__spin"></view>
+  <view class="np-loading__text">{{text}}</view>
+</view>

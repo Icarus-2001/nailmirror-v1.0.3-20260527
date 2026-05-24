@@ -1,0 +1,6 @@
+<view class="hde">
+  <view class="hde__actions">
+    <view class="np-btn np-btn--ghost" bindtap="onCopyCaption" wx:if="{{caption}}">复制文案</view>
+    <view class="np-btn" bindtap="onSave">保存相册</view>
+  </view>
+</view>

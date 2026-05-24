@@ -1,0 +1,57 @@
+<view class="home">
+
+  <!-- 顶部欢迎 -->
+  <view class="home__hero">
+    <view class="home__greet">Hi，{{userName}} 👋</view>
+    <view class="home__slogan">0 成本试美甲 · 一键 2K 高清出片</view>
+  </view>
+
+  <!-- 主入口大卡 -->
+  <view class="home__main-card" hover-class="home__main-card--hover" bindtap="onGoTryOn">
+    <view class="home__main-inner">
+      <view class="home__main-icon">✋</view>
+      <view class="home__main-text">
+        <view class="home__main-title">立即试戴</view>
+        <view class="home__main-sub">选甲型 → 上传照片 → 一键合成</view>
+      </view>
+      <view class="home__main-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 副入口二宫格 -->
+  <view class="home__sub-entries home__sub-entries--two">
+    <view class="home__sub-entry" bindtap="onGoLibrary">
+      <view class="home__sub-icon home__sub-icon--purple">🎨</view>
+      <view class="home__sub-label">款式库</view>
+    </view>
+    <view class="home__sub-entry" bindtap="onGoHotRank">
+      <view class="home__sub-icon home__sub-icon--orange">🔥</view>
+      <view class="home__sub-label">热款榜</view>
+    </view>
+  </view>
+
+  <!-- 为你推荐 -->
+  <view class="home__section">
+    <view class="home__section-head">
+      <view class="home__section-title">为你推荐</view>
+      <view class="home__section-more" bindtap="onGoLibrary">去款式库 ›</view>
+    </view>
+    <view class="home__grid">
+      <view class="home__grid-col" wx:for="{{quickStyles}}" wx:key="id" data-id="{{item.id}}" bindtap="onStyleTap">
+        <view class="home__card">
+          <view class="home__card-cover">
+            <image wx:if="{{item.coverUrl}}" class="home__card-img" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}"/>
+            <text wx:else class="home__card-emoji">💅</text>
+            <view wx:if="{{item.heat}}" class="home__card-heat">🔥 {{item.heat}}</view>
+          </view>
+          <view class="home__card-body">
+            <view class="home__card-title">{{item.title}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="home__safe-bottom"></view>
+</view>
+<privacy-popup />

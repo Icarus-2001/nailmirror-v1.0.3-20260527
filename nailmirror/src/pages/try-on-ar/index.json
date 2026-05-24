@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "AR 试戴",
+  "usingComponents": {
+    "device-downgrade": "/components/device-downgrade/index",
+    "loading": "/components/loading/index"
+  }
+}

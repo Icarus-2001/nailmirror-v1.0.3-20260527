@@ -1,0 +1,2 @@
+.bh__chart { width: 686rpx; height: 300rpx; background: var(--np-card); border-radius: 16rpx; margin: 20rpx 0 30rpx; }
+.bh__section { margin-top: 30rpx; }

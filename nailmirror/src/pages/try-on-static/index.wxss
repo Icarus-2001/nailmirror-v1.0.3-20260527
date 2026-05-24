@@ -1,0 +1,249 @@
+/* ===== 步骤指示器 ===== */
+.ts { padding: 32rpx 32rpx 80rpx; }
+.ts__steps {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16rpx 0 40rpx;
+}
+.ts__step { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.ts__step-dot {
+  width: 56rpx; height: 56rpx; border-radius: 50%;
+  background: #ececec; color: #aaa;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28rpx; font-weight: 600;
+  transition: all .25s;
+}
+.ts__step-label { font-size: 22rpx; color: #999; margin-top: 10rpx; }
+.ts__step.on .ts__step-dot {
+  background: linear-gradient(135deg, #ff5e8a, #9b6cff);
+  color: #fff;
+  box-shadow: 0 6rpx 18rpx rgba(255,94,138,0.3);
+}
+.ts__step.on .ts__step-label { color: #333; font-weight: 600; }
+.ts__step-line {
+  flex: 1; height: 4rpx; background: #ececec; margin: 0 12rpx;
+  position: relative; top: -16rpx;
+  transition: background .25s;
+}
+.ts__step-line.on { background: linear-gradient(90deg, #ff5e8a, #9b6cff); }
+
+/* ===== 标题 ===== */
+.ts__title { font-size: 40rpx; font-weight: 700; margin-bottom: 12rpx; color: #1a1a1a; }
+.ts__sub   { font-size: 26rpx; color: #888; line-height: 1.6; margin-bottom: 36rpx; }
+
+/* ===== Step 1：甲型卡片 ===== */
+.ts__shapes {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24rpx;
+}
+.ts__shape-card {
+  background: #fff; border-radius: 24rpx; padding: 32rpx 24rpx;
+  border: 2rpx solid transparent;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  text-align: center;
+  transition: all .2s;
+}
+.ts__shape-card.on {
+  border-color: #ff5e8a;
+  background: linear-gradient(135deg, #fff5f8, #f5f0ff);
+  box-shadow: 0 8rpx 28rpx rgba(255,94,138,0.18);
+  transform: translateY(-4rpx);
+}
+.ts__shape-icon {
+  width: 96rpx; height: 96rpx; margin: 0 auto 18rpx;
+  background: linear-gradient(135deg, #ffd1dc, #d6c2ff);
+  position: relative;
+}
+.ts__shape-icon--almond      { border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%; }
+.ts__shape-icon--square      { border-radius: 18rpx 18rpx 8rpx 8rpx; }
+.ts__shape-icon--round       { border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%; }
+.ts__shape-icon--trapezoid   { border-radius: 14rpx; transform: perspective(80rpx) rotateX(8deg); }
+.ts__shape-icon--short-round { width: 88rpx; height: 80rpx; border-radius: 50% 50% 35% 35%; }
+.ts__shape-icon--tip         { width: 80rpx; height: 110rpx; border-radius: 50% 50% 30% 30% / 65% 65% 35% 35%; }
+
+.ts__shape-name { font-size: 30rpx; font-weight: 600; color: #1a1a1a; margin-bottom: 6rpx; }
+.ts__shape-desc { font-size: 22rpx; color: #999; line-height: 1.4; }
+
+.ts__cta { margin-top: 48rpx; }
+
+/* ===== Step 2：上传 ===== */
+.ts__upload {
+  position: relative;
+  width: 100%; aspect-ratio: 4/3;
+  border-radius: 24rpx;
+  background: #fafafa;
+  border: 3rpx dashed #d0d0d0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.ts__upload--has-photo {
+  aspect-ratio: auto;
+  height: auto;
+  min-height: 0;
+  padding: 16rpx;
+  overflow: visible;
+  background: #f3f3f3;
+  border-style: solid;
+}
+.ts__upload-actions {
+  display: flex; flex-wrap: wrap; gap: 20rpx; margin-top: 28rpx; width: 86%;
+  justify-content: center;
+}
+.ts__pick-btn {
+  flex: 1; margin: 0; padding: 0; height: 76rpx; line-height: 76rpx;
+  font-size: 28rpx; border-radius: 999rpx;
+  background: #fff !important; color: #333 !important;
+  border: 2rpx solid #ddd !important;
+}
+.ts__pick-btn::after { border: none; }
+.ts__pick-btn--primary {
+  background: linear-gradient(135deg, #ff5e8a, #9b6cff) !important;
+  color: #fff !important; border: none !important;
+}
+.ts__pick-btn--hover { opacity: 0.88; }
+.ts__upload-icon {
+  width: 96rpx; height: 96rpx; border-radius: 50%;
+  background: linear-gradient(135deg, #ff5e8a, #9b6cff);
+  color: #fff; font-size: 56rpx; line-height: 92rpx;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255,94,138,0.28);
+}
+.ts__upload-text { font-size: 30rpx; color: #333; font-weight: 500; }
+.ts__upload-tip  { font-size: 22rpx; color: #aaa; margin-top: 10rpx; }
+.ts__upload-img  { width: 100%; height: 100%; }
+.ts__upload-img--fit {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12rpx;
+}
+.ts__mock-tag {
+  position: absolute; left: 20rpx; top: 20rpx;
+  background: rgba(255,94,138,0.92); color: #fff;
+  font-size: 22rpx; padding: 8rpx 18rpx; border-radius: 999rpx;
+}
+
+.ts__eval { margin-top: 24rpx; }
+.ts__eval-title { font-size: 26rpx; color: #666; margin-bottom: 16rpx; }
+.ts__eval-scroll { white-space: nowrap; }
+.ts__eval-item {
+  display: inline-block; width: 128rpx; margin-right: 16rpx;
+  vertical-align: top; border: 3rpx solid transparent; border-radius: 14rpx;
+  padding: 4rpx; transition: border-color .2s;
+}
+.ts__eval-item.on { border-color: #ff5e8a; }
+.ts__eval-thumb {
+  width: 120rpx; height: 120rpx; border-radius: 10rpx; display: block;
+  background: #eee;
+  object-fit: contain;
+}
+.ts__eval-thumb--local { opacity: 0.85; }
+.ts__eval-name {
+  font-size: 20rpx; color: #666; text-align: center; margin-top: 8rpx;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.ts__back-row {
+  margin-top: 36rpx;
+  display: flex; flex-direction: column; gap: 20rpx;
+}
+.ts__back { font-size: 26rpx; color: #888; text-align: center; padding: 12rpx; }
+.ts__compose-btn { width: 100%; }
+
+/* ===== Step 3：预览 ===== */
+.ts__stage {
+  position: relative; width: 100%; aspect-ratio: 3/4;
+  background: #f5f5f5; border-radius: 24rpx; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.ts__photo { width: 100%; height: 100%; }
+.ts__retake {
+  position: absolute; right: 24rpx; bottom: 24rpx;
+  padding: 14rpx 28rpx; background: rgba(0,0,0,0.6); color: #fff;
+  border-radius: 999rpx; font-size: 24rpx;
+}
+
+.ts__current {
+  margin: 28rpx 0 12rpx;
+  background: #fff; border-radius: 18rpx; padding: 24rpx;
+}
+.ts__current-row { display: flex; align-items: center; gap: 16rpx; }
+.ts__current-tag {
+  font-size: 22rpx; color: #ff5e8a;
+  background: #fff0f5; padding: 4rpx 14rpx; border-radius: 999rpx;
+}
+.ts__current-name { font-size: 30rpx; font-weight: 600; color: #1a1a1a; }
+.ts__current-shape { font-size: 24rpx; color: #888; margin-top: 10rpx; }
+
+.ts__switch { margin-top: 28rpx; }
+.ts__switch-title { font-size: 28rpx; font-weight: 600; margin-bottom: 16rpx; color: #333; }
+.ts__alts { white-space: nowrap; }
+.ts__alt {
+  display: inline-block; margin-right: 16rpx;
+  vertical-align: top;
+  border: 3rpx solid transparent; border-radius: 14rpx; padding: 4rpx;
+  transition: border-color .2s;
+}
+.ts__alt.on { border-color: #ff5e8a; }
+.ts__alt-cover { width: 160rpx; height: 213rpx; border-radius: 12rpx; display: block; }
+.ts__alt-name { font-size: 22rpx; color: #555; text-align: center; margin-top: 8rpx; max-width: 168rpx; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== 选款式 step（首页直接进试戴时） ===== */
+.ts__empty { text-align: center; color: #999; font-size: 26rpx; padding: 60rpx 0; }
+.ts__style-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx;
+}
+.ts__style-card {
+  background: #fff; border-radius: 18rpx; overflow: hidden;
+  border: 3rpx solid transparent;
+  transition: all .2s;
+}
+.ts__style-card.on {
+  border-color: #ff5e8a;
+  box-shadow: 0 8rpx 24rpx rgba(255,94,138,0.18);
+  transform: translateY(-4rpx);
+}
+.ts__style-cover {
+  position: relative; width: 100%; aspect-ratio: 3/4;
+  background: linear-gradient(135deg, #ffd1dc, #d6c2ff);
+  display: flex; align-items: center; justify-content: center;
+}
+.ts__style-img { width: 100%; height: 100%; }
+.ts__style-fallback {
+  color: #fff; font-size: 28rpx; font-weight: 600; padding: 0 16rpx; text-align: center;
+}
+.ts__style-check {
+  position: absolute; top: 12rpx; right: 12rpx;
+  width: 44rpx; height: 44rpx; border-radius: 50%;
+  background: #ff5e8a; color: #fff;
+  font-size: 28rpx; line-height: 44rpx; text-align: center;
+  box-shadow: 0 4rpx 10rpx rgba(255,94,138,0.4);
+}
+.ts__style-name {
+  font-size: 26rpx; color: #333; padding: 14rpx 16rpx;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 已选款式提示（photo step 上方） */
+.ts__chosen {
+  background: #fff5f8; border-radius: 12rpx;
+  padding: 18rpx 24rpx; margin-bottom: 24rpx;
+  font-size: 26rpx; color: #333;
+}
+.ts__chosen-tag {
+  font-size: 22rpx; color: #ff5e8a;
+  background: #fff; padding: 4rpx 14rpx; border-radius: 999rpx;
+  margin-right: 14rpx;
+}
+.ts__chosen-name { font-weight: 600; }
+.ts__chosen-shape { color: #888; margin-left: 10rpx; }
+
+/* loading */
+.ts__loading {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6); color: #fff;
+  padding: 16rpx 32rpx; border-radius: 12rpx;
+  font-size: 26rpx;
+}

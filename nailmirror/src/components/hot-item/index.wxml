@@ -1,0 +1,10 @@
+<view class="hot-item" bindtap="onTap">
+  <view class="hot-item__rank hot-item__rank--top{{rank <= 3 ? rank : 0}}">{{rank}}</view>
+  <view class="hot-item__body">
+    <view class="hot-item__word">{{word}}</view>
+    <view class="hot-item__meta">
+      <text class="np-tag">{{platform}}</text>
+      <text class="hot-item__heat">🔥 {{heat}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,12 @@
+.sd { padding-bottom: 140rpx; }
+.sd__swiper { width: 100%; height: 900rpx; }
+.sd__img { width: 100%; height: 900rpx; }
+.sd__title { font-size: 40rpx; font-weight: 700; }
+.sd__brief { color: var(--np-text-weak); margin: 14rpx 0 20rpx; font-size: 26rpx; line-height: 1.6; }
+.sd__tags { display: flex; flex-wrap: wrap; }
+.sd__heat { margin-top: 24rpx; color: var(--np-danger); font-size: 28rpx; }
+.sd__merchant { margin-top: 32rpx; padding: 24rpx; background: var(--np-card); border-radius: 16rpx; }
+.sd__bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1rpx solid var(--np-border); padding: 20rpx 24rpx; display: flex; align-items: center; gap: 20rpx; }
+.sd__fav { font-size: 26rpx; color: var(--np-primary); }
+.sd__contact { font-size: 26rpx; color: var(--np-text); }
+.sd__try { flex: 1; }

@@ -1,0 +1,52 @@
+<view class="me">
+  <view class="me__header">
+    <image class="me__avatar" src="{{user.avatarUrl}}"/>
+    <view class="me__info">
+      <view class="me__name">{{user.nickname}}</view>
+      <view class="me__role">{{user.role === 'b' ? '商家身份' : '用户身份'}} · 会员 L{{user.membershipLevel}}</view>
+    </view>
+  </view>
+
+  <view class="me__stats">
+    <view class="me__stat" bindtap="onGoHistory">
+      <view class="me__stat-num">{{historyCount}}</view>
+      <view class="me__stat-label">试戴</view>
+    </view>
+    <view class="me__stat" bindtap="onGoFavorite">
+      <view class="me__stat-num">{{favCount}}</view>
+      <view class="me__stat-label">收藏</view>
+    </view>
+    <view class="me__stat" bindtap="onGoCountdown">
+      <view class="me__stat-num">{{countdownDays}}</view>
+      <view class="me__stat-label">卸甲倒计时</view>
+    </view>
+  </view>
+
+  <view class="me__menu">
+    <view class="me__menu-item" bindtap="onGoHistory">
+      <text class="me__menu-icon">📖</text>
+      <text class="me__menu-label">试戴历史</text>
+      <text class="me__menu-arrow">›</text>
+    </view>
+    <view class="me__menu-item" bindtap="onGoFavorite">
+      <text class="me__menu-icon">❤️</text>
+      <text class="me__menu-label">我的收藏</text>
+      <text class="me__menu-arrow">›</text>
+    </view>
+    <view class="me__menu-item" bindtap="onGoCountdown">
+      <text class="me__menu-icon">⏰</text>
+      <text class="me__menu-label">卸甲倒计时</text>
+      <text class="me__menu-arrow">›</text>
+    </view>
+    <view class="me__menu-item" bindtap="onGoMembership">
+      <text class="me__menu-icon">👑</text>
+      <text class="me__menu-label">会员中心</text>
+      <text class="me__menu-arrow">›</text>
+    </view>
+    <view class="me__menu-item" bindtap="onGoMerchant">
+      <text class="me__menu-icon">🏪</text>
+      <text class="me__menu-label">商家入口（B 端）</text>
+      <text class="me__menu-arrow">›</text>
+    </view>
+  </view>
+</view>

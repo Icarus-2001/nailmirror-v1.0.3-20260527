@@ -1,0 +1,11 @@
+<view class="bh np-container">
+  <view class="np-title">"{{word}}" · 7 日热度趋势</view>
+  <canvas canvas-id="trend-canvas" class="bh__chart"></canvas>
+
+  <view class="bh__section">
+    <view class="np-title">其他热门搜索词</view>
+    <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
+      <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}" data-word="{{item.word}}" bindtap="onPickWord"></hot-item>
+    </block>
+  </view>
+</view>

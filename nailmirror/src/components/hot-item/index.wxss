@@ -1,0 +1,8 @@
+.hot-item { display: flex; align-items: center; padding: 20rpx 24rpx; background: var(--np-card); border-radius: 16rpx; margin-bottom: 14rpx; }
+.hot-item__rank { width: 56rpx; height: 56rpx; border-radius: 12rpx; background: var(--np-bg); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 26rpx; color: var(--np-text-weak); margin-right: 20rpx; }
+.hot-item__rank--top1 { background: #ff4d6d; color: #fff; }
+.hot-item__rank--top2 { background: #ff8fa3; color: #fff; }
+.hot-item__rank--top3 { background: #ffc2d1; color: #fff; }
+.hot-item__word { font-size: 30rpx; font-weight: 500; }
+.hot-item__meta { margin-top: 6rpx; display: flex; align-items: center; font-size: 24rpx; color: var(--np-text-weak); }
+.hot-item__heat { margin-left: 10rpx; }

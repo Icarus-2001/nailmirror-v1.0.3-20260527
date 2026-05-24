@@ -1,0 +1,11 @@
+.fdrawer { position: fixed; inset: 0; z-index: 999; }
+.fdrawer__mask { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+.fdrawer__panel { position: absolute; right: 0; top: 0; bottom: 0; width: 620rpx; background: #fff; padding: 40rpx 28rpx; overflow-y: auto; }
+.fdrawer__title { font-size: 34rpx; font-weight: 600; margin-bottom: 30rpx; }
+.fdrawer__section { margin-bottom: 32rpx; }
+.fdrawer__label { font-size: 26rpx; color: var(--np-text-weak); margin-bottom: 16rpx; }
+.fdrawer__tags { display: flex; flex-wrap: wrap; }
+.fdrawer__tag { padding: 12rpx 24rpx; margin: 0 14rpx 14rpx 0; border-radius: 999rpx; background: var(--np-bg); color: var(--np-text); font-size: 26rpx; }
+.fdrawer__tag--on { background: var(--np-primary-soft); color: var(--np-primary); }
+.fdrawer__actions { display: flex; gap: 20rpx; margin-top: 40rpx; }
+.fdrawer__actions .np-btn { flex: 1; }

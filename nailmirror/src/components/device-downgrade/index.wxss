@@ -1,0 +1,7 @@
+.ddg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 9000; }
+.ddg__box { width: 600rpx; background: #fff; border-radius: 24rpx; padding: 40rpx 32rpx; text-align: center; }
+.ddg__icon { font-size: 80rpx; }
+.ddg__title { font-size: 32rpx; font-weight: 600; margin-top: 20rpx; }
+.ddg__desc { color: var(--np-text-weak); font-size: 26rpx; margin: 20rpx 0 32rpx; line-height: 1.6; }
+.ddg__actions { display: flex; gap: 20rpx; }
+.ddg__actions .np-btn { flex: 1; }

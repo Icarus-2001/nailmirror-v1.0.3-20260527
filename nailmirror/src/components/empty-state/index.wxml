@@ -1,0 +1,5 @@
+<view class="np-empty">
+  <view class="np-empty__icon">🖐</view>
+  <view class="np-empty__text">{{text}}</view>
+  <view class="np-empty__hint" wx:if="{{hint}}">{{hint}}</view>
+</view>

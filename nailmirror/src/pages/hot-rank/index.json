@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "热度榜单",
+  "usingComponents": {
+    "hot-rank-card": "/components/hot-rank-card/index",
+    "hot-item": "/components/hot-item/index"
+  }
+}

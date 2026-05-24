@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"],
+      "@config/*": ["config/*"],
+      "@stores/*": ["stores/*"],
+      "@mock/*": ["mock/*"]
+    },
+    "target": "es2017",
+    "module": "commonjs"
+  },
+  "exclude": ["node_modules"]
+}

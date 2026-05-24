@@ -1,0 +1,9 @@
+{
+  "desc": "NailMirror sitemap — B 端分包默认不被索引",
+  "rules": [
+    { "action": "allow", "page": "pages/home/index" },
+    { "action": "allow", "page": "pages/style-library/index" },
+    { "action": "allow", "page": "pages/hot-rank/index" },
+    { "action": "disallow", "page": "pages-b/*" }
+  ]
+}

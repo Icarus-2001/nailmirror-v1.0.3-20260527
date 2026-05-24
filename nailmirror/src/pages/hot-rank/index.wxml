@@ -1,0 +1,18 @@
+<view class="hr np-container">
+  <view class="hr__head">
+    <view class="np-title">全网热款 TOP20</view>
+    <view class="np-subtitle">更新于 {{updatedAt}}</view>
+  </view>
+
+  <block wx:for="{{items}}" wx:key="styleId" wx:for-index="idx">
+    <hot-rank-card rank="{{idx + 1}}" item="{{item}}"></hot-rank-card>
+  </block>
+
+  <view class="hr__head" style="margin-top: 40rpx;">
+    <view class="np-title">热门搜索词</view>
+  </view>
+
+  <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
+    <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}"></hot-item>
+  </block>
+</view>

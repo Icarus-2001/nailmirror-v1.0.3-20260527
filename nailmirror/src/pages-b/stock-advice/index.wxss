@@ -1,0 +1,9 @@
+.bs__section { margin: 24rpx 0; }
+.bs__head { font-size: 30rpx; font-weight: 600; margin-bottom: 14rpx; }
+.bs__list { background: var(--np-card); border-radius: 16rpx; padding: 0 20rpx; }
+.bs__item { display: flex; align-items: center; padding: 22rpx 0; border-bottom: 1rpx solid var(--np-border); }
+.bs__item:last-child { border-bottom: 0; }
+.bs__name { flex: 1; font-size: 28rpx; }
+.bs__meta { color: var(--np-text-weak); font-size: 22rpx; margin-right: 20rpx; }
+.bs__qty { font-weight: 600; color: var(--np-primary); }
+.bs__bottom { padding: 20rpx 0 40rpx; }

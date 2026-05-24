@@ -1,0 +1,10 @@
+.be__head { text-align: center; padding: 40rpx 0; }
+.be__title { font-size: 36rpx; font-weight: 700; }
+.be__hint { color: var(--np-text-weak); font-size: 24rpx; margin-top: 10rpx; }
+.be__switch { margin: 20rpx 0; }
+.be__menu { background: var(--np-card); border-radius: 16rpx; margin-top: 30rpx; padding: 0 24rpx; }
+.be__item { display: flex; align-items: center; padding: 28rpx 0; border-bottom: 1rpx solid var(--np-border); font-size: 28rpx; }
+.be__item:last-child { border-bottom: 0; }
+.be__icon { font-size: 32rpx; margin-right: 18rpx; }
+.be__label { flex: 1; }
+.be__arrow { color: var(--np-text-weak); font-size: 32rpx; }

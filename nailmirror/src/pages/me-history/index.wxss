@@ -1,0 +1,7 @@
+.mh__card { display: flex; background: var(--np-card); border-radius: 16rpx; padding: 20rpx; margin-bottom: 16rpx; }
+.mh__thumb { width: 200rpx; height: 266rpx; border-radius: 12rpx; background: #eee; margin-right: 20rpx; }
+.mh__info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.mh__style { font-size: 30rpx; font-weight: 600; }
+.mh__meta { color: var(--np-text-weak); font-size: 24rpx; }
+.mh__actions { display: flex; gap: 14rpx; }
+.mh__btn { padding: 12rpx 24rpx; font-size: 24rpx; }

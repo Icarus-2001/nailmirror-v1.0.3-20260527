@@ -1,0 +1,36 @@
+<view class="sd" wx:if="{{style}}">
+  <swiper class="sd__swiper" autoplay circular indicator-dots>
+    <swiper-item wx:for="{{style.previewUrls}}" wx:key="*this">
+      <image src="{{item}}" class="sd__img" mode="aspectFill"></image>
+    </swiper-item>
+  </swiper>
+
+  <view class="sd__body np-container">
+    <view class="sd__title">{{style.title}}</view>
+    <view class="sd__brief">{{style.brief}}</view>
+    <view class="sd__tags" wx:if="{{style.color || style.design}}">
+      <text class="np-tag" wx:if="{{style.color}}">{{style.color}}</text>
+      <text class="np-tag" wx:if="{{style.design}}">{{style.design}}</text>
+      <text class="np-tag" wx:if="{{style.shapeLabel}}">{{style.shapeLabel}}</text>
+      <text class="np-tag" wx:if="{{style.styleLabel}}">{{style.styleLabel}}</text>
+    </view>
+    <view class="sd__tags">
+      <text class="np-tag" wx:for="{{style.styleTags}}" wx:for-item="t" wx:key="*this">#{{t}}</text>
+      <text class="np-tag" wx:for="{{style.materialTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+      <text class="np-tag" wx:for="{{style.shapeTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+    </view>
+
+    <view class="sd__heat">🔥 热度 {{style.heat}}</view>
+
+    <view class="sd__merchant" wx:if="{{merchant}}">
+      <view class="np-title">{{merchant.name}}</view>
+      <view class="np-subtitle">{{merchant.city}} · {{merchant.businessHours}}</view>
+    </view>
+  </view>
+
+  <view class="sd__bottom np-safe-bottom">
+    <view class="sd__fav" bindtap="onFav">{{faved ? '♥ 已收藏' : '♡ 收藏'}}</view>
+    <view class="sd__contact" bindtap="onContact">联系商家</view>
+    <view class="np-btn sd__try" bindtap="onGoStatic">立即试戴</view>
+  </view>
+</view>

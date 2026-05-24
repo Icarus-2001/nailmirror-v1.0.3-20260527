@@ -1,0 +1,30 @@
+<view class="bs np-container">
+  <view class="np-title">本周备货建议</view>
+  <view class="np-subtitle">基于 TOP 热款关联消耗品自动生成</view>
+
+  <view class="bs__section">
+    <view class="bs__head">甲油胶</view>
+    <view class="bs__list">
+      <view class="bs__item" wx:for="{{gels}}" wx:key="name">
+        <view class="bs__name">{{item.name}}</view>
+        <view class="bs__meta">{{item.spec}} · {{item.brand}}</view>
+        <view class="bs__qty">× {{item.qty}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bs__section">
+    <view class="bs__head">饰品 / 配件</view>
+    <view class="bs__list">
+      <view class="bs__item" wx:for="{{accessories}}" wx:key="name">
+        <view class="bs__name">{{item.name}}</view>
+        <view class="bs__meta">{{item.spec}}</view>
+        <view class="bs__qty">× {{item.qty}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bs__bottom">
+    <button class="np-btn np-btn--block" bindtap="onCopy">一键复制完整清单</button>
+  </view>
+</view>

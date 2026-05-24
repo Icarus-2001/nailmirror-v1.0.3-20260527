@@ -1,0 +1,37 @@
+<view class="be np-container">
+  <view class="be__head">
+    <view class="be__title">商家中心 · {{role === 'b' ? '已切换商家身份' : 'C 端用户'}}</view>
+    <view class="be__hint" wx:if="{{role !== 'b'}}">点击下方切换为商家身份后查看完整数据</view>
+  </view>
+
+  <view wx:if="{{role !== 'b'}}" class="np-btn np-btn--block be__switch" bindtap="onSwitchToB">切换为商家身份</view>
+  <view wx:else class="np-btn np-btn--ghost np-btn--block be__switch" bindtap="onSwitchToC">退出商家身份</view>
+
+  <view class="be__menu" wx:if="{{role === 'b'}}">
+    <view class="be__item" bindtap="onGoDashboard">
+      <text class="be__icon">📊</text>
+      <text class="be__label">商家看板</text>
+      <text class="be__arrow">›</text>
+    </view>
+    <view class="be__item" bindtap="onGoStock">
+      <text class="be__icon">📦</text>
+      <text class="be__label">备货建议</text>
+      <text class="be__arrow">›</text>
+    </view>
+    <view class="be__item" bindtap="onGoContact">
+      <text class="be__icon">📞</text>
+      <text class="be__label">轻预约配置</text>
+      <text class="be__arrow">›</text>
+    </view>
+    <view class="be__item" bindtap="onGoHotRank">
+      <text class="be__icon">🔥</text>
+      <text class="be__label">热度详情</text>
+      <text class="be__arrow">›</text>
+    </view>
+    <view class="be__item" bindtap="onGoMembership">
+      <text class="be__icon">👑</text>
+      <text class="be__label">付费方案</text>
+      <text class="be__arrow">›</text>
+    </view>
+  </view>
+</view>

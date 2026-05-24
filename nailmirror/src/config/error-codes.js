@@ -1,0 +1,11 @@
+// 统一错误码
+module.exports = {
+  NETWORK_ERR:     'NETWORK_ERR',
+  NOT_FOUND:       'NOT_FOUND',
+  UPLOAD_ERR:      'UPLOAD_ERR',
+  NO_MATCH:        'NO_MATCH',
+  QUOTA_EXCEEDED:  'QUOTA_EXCEEDED',
+  DUPLICATE:       'DUPLICATE',
+  EXPIRED:         'EXPIRED',
+  AR_UNSUPPORTED:  'AR_UNSUPPORTED'
+};

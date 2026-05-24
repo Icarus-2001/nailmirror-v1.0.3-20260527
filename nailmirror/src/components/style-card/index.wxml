@@ -1,0 +1,15 @@
+<view class="style-card" bindtap="onTap" wx:if="{{style}}">
+  <view class="style-card__cover-wrap">
+    <image class="style-card__cover" src="{{style.coverUrl}}" mode="aspectFill" lazy-load="true"></image>
+    <view class="style-card__fav {{faved ? 'style-card__fav--on' : ''}}" wx:if="{{showFav}}" catchtap="onFav">{{faved ? '♥' : '♡'}}</view>
+    <view class="np-badge" wx:if="{{style.heat}}">🔥 {{style.heat}}</view>
+  </view>
+  <view class="style-card__body">
+    <view class="style-card__title">{{style.title}}</view>
+    <view class="style-card__tags">
+      <text class="np-tag" wx:if="{{style.color}}">{{style.color}}</text>
+      <text class="np-tag" wx:if="{{style.design}}">{{style.design}}</text>
+      <text class="np-tag" wx:for="{{style.styleTags}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+</view>

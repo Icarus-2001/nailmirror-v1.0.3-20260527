@@ -1,0 +1,16 @@
+<view class="mf np-container">
+  <view class="mf__toolbar">
+    <view class="mf__mode" bindtap="onToggleSelect">{{selectMode ? '取消' : '多选'}}</view>
+    <view class="np-btn mf__del" wx:if="{{selectMode}}" bindtap="onBatchDelete">删除选中</view>
+  </view>
+
+  <view class="mf__grid" wx:if="{{list.length > 0}}">
+    <view class="mf__item {{selected[item.id] ? 'mf__item--on' : ''}}" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onPick">
+      <image src="{{item.coverUrl}}" class="mf__cover" mode="aspectFill"/>
+      <view class="mf__title">{{item.title}}</view>
+      <view class="mf__check" wx:if="{{selectMode}}">{{selected[item.id] ? '✓' : '○'}}</view>
+    </view>
+  </view>
+
+  <empty-state wx:if="{{list.length === 0}}" text="还没有收藏款式" hint="去款式库种草吧"></empty-state>
+</view>

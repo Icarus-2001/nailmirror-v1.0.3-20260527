@@ -1,0 +1,17 @@
+<view class="mh np-container">
+  <block wx:if="{{list.length > 0}}" wx:for="{{list}}" wx:key="id">
+    <view class="mh__card">
+      <image class="mh__thumb" src="{{item.thumbUrl}}" mode="aspectFill"/>
+      <view class="mh__info">
+        <view class="mh__style">{{item.styleId}}</view>
+        <view class="mh__meta">{{item.mode}} · {{item.nailShape}} · {{item.createdAt}}</view>
+        <view class="mh__actions">
+          <view class="np-btn mh__btn" data-id="{{item.id}}" bindtap="onRegenerate">重新出图</view>
+          <view class="np-btn np-btn--ghost mh__btn" data-id="{{item.id}}" bindtap="onRemove">删除</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <empty-state wx:if="{{list.length === 0}}" text="还没有试戴历史" hint="去首页开始第一次试戴吧"></empty-state>
+</view>

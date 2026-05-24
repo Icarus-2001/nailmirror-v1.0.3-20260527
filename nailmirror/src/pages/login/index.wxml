@@ -1,0 +1,13 @@
+<view class="login np-container">
+  <view class="login__logo">💅 NailMirror</view>
+  <view class="login__subtitle">AI 美甲试戴 · 高清出片 · 智能运营</view>
+
+  <view class="login__hero"></view>
+
+  <view class="login__actions">
+    <button class="np-btn np-btn--block" open-type="getUserInfo" bindtap="onLogin" loading="{{loading}}">微信一键登录</button>
+    <view class="login__skip" bindtap="onSkip">先随便逛逛 ›</view>
+  </view>
+
+  <view class="login__policy">登录即代表同意《隐私政策》与《用户协议》</view>
+</view>

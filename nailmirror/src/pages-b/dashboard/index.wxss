@@ -1,0 +1,3 @@
+.bd__head { margin-bottom: 24rpx; }
+.bd__section { margin-bottom: 30rpx; }
+.bd__cta { padding-bottom: 40rpx; }

@@ -1,0 +1,26 @@
+{
+  "updatedAt": "2026-05-07 14:00",
+  "city": "全网",
+  "items": [
+    { "styleId": "french-01", "rank": 1, "heat": 98210 },
+    { "styleId": "minimal-02", "rank": 2, "heat": 95340 },
+    { "styleId": "cream-01", "rank": 3, "heat": 92105 },
+    { "styleId": "glitter-01", "rank": 4, "heat": 89010 },
+    { "styleId": "vintage-01", "rank": 5, "heat": 85622 },
+    { "styleId": "cool-01", "rank": 6, "heat": 82014 },
+    { "styleId": "fairy-01", "rank": 7, "heat": 78520 },
+    { "styleId": "gentle-01", "rank": 8, "heat": 75610 },
+    { "styleId": "cool-02", "rank": 9, "heat": 73320 },
+    { "styleId": "minimal-01", "rank": 10, "heat": 71040 },
+    { "styleId": "french-02", "rank": 11, "heat": 68911 },
+    { "styleId": "glitter-02", "rank": 12, "heat": 66220 },
+    { "styleId": "cream-02", "rank": 13, "heat": 63014 },
+    { "styleId": "fairy-02", "rank": 14, "heat": 60511 },
+    { "styleId": "vintage-02", "rank": 15, "heat": 58210 },
+    { "styleId": "cool-03", "rank": 16, "heat": 55040 },
+    { "styleId": "gentle-02", "rank": 17, "heat": 52120 },
+    { "styleId": "minimal-03", "rank": 18, "heat": 49800 },
+    { "styleId": "glitter-03", "rank": 19, "heat": 47020 },
+    { "styleId": "cream-03", "rank": 20, "heat": 45015 }
+  ]
+}

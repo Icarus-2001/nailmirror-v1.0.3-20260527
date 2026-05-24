@@ -1,0 +1,30 @@
+<view class="ar">
+  <!-- AR 占位（Mock）：camera 真实环境用 <camera>；这里用首帧图模拟 -->
+  <view class="ar__stage">
+    <image src="{{firstFrameUrl || 'https://picsum.photos/seed/ar-stage/750/1334'}}" class="ar__frame" mode="aspectFill" wx:if="{{!starting}}"></image>
+    <view class="ar__hint" wx:if="{{!starting}}">五指识别中…保持手部居中</view>
+    <loading visible="{{starting}}" text="AR 启动中… ({{deviceLevel}})"></loading>
+  </view>
+
+  <!-- 切款按钮 -->
+  <view class="ar__switch" bindtap="onOpenDrawer">切款</view>
+
+  <!-- 拍照 -->
+  <view class="ar__shoot" bindtap="onShoot">📸</view>
+
+  <!-- 切款抽屉 -->
+  <view class="ar__drawer" wx:if="{{drawerOpen}}">
+    <view class="ar__drawer-mask" bindtap="onCloseDrawer"></view>
+    <view class="ar__drawer-panel">
+      <view class="ar__drawer-title">选择款式</view>
+      <scroll-view scroll-x class="ar__drawer-list">
+        <view class="ar__drawer-item" wx:for="{{altStyles}}" wx:key="id" data-id="{{item.id}}" bindtap="onPickStyle">
+          <image src="{{item.coverUrl}}" mode="aspectFill" class="ar__drawer-cover"/>
+          <view class="ar__drawer-name">{{item.title}}</view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <device-downgrade visible="{{showDowngrade}}" level="{{deviceLevel}}" bind:goStatic="onGoStatic" bind:stay="onStayAR"></device-downgrade>
+</view>

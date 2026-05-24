@@ -1,0 +1,11 @@
+.lib { padding: 20rpx 24rpx 40rpx; }
+.lib__search { display: flex; align-items: center; background: var(--np-card); border-radius: 999rpx; padding: 14rpx 20rpx; margin-bottom: 20rpx; }
+.lib__input { flex: 1; font-size: 28rpx; }
+.lib__filter { width: 56rpx; height: 56rpx; border-radius: 50%; background: var(--np-bg); display: flex; align-items: center; justify-content: center; font-size: 28rpx; margin-left: 12rpx; }
+.lib__tabs { white-space: nowrap; margin-bottom: 20rpx; }
+.lib__tabs--sub { margin-bottom: 16rpx; }
+.lib__tab { display: inline-block; padding: 14rpx 26rpx; margin-right: 14rpx; background: var(--np-card); border-radius: 999rpx; font-size: 26rpx; color: var(--np-text-weak); }
+.lib__tab--sm { padding: 10rpx 20rpx; font-size: 24rpx; }
+.lib__tab--on { background: var(--np-primary); color: #fff; }
+.lib__fallback { background: #fff7ed; color: #b45309; padding: 16rpx 24rpx; border-radius: 12rpx; font-size: 24rpx; margin-bottom: 20rpx; }
+.lib__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }

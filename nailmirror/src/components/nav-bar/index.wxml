@@ -1,0 +1,4 @@
+<view class="np-navbar">
+  <view class="np-navbar__back" wx:if="{{showBack}}" bindtap="onBack">‹</view>
+  <view class="np-navbar__title">{{title}}</view>
+</view>

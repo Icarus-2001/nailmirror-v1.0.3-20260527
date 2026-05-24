@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "卸甲倒计时",
+  "usingComponents": {
+    "style-card": "/components/style-card/index"
+  }
+}

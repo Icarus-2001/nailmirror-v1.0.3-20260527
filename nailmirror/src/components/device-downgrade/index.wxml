@@ -1,0 +1,11 @@
+<view class="ddg" wx:if="{{visible}}">
+  <view class="ddg__box">
+    <view class="ddg__icon">⚡</view>
+    <view class="ddg__title">当前机型建议静态试戴</view>
+    <view class="ddg__desc">设备等级：{{level}}。为保证体验流畅，推荐您切换至静态手照试戴模式。</view>
+    <view class="ddg__actions">
+      <view class="np-btn np-btn--ghost" bindtap="onStay">继续 AR</view>
+      <view class="np-btn" bindtap="onGoStatic">切静态</view>
+    </view>
+  </view>
+</view>

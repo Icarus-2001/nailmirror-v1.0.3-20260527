@@ -1,0 +1,15 @@
+.aim__title { font-size: 36rpx; font-weight: 700; }
+.aim__title--sub { font-size: 30rpx; margin: 28rpx 0 16rpx; }
+.aim__hint { color: var(--np-text-weak); font-size: 26rpx; margin: 12rpx 0 28rpx; }
+.aim__upload { width: 100%; aspect-ratio: 3/4; background: var(--np-card); border: 2rpx dashed var(--np-border); border-radius: 20rpx; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.aim__placeholder { color: var(--np-text-weak); font-size: 30rpx; }
+.aim__preview { width: 100%; height: 100%; }
+.aim__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
+.aim__card { background: var(--np-card); border-radius: 16rpx; overflow: hidden; }
+.aim__cover { width: 100%; aspect-ratio: 3/4; }
+.aim__card-body { padding: 16rpx; }
+.aim__card-title { font-size: 26rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aim__card-actions { display: flex; align-items: center; margin-top: 12rpx; }
+.aim__fav { font-size: 32rpx; color: var(--np-text-weak); margin-right: 16rpx; }
+.aim__fav--on { color: var(--np-primary); }
+.aim__try { padding: 10rpx 22rpx; font-size: 24rpx; }

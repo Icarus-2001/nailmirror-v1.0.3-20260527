@@ -1,0 +1,30 @@
+<view class="bc np-container">
+  <view class="np-title">门店信息</view>
+
+  <view class="bc__field">
+    <view class="bc__label">门店名称</view>
+    <input class="bc__input" placeholder="例：星辰美甲·国贸店" value="{{cfg.name}}" data-field="name" bindinput="onInput"/>
+  </view>
+
+  <view class="bc__field">
+    <view class="bc__label">联系电话</view>
+    <input class="bc__input" type="number" placeholder="11 位手机号" value="{{cfg.phone}}" data-field="phone" bindinput="onInput"/>
+  </view>
+
+  <view class="bc__field">
+    <view class="bc__label">营业时间</view>
+    <input class="bc__input" placeholder="例：10:00-22:00" value="{{cfg.businessHours}}" data-field="businessHours" bindinput="onInput"/>
+  </view>
+
+  <view class="bc__field">
+    <view class="bc__label">企微二维码</view>
+    <view class="bc__qr" bindtap="onUploadQr">
+      <image src="{{cfg.wecomQrUrl}}" mode="aspectFill" wx:if="{{cfg.wecomQrUrl}}" class="bc__qr-img"/>
+      <view class="bc__qr-empty" wx:else>📷 点击上传二维码</view>
+    </view>
+  </view>
+
+  <view class="bc__bottom">
+    <button class="np-btn np-btn--block" bindtap="onSave" loading="{{saving}}">保存配置</button>
+  </view>
+</view>

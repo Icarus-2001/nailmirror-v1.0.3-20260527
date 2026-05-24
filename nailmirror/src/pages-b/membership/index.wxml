@@ -1,0 +1,16 @@
+<view class="bm np-container">
+  <view class="np-title">商家版价值对比</view>
+  <view class="np-subtitle">付费版可解锁完整进货清单、AI 预测、专属服务</view>
+
+  <view class="bm__plans">
+    <view class="bm__plan {{item.current ? 'bm__plan--cur' : ''}}" wx:for="{{plans}}" wx:key="name">
+      <view class="bm__plan-name">{{item.name}}</view>
+      <view class="bm__plan-price">¥ {{item.price}}</view>
+      <view class="bm__plan-features">
+        <view class="bm__plan-feature" wx:for="{{item.features}}" wx:for-item="f" wx:key="*this">✓ {{f}}</view>
+      </view>
+      <view class="np-btn np-btn--block" wx:if="{{!item.current}}" data-name="{{item.name}}" bindtap="onUnlock">解锁{{item.name}}</view>
+      <view class="np-btn np-btn--ghost np-btn--block" wx:else>当前版本</view>
+    </view>
+  </view>
+</view>

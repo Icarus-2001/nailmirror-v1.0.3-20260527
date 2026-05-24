@@ -1,0 +1,13 @@
+.hrc { display: flex; align-items: center; padding: 16rpx; background: var(--np-card); border-radius: 16rpx; margin-bottom: 14rpx; }
+.hrc__rank { width: 56rpx; height: 56rpx; border-radius: 12rpx; background: var(--np-bg); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 16rpx; color: var(--np-text-weak); }
+.hrc__rank--top1 { background: #ff4d6d; color: #fff; }
+.hrc__rank--top2 { background: #ff8fa3; color: #fff; }
+.hrc__rank--top3 { background: #ffc2d1; color: #fff; }
+.hrc__cover { width: 88rpx; height: 118rpx; border-radius: 12rpx; margin-right: 16rpx; background: #eee; flex-shrink: 0; }
+.hrc__cover--ph {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40rpx; background: linear-gradient(135deg, #ffd8e3, #c4b5fd);
+}
+.hrc__body { flex: 1; min-width: 0; }
+.hrc__title { font-size: 28rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hrc__heat { font-size: 24rpx; color: var(--np-text-weak); margin-top: 6rpx; }

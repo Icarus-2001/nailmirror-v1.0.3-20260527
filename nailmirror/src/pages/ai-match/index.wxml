@@ -1,0 +1,29 @@
+<view class="aim np-container">
+  <view class="aim__title">小红书 / 抖音同款识别</view>
+  <view class="aim__hint">上传美甲截图，AI 在 8 秒内为你匹配最相似的 5 款</view>
+
+  <view class="aim__upload" bindtap="onChoose">
+    <view class="aim__placeholder" wx:if="{{!imagePath}}">📤 点击选择图片（≤10MB）</view>
+    <image src="{{imagePath}}" class="aim__preview" mode="aspectFit" wx:if="{{imagePath}}"></image>
+  </view>
+
+  <loading visible="{{matching}}" text="AI 匹配中…"></loading>
+
+  <view class="aim__results" wx:if="{{top5.length > 0}}">
+    <view class="aim__title aim__title--sub">{{fallback ? '兜底推荐' : 'TOP 5 相似款'}}</view>
+    <view class="aim__grid">
+      <view class="aim__card" wx:for="{{top5}}" wx:key="id">
+        <image src="{{item.coverUrl}}" class="aim__cover" mode="aspectFill" data-id="{{item.id}}" bindtap="onPick"/>
+        <view class="aim__card-body">
+          <view class="aim__card-title">{{item.title}}</view>
+          <view class="aim__card-actions">
+            <view class="aim__fav {{favIds.indexOf(item.id) > -1 ? 'aim__fav--on' : ''}}" data-id="{{item.id}}" catchtap="onFav">{{favIds.indexOf(item.id) > -1 ? '♥' : '♡'}}</view>
+            <view class="np-btn aim__try" data-id="{{item.id}}" bindtap="onPick">试戴</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <empty-state wx:if="{{!imagePath && !matching}}" text="还没识别图片" hint="上传截图开始 AI 同款匹配"></empty-state>
+</view>

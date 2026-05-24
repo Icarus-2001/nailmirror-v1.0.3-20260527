@@ -1,0 +1,8 @@
+.style-card { background: var(--np-card); border-radius: 16rpx; overflow: hidden; margin-bottom: 20rpx; }
+.style-card__cover-wrap { position: relative; width: 100%; aspect-ratio: 3/4; background: #eee; }
+.style-card__cover { width: 100%; height: 100%; display: block; }
+.style-card__fav { position: absolute; top: 12rpx; left: 12rpx; width: 56rpx; height: 56rpx; border-radius: 50%; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 32rpx; color: var(--np-text-weak); }
+.style-card__fav--on { color: var(--np-primary); }
+.style-card__body { padding: 16rpx 20rpx 20rpx; }
+.style-card__title { font-size: 28rpx; color: var(--np-text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.style-card__tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; }

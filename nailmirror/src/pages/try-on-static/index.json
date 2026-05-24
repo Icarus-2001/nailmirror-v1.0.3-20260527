@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "拍照试戴",
+  "navigationBarBackgroundColor": "#ffffff",
+  "usingComponents": {
+    "loading": "/components/loading/index",
+    "privacy-popup": "/components/privacy-popup/index"
+  }
+}

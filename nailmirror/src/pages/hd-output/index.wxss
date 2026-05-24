@@ -1,0 +1,7 @@
+.hd__quota { color: var(--np-text-weak); font-size: 24rpx; margin-top: 10rpx; }
+.hd__stage { position: relative; width: 100%; aspect-ratio: 3/4; background: var(--np-card); border-radius: 20rpx; overflow: hidden; margin: 20rpx 0; }
+.hd__img { width: 100%; height: 100%; }
+.hd__watermark { position: absolute; right: 20rpx; bottom: 16rpx; color: rgba(255,255,255,0.85); font-size: 22rpx; text-shadow: 0 1rpx 3rpx rgba(0,0,0,0.5); }
+.hd__caption-text { background: var(--np-card); padding: 20rpx; border-radius: 14rpx; font-size: 26rpx; line-height: 1.6; margin-top: 10rpx; }
+.hd__actions { margin-top: 28rpx; display: flex; flex-direction: column; gap: 16rpx; }
+.hd__actions button { margin: 0; }

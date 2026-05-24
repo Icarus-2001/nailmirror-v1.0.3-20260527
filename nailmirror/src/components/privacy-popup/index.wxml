@@ -1,0 +1,20 @@
+<view wx:if="{{visible}}" class="pp">
+  <view class="pp__mask"></view>
+  <view class="pp__box">
+    <view class="pp__title">用户隐私保护提示</view>
+    <view class="pp__body">
+      为完成手部照片上传与 AI 试戴，我们需要使用你的相册或相机。请阅读并同意
+      <text class="pp__link" bindtap="onOpenContract">《用户隐私保护指引》</text>
+      后继续。
+    </view>
+    <view class="pp__actions">
+      <button class="pp__btn pp__btn--ghost" bindtap="onDisagree">不同意</button>
+      <button
+        id="privacy-agree-btn"
+        class="pp__btn pp__btn--primary"
+        open-type="agreePrivacyAuthorization"
+        bindagreeprivacyauthorization="onAgree"
+      >同意并继续</button>
+    </view>
+  </view>
+</view>

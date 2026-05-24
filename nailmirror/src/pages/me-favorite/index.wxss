@@ -1,0 +1,9 @@
+.mf__toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20rpx; }
+.mf__mode { color: var(--np-primary); font-size: 28rpx; }
+.mf__del { padding: 12rpx 24rpx; font-size: 24rpx; }
+.mf__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
+.mf__item { position: relative; background: var(--np-card); border-radius: 16rpx; overflow: hidden; border: 3rpx solid transparent; }
+.mf__item--on { border-color: var(--np-primary); }
+.mf__cover { width: 100%; aspect-ratio: 3/4; }
+.mf__title { padding: 12rpx 16rpx; font-size: 26rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mf__check { position: absolute; right: 14rpx; top: 14rpx; width: 48rpx; height: 48rpx; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: var(--np-primary); font-size: 28rpx; }

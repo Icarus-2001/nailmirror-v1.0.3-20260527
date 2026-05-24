@@ -1,0 +1,10 @@
+{
+  "name": "tryon",
+  "version": "2.0.2",
+  "description": "NailMirror try-on cloud function",
+  "main": "index.js",
+  "dependencies": {
+    "jimp": "0.22.12",
+    "wx-server-sdk": "2.6.3"
+  }
+}

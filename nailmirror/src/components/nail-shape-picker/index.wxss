@@ -1,0 +1,11 @@
+.nsp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20rpx; }
+.nsp__item { background: var(--np-card); border: 2rpx solid transparent; border-radius: 16rpx; padding: 24rpx 16rpx; text-align: center; }
+.nsp__item--on { border-color: var(--np-primary); background: var(--np-primary-soft); }
+.nsp__shape { width: 64rpx; height: 88rpx; background: linear-gradient(180deg,#f4a5b8,#ff6e88); margin: 0 auto 14rpx; }
+.nsp__shape--almond { border-radius: 50% 50% 40% 40% / 60% 60% 20% 20%; }
+.nsp__shape--square { border-radius: 10rpx 10rpx 4rpx 4rpx; }
+.nsp__shape--round { border-radius: 50% 50% 40% 40%; }
+.nsp__shape--trapezoid { clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%); border-radius: 0; }
+.nsp__shape--short-round { height: 64rpx; border-radius: 50% 50% 40% 40%; }
+.nsp__shape--tip { height: 100rpx; border-radius: 50% 50% 30% 30% / 70% 70% 10% 10%; }
+.nsp__label { font-size: 26rpx; color: var(--np-text); }

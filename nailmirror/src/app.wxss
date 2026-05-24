@@ -1,0 +1,47 @@
+/* NailMirror 全局样式 */
+page {
+  --np-primary: #ff5e8a;
+  --np-primary-soft: #ffd8e3;
+  --np-accent: #9b6cff;
+  --np-text: #1f1f29;
+  --np-text-weak: #8a8a9a;
+  --np-bg: #f7f7fb;
+  --np-card: #ffffff;
+  --np-border: #efeff5;
+  --np-success: #22c55e;
+  --np-warn: #f59e0b;
+  --np-danger: #ef4444;
+  background: var(--np-bg);
+  color: var(--np-text);
+  font-size: 28rpx;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+
+view, text { box-sizing: border-box; }
+
+.np-container { padding: 24rpx; }
+.np-row { display: flex; align-items: center; }
+.np-col { display: flex; flex-direction: column; }
+.np-space-between { justify-content: space-between; }
+
+.np-card { background: var(--np-card); border-radius: 16rpx; padding: 24rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+.np-title { font-size: 34rpx; font-weight: 600; color: var(--np-text); }
+.np-subtitle { font-size: 26rpx; color: var(--np-text-weak); }
+.np-tag { display: inline-flex; padding: 6rpx 18rpx; border-radius: 999rpx; background: var(--np-primary-soft); color: var(--np-primary); font-size: 22rpx; margin-right: 10rpx; }
+.np-btn { display: inline-flex; align-items: center; justify-content: center; padding: 20rpx 36rpx; border-radius: 999rpx; background: var(--np-primary); color: #fff; font-size: 28rpx; border: none; }
+.np-btn--ghost { background: transparent; color: var(--np-primary); border: 2rpx solid var(--np-primary); }
+.np-btn--block { width: 100%; }
+.np-btn[disabled] { opacity: 0.5; }
+
+.np-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
+.np-grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+.np-divider { height: 1rpx; background: var(--np-border); margin: 24rpx 0; }
+
+.np-empty { text-align: center; padding: 80rpx 0; color: var(--np-text-weak); }
+
+.np-cover { width: 100%; border-radius: 12rpx; background: #eee; }
+
+.np-badge { position: absolute; top: 12rpx; right: 12rpx; padding: 4rpx 14rpx; background: rgba(0,0,0,0.55); color: #fff; border-radius: 999rpx; font-size: 20rpx; }
+
+.np-safe-bottom { padding-bottom: constant(safe-area-inset-bottom); padding-bottom: env(safe-area-inset-bottom); }

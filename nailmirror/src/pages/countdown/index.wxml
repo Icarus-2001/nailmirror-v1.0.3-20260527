@@ -1,0 +1,18 @@
+<view class="cd np-container">
+  <view class="cd__hero">
+    <view class="cd__label">距离建议卸甲还有</view>
+    <view class="cd__num">{{days}}<text class="cd__unit">天</text></view>
+    <view class="cd__meta">上次卸甲：{{lastRemoveDate}}</view>
+    <view class="cd__meta">建议日期：{{nextSuggestDate}}</view>
+    <view class="np-btn np-btn--ghost cd__btn" bindtap="onResetToday">今天卸甲了</view>
+  </view>
+
+  <view class="cd__head">
+    <view class="np-title">下一款试试看</view>
+  </view>
+  <view class="cd__grid">
+    <view wx:for="{{recommend}}" wx:key="id">
+      <style-card style="{{item}}"></style-card>
+    </view>
+  </view>
+</view>

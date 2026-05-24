@@ -1,0 +1,4 @@
+.np-empty { text-align: center; padding: 120rpx 0; }
+.np-empty__icon { font-size: 96rpx; opacity: 0.5; }
+.np-empty__text { font-size: 28rpx; color: var(--np-text-weak); margin-top: 16rpx; }
+.np-empty__hint { font-size: 24rpx; color: var(--np-text-weak); margin-top: 10rpx; }

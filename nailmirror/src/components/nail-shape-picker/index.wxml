@@ -1,0 +1,6 @@
+<view class="nsp">
+  <view wx:for="{{shapes}}" wx:key="id" class="nsp__item {{selected === item.id ? 'nsp__item--on' : ''}}" data-v="{{item.id}}" bindtap="onPick">
+    <view class="nsp__shape nsp__shape--{{item.id}}"></view>
+    <view class="nsp__label">{{item.label}}</view>
+  </view>
+</view>

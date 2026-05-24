@@ -1,0 +1,20 @@
+<view class="hd np-container">
+  <view class="hd__quota">今日剩余免费出图：{{quotaLeft}}</view>
+
+  <view class="hd__stage">
+    <image src="{{hdUrl}}" class="hd__img" mode="aspectFill" wx:if="{{hdUrl}}"></image>
+    <view class="hd__watermark" wx:if="{{watermark && hdUrl}}">@NailMirror</view>
+  </view>
+
+  <view class="hd__caption" wx:if="{{caption}}">
+    <view class="np-subtitle">推荐文案（点击复制）</view>
+    <view class="hd__caption-text" bindtap="onCopyCaption">{{caption}}</view>
+  </view>
+
+  <view class="hd__actions">
+    <button class="np-btn np-btn--block" bindtap="onSave" loading="{{saving}}">保存到相册</button>
+    <rewarded-ad-btn label="观看 30s 广告 · 去水印" bind:result="onRemoveWatermark" wx:if="{{watermark}}"></rewarded-ad-btn>
+    <button class="np-btn np-btn--ghost np-btn--block" open-type="share">分享给朋友</button>
+    <view class="np-btn np-btn--ghost np-btn--block" bindtap="onShareAndGrant">已分享 · 领取 +1 额度</view>
+  </view>
+</view>

@@ -1,0 +1,4 @@
+<view class="tag-pill {{selected ? 'tag-pill--active' : ''}}" bindtap="onTap">
+  <text>{{label}}</text>
+  <text class="tag-pill__x" wx:if="{{removable}}" catchtap="onRemove">×</text>
+</view>

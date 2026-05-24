@@ -1,0 +1,15 @@
+.me { padding: 24rpx; }
+.me__header { background: linear-gradient(135deg,#ffd8e3,#f0e5ff); border-radius: 20rpx; padding: 40rpx 28rpx; display: flex; align-items: center; }
+.me__avatar { width: 120rpx; height: 120rpx; border-radius: 50%; background: #eee; margin-right: 24rpx; }
+.me__name { font-size: 36rpx; font-weight: 600; }
+.me__role { color: var(--np-text-weak); font-size: 24rpx; margin-top: 6rpx; }
+.me__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16rpx; margin: 24rpx 0; }
+.me__stat { background: var(--np-card); text-align: center; padding: 30rpx 0; border-radius: 16rpx; }
+.me__stat-num { font-size: 40rpx; font-weight: 700; color: var(--np-primary); }
+.me__stat-label { font-size: 24rpx; color: var(--np-text-weak); margin-top: 6rpx; }
+.me__menu { background: var(--np-card); border-radius: 16rpx; padding: 0 24rpx; }
+.me__menu-item { display: flex; align-items: center; padding: 28rpx 0; border-bottom: 1rpx solid var(--np-border); font-size: 28rpx; }
+.me__menu-item:last-child { border-bottom: 0; }
+.me__menu-icon { font-size: 32rpx; margin-right: 18rpx; }
+.me__menu-label { flex: 1; }
+.me__menu-arrow { color: var(--np-text-weak); font-size: 32rpx; }

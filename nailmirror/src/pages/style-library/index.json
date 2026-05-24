@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "款式库",
+  "usingComponents": {
+    "style-card": "/components/style-card/index",
+    "filter-drawer": "/components/filter-drawer/index",
+    "empty-state": "/components/empty-state/index",
+    "loading": "/components/loading/index"
+  }
+}

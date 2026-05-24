@@ -1,0 +1,7 @@
+.bc__field { margin: 24rpx 0; }
+.bc__label { font-size: 26rpx; color: var(--np-text-weak); margin-bottom: 12rpx; }
+.bc__input { background: var(--np-card); padding: 22rpx 24rpx; border-radius: 12rpx; font-size: 28rpx; }
+.bc__qr { width: 280rpx; height: 280rpx; background: var(--np-card); border-radius: 16rpx; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.bc__qr-img { width: 280rpx; height: 280rpx; }
+.bc__qr-empty { color: var(--np-text-weak); font-size: 26rpx; }
+.bc__bottom { padding: 30rpx 0 40rpx; }

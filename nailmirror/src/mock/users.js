@@ -1,0 +1,21 @@
+module.exports = [
+  {
+    "openid": "demo-user-c-001",
+    "nickname": "甜甜圈",
+    "avatarUrl": "https://picsum.photos/seed/user1/120/120",
+    "role": "c",
+    "membershipLevel": 0,
+    "lastRemoveDate": "2026-04-20",
+    "dailyFreeHDLeft": 2
+  },
+  {
+    "openid": "demo-user-b-001",
+    "nickname": "星辰美甲店长",
+    "avatarUrl": "https://picsum.photos/seed/user2/120/120",
+    "role": "b",
+    "membershipLevel": 1,
+    "lastRemoveDate": "",
+    "dailyFreeHDLeft": 2
+  }
+]
+;

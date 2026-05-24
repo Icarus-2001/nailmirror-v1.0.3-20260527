@@ -1,0 +1,24 @@
+<view class="bd np-container">
+  <view class="bd__head">
+    <view class="np-title">今日商家看板 · {{city}}</view>
+    <view class="np-subtitle">数据更新于 {{updatedAt}}（每日 9 / 14 / 18 点更新）</view>
+  </view>
+
+  <view class="bd__section">
+    <view class="np-title">热门搜索词 TOP20</view>
+    <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
+      <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}" data-word="{{item.word}}" bindtap="onGoTrend"></hot-item>
+    </block>
+  </view>
+
+  <view class="bd__section">
+    <view class="np-title">本城热款榜 TOP10</view>
+    <block wx:for="{{ranking}}" wx:key="styleId" wx:for-index="idx">
+      <hot-rank-card rank="{{idx + 1}}" item="{{item}}"></hot-rank-card>
+    </block>
+  </view>
+
+  <view class="bd__cta">
+    <view class="np-btn np-btn--block" bindtap="onGoStock">查看本周备货建议</view>
+  </view>
+</view>

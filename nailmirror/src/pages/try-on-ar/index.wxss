@@ -1,0 +1,14 @@
+.ar { position: relative; height: 100vh; background: #000; }
+.ar__stage { width: 100%; height: 100%; }
+.ar__frame { width: 100%; height: 100%; }
+.ar__hint { position: absolute; top: 60rpx; left: 0; right: 0; text-align: center; color: #fff; font-size: 26rpx; text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.5); }
+.ar__switch { position: absolute; right: 32rpx; bottom: 280rpx; background: rgba(255,255,255,0.85); padding: 18rpx 30rpx; border-radius: 999rpx; font-size: 26rpx; }
+.ar__shoot { position: absolute; left: 50%; bottom: 100rpx; transform: translateX(-50%); width: 120rpx; height: 120rpx; border-radius: 50%; background: var(--np-primary); display: flex; align-items: center; justify-content: center; font-size: 48rpx; box-shadow: 0 0 0 8rpx rgba(255,94,138,0.3); }
+.ar__drawer { position: fixed; inset: 0; z-index: 100; }
+.ar__drawer-mask { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+.ar__drawer-panel { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 28rpx; }
+.ar__drawer-title { font-size: 30rpx; font-weight: 600; margin-bottom: 20rpx; }
+.ar__drawer-list { white-space: nowrap; }
+.ar__drawer-item { display: inline-block; width: 200rpx; margin-right: 18rpx; }
+.ar__drawer-cover { width: 200rpx; height: 266rpx; border-radius: 14rpx; }
+.ar__drawer-name { font-size: 24rpx; margin-top: 10rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

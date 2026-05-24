@@ -1,0 +1,5 @@
+.np-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40rpx; }
+.np-loading--full { position: fixed; inset: 0; background: rgba(255,255,255,0.85); z-index: 9999; }
+.np-loading__spin { width: 56rpx; height: 56rpx; border: 6rpx solid var(--np-primary-soft); border-top-color: var(--np-primary); border-radius: 50%; animation: np-spin 0.9s linear infinite; }
+.np-loading__text { color: var(--np-text-weak); font-size: 26rpx; margin-top: 16rpx; }
+@keyframes np-spin { to { transform: rotate(360deg); } }

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Local / private config
+project.private.config.json
+**/project.private.config.json
+.env
+.env.*
+*.local
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs & temp
+*.log
+npm-debug.log*
+.cache/
+tmp/
+temp/
+
+# Cloud function local install (deploy via 云端安装依赖)
+nailmirror/src/cloudfunctions/**/node_modules/

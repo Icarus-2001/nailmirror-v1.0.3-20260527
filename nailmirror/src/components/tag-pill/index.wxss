@@ -1,0 +1,3 @@
+.tag-pill { display: inline-flex; align-items: center; padding: 10rpx 24rpx; border-radius: 999rpx; background: var(--np-bg); color: var(--np-text-weak); font-size: 24rpx; margin: 0 12rpx 12rpx 0; border: 2rpx solid transparent; }
+.tag-pill--active { background: var(--np-primary-soft); color: var(--np-primary); border-color: var(--np-primary); }
+.tag-pill__x { margin-left: 10rpx; font-size: 26rpx; }

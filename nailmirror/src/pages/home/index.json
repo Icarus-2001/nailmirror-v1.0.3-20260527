@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "NailMirror",
+  "usingComponents": {
+    "privacy-popup": "/components/privacy-popup/index"
+  }
+}

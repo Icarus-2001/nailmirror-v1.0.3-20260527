@@ -1,0 +1,23 @@
+module.exports = [
+  { "word": "法式极简", "platform": "xhs", "heat": 98210, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["french-01","minimal-02","french-03"] },
+  { "word": "猫眼美甲", "platform": "xhs", "heat": 95340, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cool-01","glitter-04"] },
+  { "word": "奶茶色系", "platform": "douyin", "heat": 92105, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cream-01","gentle-02"] },
+  { "word": "星河流光", "platform": "xhs", "heat": 89010, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["glitter-01","cool-03"] },
+  { "word": "复古酒红", "platform": "weibo", "heat": 85622, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["vintage-01","vintage-05"] },
+  { "word": "镜面银", "platform": "xhs", "heat": 82014, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cool-02","minimal-04"] },
+  { "word": "珍珠晕染", "platform": "douyin", "heat": 78520, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["fairy-01","gentle-03"] },
+  { "word": "甜美果冻", "platform": "xhs", "heat": 75610, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["fairy-02","cream-03"] },
+  { "word": "冷酷黑曜", "platform": "weibo", "heat": 73320, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cool-04","cool-06"] },
+  { "word": "温柔裸粉", "platform": "xhs", "heat": 71040, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["gentle-01","cream-02"] },
+  { "word": "蕾丝法式", "platform": "douyin", "heat": 68911, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["french-04","french-06"] },
+  { "word": "亮片星夜", "platform": "xhs", "heat": 66220, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["glitter-02","glitter-05"] },
+  { "word": "奶油蛋糕", "platform": "douyin", "heat": 63014, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cream-04","fairy-03"] },
+  { "word": "极简线条", "platform": "xhs", "heat": 60511, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["minimal-01","minimal-05"] },
+  { "word": "磨砂雾面", "platform": "weibo", "heat": 58210, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cool-05","minimal-06"] },
+  { "word": "复古碎花", "platform": "xhs", "heat": 55040, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["vintage-02","vintage-06"] },
+  { "word": "樱花粉", "platform": "douyin", "heat": 52120, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["fairy-04","gentle-04"] },
+  { "word": "法式晕染", "platform": "xhs", "heat": 49800, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["french-02","french-05"] },
+  { "word": "亮闪派对", "platform": "weibo", "heat": 47020, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["glitter-03","glitter-06"] },
+  { "word": "奶霜豆沙", "platform": "douyin", "heat": 45015, "fetchedAt": "2026-05-07 09:00", "relatedStyleIds": ["cream-05","gentle-05"] }
+]
+;

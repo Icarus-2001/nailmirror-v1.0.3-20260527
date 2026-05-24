@@ -1,0 +1,9 @@
+.ns__title { font-size: 40rpx; font-weight: 700; margin-top: 20rpx; }
+.ns__hint { color: var(--np-text-weak); font-size: 26rpx; margin: 12rpx 0 30rpx; }
+.ns__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
+.ns__card { background: var(--np-card); padding: 32rpx 24rpx; border-radius: 20rpx; border: 3rpx solid transparent; }
+.ns__card--on { border-color: var(--np-primary); background: var(--np-primary-soft); }
+.ns__icon { font-size: 56rpx; }
+.ns__label { font-size: 30rpx; font-weight: 600; margin-top: 12rpx; }
+.ns__desc { font-size: 24rpx; color: var(--np-text-weak); margin-top: 10rpx; line-height: 1.6; }
+.ns__bottom { position: fixed; left: 24rpx; right: 24rpx; bottom: 40rpx; }

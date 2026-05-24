@@ -1,0 +1,66 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/login/index",
+    "pages/style-library/index",
+    "pages/style-detail/index",
+    "pages/try-on-static/index",
+    "pages/hd-output/index",
+    "pages/hot-rank/index",
+    "pages/me/index",
+    "pages/me-history/index",
+    "pages/me-favorite/index",
+    "pages/me-membership/index",
+    "pages/countdown/index"
+  ],
+  "subPackages": [
+    {
+      "root": "pages-b",
+      "name": "merchant",
+      "pages": [
+        "entry/index",
+        "dashboard/index",
+        "stock-advice/index",
+        "contact-config/index",
+        "hot-rank/index",
+        "membership/index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/home/index": {
+      "network": "all",
+      "packages": ["merchant"]
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "NailMirror",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f7fb"
+  },
+  "tabBar": {
+    "color": "#8a8a8a",
+    "selectedColor": "#ff5e8a",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.writePhotosAlbum": { "desc": "用于保存高清出片" },
+    "scope.camera": { "desc": "用于拍摄手部照片进行 AI 试戴" }
+  },
+  "requiredPrivateInfos": ["getLocation"],
+  "__usePrivacyCheck__": true,
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

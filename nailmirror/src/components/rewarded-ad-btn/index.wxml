@@ -1,0 +1,1 @@
+<view class="np-btn np-btn--block rab" bindtap="onTap">🎬 {{label}}</view>

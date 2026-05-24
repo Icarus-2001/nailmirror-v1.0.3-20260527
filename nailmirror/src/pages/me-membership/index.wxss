@@ -1,0 +1,19 @@
+.mm__hero { text-align: center; background: linear-gradient(135deg,#ffd26e,#ff8fa3); border-radius: 24rpx; padding: 60rpx 24rpx; color: #fff; }
+.mm__crown { font-size: 96rpx; }
+.mm__title { font-size: 48rpx; font-weight: 700; margin-top: 16rpx; }
+.mm__subtitle { font-size: 26rpx; opacity: 0.9; margin-top: 10rpx; }
+.mm__price { display: flex; gap: 16rpx; margin: 28rpx 0; }
+.mm__price-box { flex: 1; background: var(--np-card); border: 3rpx solid transparent; border-radius: 20rpx; padding: 30rpx 20rpx; text-align: center; position: relative; }
+.mm__price-box--pop { border-color: var(--np-primary); }
+.mm__price-label { font-size: 26rpx; color: var(--np-text-weak); }
+.mm__price-num { font-size: 44rpx; font-weight: 700; color: var(--np-primary); margin-top: 10rpx; }
+.mm__price-unit { font-size: 24rpx; font-weight: 400; color: var(--np-text-weak); }
+.mm__price-tag { position: absolute; top: -16rpx; right: 20rpx; padding: 4rpx 14rpx; background: var(--np-primary); color: #fff; font-size: 22rpx; border-radius: 999rpx; }
+.mm__benefits { background: var(--np-card); border-radius: 20rpx; padding: 20rpx; }
+.mm__benefit { display: flex; align-items: center; padding: 20rpx 10rpx; border-bottom: 1rpx solid var(--np-border); }
+.mm__benefit:last-child { border-bottom: 0; }
+.mm__benefit-icon { font-size: 40rpx; margin-right: 24rpx; }
+.mm__benefit-title { font-size: 30rpx; font-weight: 600; }
+.mm__benefit-desc { font-size: 24rpx; color: var(--np-text-weak); margin-top: 6rpx; }
+.mm__bottom { margin-top: 40rpx; padding-bottom: 40rpx; text-align: center; }
+.mm__disclaimer { color: var(--np-text-weak); font-size: 22rpx; margin-top: 14rpx; }

@@ -1,0 +1,34 @@
+<view class="mm np-container">
+  <view class="mm__hero">
+    <view class="mm__crown">👑</view>
+    <view class="mm__title">NailMirror VIP</view>
+    <view class="mm__subtitle">解锁全部 AI 能力，美甲自由从这里开始</view>
+  </view>
+
+  <view class="mm__price">
+    <view class="mm__price-box mm__price-box--pop">
+      <view class="mm__price-label">年度会员</view>
+      <view class="mm__price-num">￥29.9<text class="mm__price-unit">/年</text></view>
+      <view class="mm__price-tag">最划算</view>
+    </view>
+    <view class="mm__price-box">
+      <view class="mm__price-label">月度会员</view>
+      <view class="mm__price-num">￥9.9<text class="mm__price-unit">/月</text></view>
+    </view>
+  </view>
+
+  <view class="mm__benefits">
+    <view class="mm__benefit" wx:for="{{benefits}}" wx:key="title">
+      <view class="mm__benefit-icon">{{item.icon}}</view>
+      <view class="mm__benefit-body">
+        <view class="mm__benefit-title">{{item.title}}</view>
+        <view class="mm__benefit-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="mm__bottom">
+    <button class="np-btn np-btn--block" bindtap="onUnlock">付费解锁（演示）</button>
+    <view class="mm__disclaimer">MVP 版本暂不开通真实支付</view>
+  </view>
+</view>

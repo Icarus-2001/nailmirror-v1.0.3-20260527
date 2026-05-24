@@ -1,0 +1,11 @@
+<view class="cdlg" wx:if="{{visible}}">
+  <view class="cdlg__mask" bindtap="onCancel"></view>
+  <view class="cdlg__box">
+    <view class="cdlg__title">{{title}}</view>
+    <view class="cdlg__content">{{content}}</view>
+    <view class="cdlg__actions">
+      <view class="cdlg__btn cdlg__btn--cancel" bindtap="onCancel">{{cancelText}}</view>
+      <view class="cdlg__btn cdlg__btn--ok" bindtap="onConfirm">{{confirmText}}</view>
+    </view>
+  </view>
+</view>

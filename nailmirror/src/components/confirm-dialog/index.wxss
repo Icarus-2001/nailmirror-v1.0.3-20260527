@@ -1,0 +1,9 @@
+.cdlg { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+.cdlg__mask { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+.cdlg__box { position: relative; width: 560rpx; background: #fff; border-radius: 20rpx; padding: 40rpx 32rpx 0; }
+.cdlg__title { font-size: 32rpx; font-weight: 600; text-align: center; }
+.cdlg__content { margin: 24rpx 0 36rpx; color: var(--np-text-weak); text-align: center; font-size: 28rpx; }
+.cdlg__actions { display: flex; border-top: 1rpx solid var(--np-border); }
+.cdlg__btn { flex: 1; text-align: center; padding: 28rpx 0; font-size: 30rpx; }
+.cdlg__btn--cancel { color: var(--np-text-weak); border-right: 1rpx solid var(--np-border); }
+.cdlg__btn--ok { color: var(--np-primary); font-weight: 600; }

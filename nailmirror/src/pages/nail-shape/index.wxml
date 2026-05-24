@@ -1,0 +1,16 @@
+<view class="ns np-container">
+  <view class="ns__title">选择你的甲型</view>
+  <view class="ns__hint">试戴前必选，后续识别关键点将根据甲型适配</view>
+
+  <view class="ns__grid">
+    <view wx:for="{{shapes}}" wx:key="id" class="ns__card {{selected === item.id ? 'ns__card--on' : ''}}" data-v="{{item.id}}" bindtap="onPick">
+      <view class="ns__icon">💅</view>
+      <view class="ns__label">{{item.label}}</view>
+      <view class="ns__desc">{{item.desc}}</view>
+    </view>
+  </view>
+
+  <view class="ns__bottom">
+    <button class="np-btn np-btn--block" bindtap="onNext">下一步，选款式</button>
+  </view>
+</view>

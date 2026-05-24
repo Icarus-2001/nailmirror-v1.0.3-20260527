@@ -1,0 +1,8 @@
+.cd__hero { background: linear-gradient(135deg,#ffd8e3,#f0e5ff); padding: 50rpx 32rpx; border-radius: 24rpx; text-align: center; }
+.cd__label { color: var(--np-text-weak); font-size: 26rpx; }
+.cd__num { font-size: 120rpx; font-weight: 700; color: var(--np-primary); line-height: 1; margin: 14rpx 0; }
+.cd__unit { font-size: 36rpx; font-weight: 400; margin-left: 8rpx; }
+.cd__meta { color: var(--np-text-weak); font-size: 24rpx; margin-top: 4rpx; }
+.cd__btn { margin-top: 28rpx; }
+.cd__head { margin: 40rpx 0 20rpx; }
+.cd__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }

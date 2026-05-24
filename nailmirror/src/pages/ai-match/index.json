@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "AI 同款识别",
+  "usingComponents": {
+    "loading": "/components/loading/index",
+    "empty-state": "/components/empty-state/index"
+  }
+}

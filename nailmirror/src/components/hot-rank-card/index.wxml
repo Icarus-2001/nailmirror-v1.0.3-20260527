@@ -1,0 +1,9 @@
+<view class="hrc" bindtap="onTap" wx:if="{{item}}">
+  <view class="hrc__rank hrc__rank--top{{rank <= 3 ? rank : 0}}">{{rank}}</view>
+  <image class="hrc__cover" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}" wx:if="{{item.coverUrl}}"></image>
+  <view class="hrc__cover hrc__cover--ph" wx:else>💅</view>
+  <view class="hrc__body">
+    <view class="hrc__title">{{item.title || item.styleId}}</view>
+    <view class="hrc__heat">🔥 {{item.heat}}</view>
+  </view>
+</view>

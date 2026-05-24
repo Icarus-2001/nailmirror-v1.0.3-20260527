@@ -1,0 +1,2 @@
+.hde__actions { display: flex; gap: 16rpx; }
+.hde__actions .np-btn { flex: 1; }

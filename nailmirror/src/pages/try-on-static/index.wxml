@@ -1,0 +1,156 @@
+<view class="ts">
+  <!-- 步骤指示器（动态根据 stepLabels 渲染） -->
+  <view class="ts__steps">
+    <block wx:for="{{stepLabels}}" wx:key="key">
+      <view class="ts__step {{index <= stepIndex ? 'on' : ''}}">
+        <view class="ts__step-dot">{{index + 1}}</view>
+        <view class="ts__step-label">{{item.label}}</view>
+      </view>
+      <view wx:if="{{index < stepLabels.length - 1}}" class="ts__step-line {{index < stepIndex ? 'on' : ''}}"></view>
+    </block>
+  </view>
+
+  <!-- Step：选甲型 -->
+  <block wx:if="{{step === 'shape'}}">
+    <view class="ts__title">选择你的甲型</view>
+    <view class="ts__sub">不同甲型决定试戴效果，请先确认你的指甲形状</view>
+
+    <view class="ts__shapes">
+      <view
+        wx:for="{{shapes}}" wx:key="id"
+        class="ts__shape-card {{selectedShape === item.id ? 'on' : ''}}"
+        data-v="{{item.id}}" bindtap="onPickShape">
+        <view class="ts__shape-icon ts__shape-icon--{{item.id}}"></view>
+        <view class="ts__shape-name">{{item.label}}</view>
+        <view class="ts__shape-desc">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <view class="ts__cta">
+      <button class="np-btn np-btn--block" bindtap="onShapeNext" disabled="{{!selectedShape}}">下一步</button>
+    </view>
+  </block>
+
+  <!-- Step：选款式（仅当首页直接进来时） -->
+  <block wx:if="{{step === 'style'}}">
+    <view class="ts__title">选择想试戴的款式</view>
+    <view class="ts__sub">选好款式后，再上传你的手部照片合成效果</view>
+
+    <view wx:if="{{styleLoading && !styleList.length}}" class="ts__empty">加载中…</view>
+
+    <view class="ts__style-grid">
+      <view
+        wx:for="{{styleList}}" wx:key="id"
+        class="ts__style-card {{styleId === item.id ? 'on' : ''}}"
+        data-id="{{item.id}}" bindtap="onPickStyle">
+        <view class="ts__style-cover">
+          <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" class="ts__style-img" mode="aspectFill"/>
+          <view wx:else class="ts__style-fallback">{{item.title}}</view>
+          <view wx:if="{{styleId === item.id}}" class="ts__style-check">✓</view>
+        </view>
+        <view class="ts__style-name">{{item.title}}</view>
+      </view>
+    </view>
+
+    <view class="ts__back-row">
+      <view class="ts__back" bindtap="onPrevStep">‹ 重新选甲型</view>
+      <button class="np-btn np-btn--block" bindtap="onStyleNext" disabled="{{!styleId}}">下一步</button>
+    </view>
+  </block>
+
+  <!-- Step：上传照片 -->
+  <block wx:if="{{step === 'photo'}}">
+    <view class="ts__title">上传你的手部照片</view>
+    <view class="ts__sub" wx:if="{{useMockHand}}">测试模式：{{mockHandLabel || '评测手照'}}，可切换下方手照后点「开始合成」</view>
+    <view class="ts__sub" wx:else>建议手部正面、五指张开、光线均匀，效果更佳</view>
+
+    <view wx:if="{{style}}" class="ts__chosen">
+      <text class="ts__chosen-tag">已选款式</text>
+      <text class="ts__chosen-name">{{style.title}}</text>
+      <text class="ts__chosen-shape">· 甲型 {{shapeLabel}}</text>
+    </view>
+
+    <view class="ts__upload {{photoPath ? 'ts__upload--has-photo' : ''}}">
+      <block wx:if="{{!photoPath}}">
+        <view class="ts__upload-icon">+</view>
+        <view class="ts__upload-text">选择手部照片</view>
+        <view class="ts__upload-tip">JPG / PNG · 不超过 10MB</view>
+        <view class="ts__upload-actions">
+          <button wx:if="{{useMockHand}}" class="ts__pick-btn ts__pick-btn--primary" plain hover-class="ts__pick-btn--hover" catchtap="onUseMockHand">使用测试手照</button>
+          <block wx:else>
+            <button class="ts__pick-btn" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromCamera">拍照</button>
+            <button class="ts__pick-btn ts__pick-btn--primary" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromAlbum">从相册选择</button>
+            <button class="ts__pick-btn" plain hover-class="ts__pick-btn--hover" catchtap="onUseMockHand">使用测试手照</button>
+          </block>
+        </view>
+      </block>
+      <block wx:else>
+        <image src="{{photoPath}}" class="ts__upload-img ts__upload-img--fit" mode="widthFix"></image>
+        <view wx:if="{{useMockHand}}" class="ts__mock-tag">{{mockHandLabel || '测试手照'}}</view>
+      </block>
+    </view>
+
+    <view wx:if="{{useMockHand && evalHands.length}}" class="ts__eval">
+      <view class="ts__eval-title">切换评测手照（共 {{evalHands.length}} 张）</view>
+      <scroll-view scroll-x class="ts__eval-scroll" enhanced show-scrollbar="{{false}}">
+        <view
+          class="ts__eval-item {{selectedEvalHandId === 'local' ? 'on' : ''}}"
+          data-id="local"
+          catchtap="onSelectEvalHand">
+          <image src="/data/hand-mock.jpg" class="ts__eval-thumb ts__eval-thumb--local" mode="aspectFit"/>
+          <view class="ts__eval-name">本地</view>
+        </view>
+        <view
+          wx:for="{{evalHands}}" wx:key="id"
+          class="ts__eval-item {{selectedEvalHandId === item.id ? 'on' : ''}}"
+          data-id="{{item.id}}"
+          catchtap="onSelectEvalHand">
+          <image src="{{item.handUrl}}" class="ts__eval-thumb" mode="aspectFit"/>
+          <view class="ts__eval-name">{{item.label}}</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="ts__back-row">
+      <view class="ts__back" bindtap="onPrevStep">‹ 上一步</view>
+      <button class="np-btn np-btn--block ts__compose-btn" bindtap="onCompose" disabled="{{!photoPath || composing}}">
+        {{composing ? '合成中…' : '开始合成'}}
+      </button>
+    </view>
+  </block>
+
+  <!-- Step：预览 + 切换款式 -->
+  <block wx:if="{{step === 'preview'}}">
+    <view class="ts__stage">
+      <image wx:if="{{composedUrl}}" src="{{composedUrl}}" class="ts__photo" mode="aspectFill"></image>
+      <view wx:if="{{composing}}" class="ts__loading">{{composeProgress || 'AI 试戴合成中，约 15–30 秒…'}}</view>
+      <view class="ts__retake" bindtap="onPrevStep">重新拍照</view>
+    </view>
+
+    <view class="ts__current" wx:if="{{style}}">
+      <view class="ts__current-row">
+        <text class="ts__current-tag">当前款式</text>
+        <text class="ts__current-name">{{style.title}}</text>
+      </view>
+      <view class="ts__current-shape">甲型：{{shapeLabel}}</view>
+    </view>
+
+    <view class="ts__switch">
+      <view class="ts__switch-title">换个款式试试</view>
+      <scroll-view scroll-x class="ts__alts" enhanced show-scrollbar="{{false}}">
+        <view
+          wx:for="{{altStyles}}" wx:key="id"
+          class="ts__alt {{styleId === item.id ? 'on' : ''}}"
+          data-id="{{item.id}}" bindtap="onSwitchStyle">
+          <image src="{{item.coverUrl}}" class="ts__alt-cover" mode="aspectFill"/>
+          <view class="ts__alt-name">{{item.title}}</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="ts__cta">
+      <button class="np-btn np-btn--block" bindtap="onSaveAndOutput">导出 2K 高清图</button>
+    </view>
+  </block>
+</view>
+<privacy-popup />
