@@ -19,12 +19,12 @@
 2. 复制环境 ID，写入 `config/cloud-env.js`：
 
 ```javascript
-module.exports = { CLOUD_ENV_ID: '你的环境ID' };
+module.exports = { ENV_ID: '你的环境ID' };
 ```
 
 当前已配置示例：`cloud1-d2g3df4y16873034b`
 
-3. **云开发控制台 → 存储**：默认即可，试戴手照会上传到 `tryon-input/`
+3. **云开发控制台 → 存储**：默认即可，试戴手照会上传到 `tryon/hands/`
 
 ---
 

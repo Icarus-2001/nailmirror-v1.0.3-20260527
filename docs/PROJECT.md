@@ -56,7 +56,7 @@ USE_MOCK_HAND_PHOTO: true,  // true：默认 Mock 手照，可跳过相册
 **`config/cloud-env.js`**
 
 ```javascript
-module.exports = { CLOUD_ENV_ID: 'cloud1-d2g3df4y16873034b' };
+module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 ```
 
 **AppID**（`project.config.json`）：`wxb5ec84f31303cfde`
