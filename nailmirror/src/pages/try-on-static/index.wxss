@@ -239,6 +239,23 @@
 .ts__chosen-name { font-weight: 600; }
 .ts__chosen-shape { color: #888; margin-left: 10rpx; }
 
+.ts__wan-model {
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  background: #f7f7fb;
+  border-radius: 16rpx;
+  border: 1rpx solid #ececf0;
+}
+.ts__wan-model-title { font-size: 26rpx; font-weight: 600; color: #333; margin-bottom: 12rpx; }
+.ts__wan-model-pick {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16rpx 20rpx; background: #fff; border-radius: 12rpx;
+  font-size: 26rpx; color: #1a1a1a;
+}
+.ts__wan-model-arrow { font-size: 20rpx; color: #999; }
+.ts__wan-model-tip { font-size: 22rpx; color: #999; margin-top: 10rpx; }
+.ts__current-model { font-size: 24rpx; color: #666; margin-top: 8rpx; }
+
 /* loading */
 .ts__loading {
   position: absolute; top: 50%; left: 50%;

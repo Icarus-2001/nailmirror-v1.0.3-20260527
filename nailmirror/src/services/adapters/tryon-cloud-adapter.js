@@ -42,9 +42,14 @@ async function pollTryonJob(jobId, opts) {
   throw new Error('试戴超时，请稍后重试');
 }
 
-async function runTryon(localPhotoPath, styleMeta, shapeId) {
+function pollMaxAttempts(wanModel) {
+  if (wanModel === 'wan2.7-image-pro' || wanModel === 'wan2.7-image') return 60;
+  return 40;
+}
+
+async function runTryon(localPhotoPath, styleMeta, shapeId, wanModel) {
   const fileID = await uploadHandPhoto(localPhotoPath);
-  const submitted = await submitTryonJob({
+  const submitPayload = {
     fileID,
     styleId: styleMeta.id,
     styleTitle: styleMeta.title,
@@ -54,11 +59,18 @@ async function runTryon(localPhotoPath, styleMeta, shapeId) {
     color: styleMeta.color,
     design: styleMeta.design,
     shapePrompt: shapeId || (styleMeta.shapeTags && styleMeta.shapeTags[0]) || 'almond'
-  });
-  logger.info('[tryon-cloud] submitted', submitted.jobId, 'nails=', submitted.nailCount);
-  const done = await pollTryonJob(submitted.jobId);
+  };
+  if (wanModel) submitPayload.wanModel = wanModel;
+  const submitted = await submitTryonJob(submitPayload);
+  logger.info('[tryon-cloud] submitted', submitted.jobId, 'model=', submitted.wanModel, 'nails=', submitted.nailCount);
+  const done = await pollTryonJob(submitted.jobId, { maxAttempts: pollMaxAttempts(wanModel || submitted.wanModel) });
   if (!done.outputUrl) throw new Error('生图完成但未返回图片 URL');
-  return { composedUrl: done.outputUrl, jobId: submitted.jobId };
+  return {
+    composedUrl: done.outputUrl,
+    jobId: submitted.jobId,
+    wanModel: submitted.wanModel || wanModel || '',
+    wanBackend: submitted.wanBackend || ''
+  };
 }
 
 module.exports = { ping, uploadHandPhoto, submitTryonJob, queryTryonJob, pollTryonJob, runTryon };

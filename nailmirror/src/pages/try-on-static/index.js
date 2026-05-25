@@ -7,6 +7,33 @@ const { NAIL_SHAPES } = require('../../config/enums');
 const featureFlags = require('../../config/feature-flags');
 const mockHand = require('../../config/mock-hand');
 
+const WAN_MODEL_STORAGE_KEY = 'tryon_wan_model';
+
+function resolveInitialWanModel() {
+  if (!featureFlags.SHOW_WAN_MODEL_PICKER) {
+    return featureFlags.DEFAULT_WAN_MODEL || '';
+  }
+  try {
+    const saved = wx.getStorageSync(WAN_MODEL_STORAGE_KEY);
+    if (saved) return saved;
+  } catch (e) { /* ignore */ }
+  if (featureFlags.DEFAULT_WAN_MODEL) return featureFlags.DEFAULT_WAN_MODEL;
+  const opts = featureFlags.WAN_MODEL_OPTIONS || [];
+  return opts.length ? opts[0].id : '';
+}
+
+function wanModelLabel(modelId) {
+  const opts = featureFlags.WAN_MODEL_OPTIONS || [];
+  const found = opts.find((o) => o.id === modelId);
+  return found ? found.label : (modelId || '默认');
+}
+
+function wanModelIndexOf(modelId) {
+  const opts = featureFlags.WAN_MODEL_OPTIONS || [];
+  const idx = opts.findIndex((o) => o.id === modelId);
+  return idx >= 0 ? idx : 0;
+}
+
 // 流程步骤：shape → (style 仅当未传 styleId) → photo → preview
 const STEP_ORDER_FULL  = ['shape', 'style', 'photo', 'preview'];
 const STEP_ORDER_SHORT = ['shape', 'photo', 'preview'];
@@ -39,7 +66,15 @@ Page({
     // 切换/相邻款式
     altStyles: [],
     composing: false,
-    composeProgress: ''
+    composeProgress: '',
+
+    showWanModelPicker: false,
+    wanModelOptions: [],
+    wanModelIndex: 0,
+    selectedWanModel: '',
+    selectedWanModelLabel: '',
+    usedWanModel: '',
+    usedWanModelLabel: ''
   },
 
   async onLoad(query) {
@@ -58,6 +93,8 @@ Page({
           { key: 'preview', label: '生成预览' }
         ];
     const initShape = tryOnStore.currentShape || '';
+    const initWanModel = resolveInitialWanModel();
+    const wanOpts = featureFlags.WAN_MODEL_OPTIONS || [];
 
     this.setData({
       needPickStyle,
@@ -68,7 +105,12 @@ Page({
       selectedShape: initShape,
       shapeLabel: this._labelOfShape(initShape),
       evalHands: featureFlags.USE_MOCK_HAND_PHOTO ? mockHand.evalHands : [],
-      selectedEvalHandId: mockHand.DEFAULT_EVAL_ID
+      selectedEvalHandId: mockHand.DEFAULT_EVAL_ID,
+      showWanModelPicker: !!featureFlags.SHOW_WAN_MODEL_PICKER && wanOpts.length > 1,
+      wanModelOptions: wanOpts,
+      selectedWanModel: initWanModel,
+      selectedWanModelLabel: wanModelLabel(initWanModel),
+      wanModelIndex: wanModelIndexOf(initWanModel)
     });
 
     if (incomingStyleId) {
@@ -218,6 +260,25 @@ Page({
   onUseMockHand() {
     this._applyMockHandPhoto(this.data.selectedEvalHandId || mockHand.DEFAULT_EVAL_ID);
   },
+
+  onWanModelPick(e) {
+    const idx = Number(e.detail.value);
+    const opt = (this.data.wanModelOptions || [])[idx];
+    if (!opt) return;
+    this.setData({
+      wanModelIndex: idx,
+      selectedWanModel: opt.id,
+      selectedWanModelLabel: opt.label
+    });
+    try {
+      wx.setStorageSync(WAN_MODEL_STORAGE_KEY, opt.id);
+    } catch (err) { /* ignore */ }
+  },
+
+  _tryonOpts() {
+    return this.data.selectedWanModel ? { wanModel: this.data.selectedWanModel } : {};
+  },
+
   async onCompose() {
     if (!this.data.photoPath) {
       wx.showToast({ title: '请先上传照片', icon: 'none' });
@@ -230,8 +291,18 @@ Page({
     this._gotoStep('preview');
     this.setData({ composing: true, composeProgress: '分析款式与指甲位置…' });
     try {
-      const r = await tryOnService.startStatic(this._photoForUpload(), this.data.styleId, this.data.selectedShape);
-      this.setData({ composedUrl: r.composedUrl, composeProgress: '' });
+      const r = await tryOnService.startStatic(
+        this._photoForUpload(),
+        this.data.styleId,
+        this.data.selectedShape,
+        this._tryonOpts()
+      );
+      this.setData({
+        composedUrl: r.composedUrl,
+        composeProgress: '',
+        usedWanModel: r.wanModel || this.data.selectedWanModel,
+        usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
+      });
     } catch (e) {
       wx.showToast({ title: e.message || '合成失败', icon: 'none' });
     } finally {
@@ -245,7 +316,9 @@ Page({
     const idx = keys.indexOf(this.data.step);
     if (idx <= 0) return;
     const prev = keys[idx - 1];
-    if (this.data.step === 'preview') this.setData({ composedUrl: '' });
+    if (this.data.step === 'preview') {
+      this.setData({ composedUrl: '', usedWanModel: '', usedWanModelLabel: '' });
+    }
     if (this.data.step === 'photo') this.setData({ photoPath: '', photoUploadPath: '', useMockHand: false });
     this._gotoStep(prev);
   },
@@ -259,8 +332,17 @@ Page({
     if (this.data.photoPath) {
       this.setData({ composing: true, composeProgress: '换款合成中…' });
       try {
-        const r = await tryOnService.startStatic(this._photoForUpload(), id, this.data.selectedShape);
-        this.setData({ composedUrl: r.composedUrl });
+        const r = await tryOnService.startStatic(
+          this._photoForUpload(),
+          id,
+          this.data.selectedShape,
+          this._tryonOpts()
+        );
+        this.setData({
+          composedUrl: r.composedUrl,
+          usedWanModel: r.wanModel || this.data.selectedWanModel,
+          usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
+        });
       } finally {
         this.setData({ composing: false, composeProgress: '' });
       }

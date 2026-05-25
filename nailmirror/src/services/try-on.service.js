@@ -20,17 +20,20 @@ async function startAR(params) {
   return arRenderer.start({ styleId, shape });
 }
 
-async function startStatic(photoPath, styleId, shapeId) {
+async function startStatic(photoPath, styleId, shapeId, opts) {
   if (!photoPath) throw makeError(ERR.UPLOAD_ERR, '未选择手照');
   if (!styleId) throw makeError(ERR.NOT_FOUND, '缺少款式');
 
   if (featureFlags.USE_CLOUD_TRYON && cloudUtil.isCloudReady()) {
     try {
       const style = await styleService.get(styleId);
-      const r = await cloudAdapter.runTryon(photoPath, style, shapeId);
+      const wanModel = (opts && opts.wanModel) || '';
+      const r = await cloudAdapter.runTryon(photoPath, style, shapeId, wanModel);
       return {
         composedUrl: r.composedUrl,
         jobId: r.jobId,
+        wanModel: r.wanModel || '',
+        wanBackend: r.wanBackend || '',
         keypoints: []
       };
     } catch (e) {

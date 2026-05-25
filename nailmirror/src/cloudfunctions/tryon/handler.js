@@ -1,8 +1,10 @@
 // tryon 业务逻辑（依赖延迟加载，避免冷启动时 module 未安装导致 exports.main 未注册）
 const https = require('https');
 const { URL } = require('url');
+const wanBackends = require('./wan-backends');
 
-const DASH_BASE = 'https://dashscope.aliyuncs.com';
+const DASH_BASE = wanBackends.DASH_BASE;
+const BACKEND_MASK = wanBackends.BACKEND_MASK;
 const MASK_SCALE = 1.28;
 
 let _cloud = null;
@@ -433,57 +435,6 @@ async function buildMaskBuffer(handBuf, nails) {
   return mask.getBufferAsync(Jimp.MIME_PNG);
 }
 
-function wanEditModel() {
-  const raw = getEnv('WANX_EDIT_MODEL', 'wanx2.1-imageedit');
-  if (raw === 'wan2.1-imageedit') return 'wanx2.1-imageedit';
-  return raw;
-}
-
-async function submitWanInpaint(baseUrl, maskUrl, prompt) {
-  const apiKey = getEnv('DASHSCOPE_API_KEY', '');
-  const model = wanEditModel();
-  console.log('[tryon] wanx prompt:', prompt.slice(0, 220));
-  let lastErr = null;
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const res = await httpJson('POST', DASH_BASE + '/api/v1/services/aigc/image2image/image-synthesis', {
-        Authorization: 'Bearer ' + apiKey,
-        'X-DashScope-Async': 'enable'
-      }, {
-        model,
-        input: {
-          function: 'description_edit_with_mask',
-          prompt: attempt === 0 ? prompt : (prompt + ' Strong visible nail polish color, high contrast.'),
-          base_image_url: baseUrl,
-          mask_image_url: maskUrl
-        },
-        parameters: { n: 1, prompt_extend: true }
-      });
-      if (res.status >= 400) throw new Error('万相提交失败: ' + (res.raw || '').slice(0, 300));
-      const taskId = ((res.data || {}).output || {}).task_id;
-      if (!taskId) throw new Error('万相未返回 task_id');
-      return taskId;
-    } catch (e) {
-      lastErr = e;
-      console.warn('[tryon] wanx submit attempt', attempt + 1, 'fail', e.message);
-    }
-  }
-  throw lastErr || new Error('万相提交失败');
-}
-
-async function queryWanTask(taskId) {
-  const apiKey = getEnv('DASHSCOPE_API_KEY', '');
-  const res = await httpJson('GET', DASH_BASE + '/api/v1/tasks/' + taskId, {
-    Authorization: 'Bearer ' + apiKey
-  });
-  const output = (res.data || {}).output || {};
-  const status = output.task_status || 'UNKNOWN';
-  let outputUrl = '';
-  const results = output.results || [];
-  if (results.length && results[0].url) outputUrl = results[0].url;
-  return { status, outputUrl, message: output.message || output.code || '' };
-}
-
 async function submitTryonJob(event) {
   const input = await resolveInputImage(event);
   const handBuf = input.type === 'buffer' ? input.value : await httpBuffer(input.value);
@@ -499,25 +450,60 @@ async function submitTryonJob(event) {
     return fail('未定位到指甲区域，请确保五指清晰、光线均匀');
   }
 
-  const maskBuf = await buildMaskBuffer(handBuf, nailAnalysis.data.nails);
-  const maskUp = await uploadBufferGetUrl(maskBuf, 'png');
   const prompt = buildTryonPrompt(promptEvent);
-  const taskId = await submitWanInpaint(baseUrl, maskUp.url, prompt);
+  const styleUrl = event.styleCoverUrl || event.styleImageUrl || '';
+  const nails = nailAnalysis.data.nails;
+  let wanResolved;
+  try {
+    wanResolved = wanBackends.resolveWanModel(event.wanModel);
+  } catch (e) {
+    return fail(e.message);
+  }
+
+  let wanJob;
+  if (wanResolved.backend === BACKEND_MASK) {
+    const maskBuf = await buildMaskBuffer(handBuf, nails);
+    const maskUp = await uploadBufferGetUrl(maskBuf, 'png');
+    wanJob = await wanBackends.submitWanJob({
+      baseUrl,
+      maskUrl: maskUp.url,
+      prompt,
+      wanModelOverride: event.wanModel,
+      model: wanResolved.model,
+      backend: wanResolved.backend
+    });
+  } else {
+    const Jimp = getJimp();
+    const handImg = await Jimp.read(handBuf);
+    wanJob = await wanBackends.submitWanJob({
+      baseUrl,
+      styleUrl,
+      prompt,
+      nails,
+      imageWidth: handImg.bitmap.width,
+      imageHeight: handImg.bitmap.height,
+      wanModelOverride: event.wanModel,
+      model: wanResolved.model,
+      backend: wanResolved.backend
+    });
+  }
 
   return ok({
-    jobId: taskId,
+    jobId: wanJob.taskId,
     status: 'processing',
     outputUrl: '',
     provider: 'dashscope-wan',
-    nailCount: nailAnalysis.data.nails.length,
-    usedStyleImage: !!(event.styleCoverUrl || event.styleImageUrl)
+    wanModel: wanJob.wanModel,
+    wanBackend: wanJob.wanBackend,
+    nailCount: nails.length,
+    usedStyleImage: !!styleUrl
   });
 }
 
 async function queryTryonJob(event) {
   const { jobId } = event || {};
   if (!jobId) return fail('缺少 jobId');
-  const r = await queryWanTask(jobId);
+  const r = await wanBackends.queryWanJob(jobId);
   let status = 'processing';
   if (r.status === 'SUCCEEDED') status = 'succeeded';
   else if (r.status === 'FAILED') status = 'failed';
@@ -533,12 +519,15 @@ async function ping() {
   let deps = { wxServerSdk: false, jimp: false };
   try { require.resolve('wx-server-sdk'); deps.wxServerSdk = true; } catch (e) { /* ignore */ }
   try { require.resolve('jimp'); deps.jimp = true; } catch (e) { /* ignore */ }
+  const wanResolved = wanBackends.resolveWanModel();
   return ok({
     ok: true,
     hasDashScopeKey: !!getEnv('DASHSCOPE_API_KEY', ''),
     qwenModel: getEnv('QWEN_VL_MODEL', 'qwen-vl-max'),
-    wanModel: wanEditModel(),
-    runtime: 'handler-v5-eval-stable',
+    wanModel: wanResolved.model,
+    wanBackend: wanResolved.backend,
+    supportedModels: wanBackends.SUPPORTED_MODELS,
+    runtime: 'handler-v7-wan27-dual',
     deps
   });
 }

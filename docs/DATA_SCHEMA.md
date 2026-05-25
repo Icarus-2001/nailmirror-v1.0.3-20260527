@@ -124,8 +124,18 @@ cd nailmirror/src && node scripts/import-eval-hands.js
 
 ## 4. 万相模型
 
-- 环境变量 `WANX_EDIT_MODEL`，默认 **`wanx2.1-imageedit`**
-- 能力：`description_edit_with_mask`（原图 + Mask + 文本 prompt）
+| 来源 | 说明 |
+|------|------|
+| `event.wanModel` | 试戴页下拉，优先级最高 |
+| `WAN_IMAGE_MODEL` | 云函数 env 默认 |
+| `WANX_EDIT_MODEL` | 兼容旧配置 |
+
+| 模型 | 后端 | API |
+|------|------|-----|
+| `wanx2.1-imageedit` | Mask 局部重绘 | `image2image/image-synthesis` |
+| `wan2.7-image-pro` | 双图 + bbox | `image-generation/generation` |
+
+`submitTryonJob` 响应含 `wanModel`、`wanBackend`。
 
 ---
 

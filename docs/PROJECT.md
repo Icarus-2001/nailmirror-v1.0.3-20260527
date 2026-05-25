@@ -8,7 +8,7 @@
 |----|------|
 | 前端 | 微信小程序原生（WXML / WXSS / JS） |
 | 后端 | 微信云开发（云函数 + 云存储） |
-| AI | 阿里云 DashScope：Qwen-VL + 万相 `wanx2.1-imageedit` |
+| AI | 阿里云 DashScope：Qwen-VL + 万相（2.1 / 2.7，试戴页可切换） |
 
 ## 目录结构
 
@@ -37,7 +37,7 @@ nailmirror-v1.6-20260519-r3/
 | 模块 | 状态 | 说明 |
 |------|------|------|
 | 款式库 / 详情 / 收藏 | ✅ 真实数据 | `USE_REAL_STYLES: true` |
-| 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 Mask 重绘 |
+| 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 2.1/2.7（试戴页可切换对比） |
 | 首页推荐 / 热款榜 | ✅ 真实封面 | `coverUrl` 来自美团 CDN |
 | 评测手照 | ✅ | 13 张，可跳过相册 |
 | 商家 / 预约 / 订单 | Mock | 演示流程 |
@@ -66,11 +66,11 @@ module.exports = { CLOUD_ENV_ID: 'cloud1-d2g3df4y16873034b' };
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）
   → wx.cloud.uploadFile
-  → 云函数 tryon（submitTryonJob）
+  → 云函数 tryon（submitTryonJob + 可选 wanModel）
       → Qwen-VL：款式图+手照 → inpaint prompt
-      → Qwen-VL：指甲位置 → Jimp Mask
-      → 万相 description_edit_with_mask → 轮询结果
-  → 结果页展示 composedUrl
+      → Qwen-VL：指甲位置
+      → 万相 2.1 Mask 或 2.7 双图+bbox → 轮询结果
+  → 结果页展示 composedUrl 与所用模型
 ```
 
 详见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
@@ -79,10 +79,11 @@ module.exports = { CLOUD_ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 | 文件 | 职责 |
 |------|------|
-| `pages/try-on-static/index.js` | 试戴页（选款、上传、Mock 手照） |
+| `pages/try-on-static/index.js` | 试戴页（选款、上传、Mock 手照、万相模型下拉） |
 | `services/try-on.service.js` | 试戴入口，按 flag 选 Cloud / Mock |
-| `services/adapters/tryon-cloud-adapter.js` | 上传 + 提交 job + 轮询 |
-| `cloudfunctions/tryon/handler.js` | VL 分析、Mask、万相调用 |
+| `services/adapters/tryon-cloud-adapter.js` | 上传 + 提交 job + 轮询（2.7 延长超时） |
+| `cloudfunctions/tryon/handler.js` | 试戴编排（handler v7） |
+| `cloudfunctions/tryon/wan-backends.js` | 万相 2.1 Mask / 2.7 双图+bbox 双后端 |
 | `services/style.service.js` | 款式列表 / 详情 / 筛选 |
 | `services/hot-data.service.js` | 热款榜（真实数据时按 heat 排序） |
 

@@ -26,3 +26,6 @@ temp/
 
 # Cloud function local install (deploy via 云端安装依赖)
 nailmirror/src/cloudfunctions/**/node_modules/
+
+# Understand Anything (local analysis artifacts)
+.understand-anything/

@@ -1,5 +1,32 @@
 # 变更记录
 
+## 2026-05-25 · 万相 2.7 双图试戴 + 模型对比下拉
+
+### 云函数（handler v7）
+
+- 新增 [`wan-backends.js`](../nailmirror/src/cloudfunctions/tryon/wan-backends.js)：2.1 Mask + 2.7 双图/bbox
+- `WAN_IMAGE_MODEL` env 默认；`event.wanModel` 可覆盖（试戴页下拉）
+- 2.7：`wan2.7-image-pro` + 款式图/手照 + `bbox_list`（指甲合并为最多 2 框）
+- `queryTryonJob` 兼容 2.7 `choices` 与 2.1 `results` 响应
+
+### 前端
+
+- `SHOW_WAN_MODEL_PICKER`：试戴页万相模型下拉，本地记忆选择
+- 预览页展示本次 `wanModel`；2.7 轮询 `maxAttempts: 60`
+
+### 单测
+
+- `cloudfunctions/tryon/wan-backends.test.js`
+
+---
+
+## 2026-05-25 · 回退万相 v6 多模型（已 supersede）
+
+- 云函数恢复为仅 `wanx2.1-imageedit` + Mask 局部重绘（`handler-v5-eval-stable`）
+- 移除 `wan-backends.js` 及 2.5/2.7 切换逻辑
+
+---
+
 ## 2026-05-24 · 云试戴 MVP 与真实数据
 
 ### 数据与展示

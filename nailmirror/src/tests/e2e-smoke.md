@@ -23,7 +23,7 @@
 {"action":"ping"}
 ```
 
-期望：`hasDashScopeKey: true`，`wanModel: "wanx2.1-imageedit"`
+期望：`hasDashScopeKey: true`，`runtime: "handler-v7-wan27-dual"`，`supportedModels` 含 2.1 与 2.7
 
 ## 3. 款式库
 

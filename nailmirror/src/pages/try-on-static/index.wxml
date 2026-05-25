@@ -70,6 +70,17 @@
       <text class="ts__chosen-shape">· 甲型 {{shapeLabel}}</text>
     </view>
 
+    <view wx:if="{{showWanModelPicker}}" class="ts__wan-model">
+      <view class="ts__wan-model-title">万相模型（对比用）</view>
+      <picker mode="selector" range="{{wanModelOptions}}" range-key="label" value="{{wanModelIndex}}" bindchange="onWanModelPick">
+        <view class="ts__wan-model-pick">
+          <text>{{selectedWanModelLabel}}</text>
+          <text class="ts__wan-model-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="ts__wan-model-tip">同手同款可切换模型各生成一次对比效果</view>
+    </view>
+
     <view class="ts__upload {{photoPath ? 'ts__upload--has-photo' : ''}}">
       <block wx:if="{{!photoPath}}">
         <view class="ts__upload-icon">+</view>
@@ -133,6 +144,7 @@
         <text class="ts__current-name">{{style.title}}</text>
       </view>
       <view class="ts__current-shape">甲型：{{shapeLabel}}</view>
+      <view wx:if="{{usedWanModelLabel}}" class="ts__current-model">模型：{{usedWanModelLabel}}</view>
     </view>
 
     <view class="ts__switch">
