@@ -1,5 +1,7 @@
 const tryOnService = require('../../services/try-on.service');
 const adService = require('../../services/ad.service');
+const imageUtil = require('../../utils/image');
+const hdOutputNav = require('../../utils/hd-output-nav');
 const { userStore } = require('../../stores/user.store');
 
 Page({
@@ -13,9 +15,10 @@ Page({
   },
   async onLoad(query) {
     userStore.init();
+    const hdUrl = hdOutputNav.resolveHdUrl(query);
     this.setData({
       styleId: query.styleId || '',
-      hdUrl: decodeURIComponent(query.hdUrl || ''),
+      hdUrl,
       quotaLeft: userStore.dailyFreeHDLeft
     });
     if (!this.data.hdUrl) {
@@ -37,20 +40,22 @@ Page({
     }
   },
   async onSave() {
-    if (!this.data.hdUrl) return;
+    if (!this.data.hdUrl) {
+      wx.showToast({ title: '图片未就绪', icon: 'none' });
+      return;
+    }
     this.setData({ saving: true });
-    wx.downloadFile({
-      url: this.data.hdUrl,
-      success: (res) => {
-        wx.saveImageToPhotosAlbum({
-          filePath: res.tempFilePath,
-          success: () => wx.showToast({ title: '已保存相册' }),
-          fail: () => wx.showToast({ title: '保存失败', icon: 'none' })
-        });
-      },
-      fail: () => wx.showToast({ title: '下载失败', icon: 'none' }),
-      complete: () => this.setData({ saving: false })
-    });
+    wx.showLoading({ title: '保存中…', mask: true });
+    try {
+      await imageUtil.saveRemoteImageToAlbum(this.data.hdUrl);
+      wx.hideLoading();
+      wx.showToast({ title: '已保存相册' });
+    } catch (e) {
+      wx.hideLoading();
+      imageUtil.showSaveError(e, this.data.hdUrl);
+    } finally {
+      this.setData({ saving: false });
+    }
   },
   async onRemoveWatermark() {
     const r = await adService.showRewardedAd();

@@ -71,6 +71,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
       → Qwen-VL：指甲位置
       → 万相 2.1 Mask 或 2.7 双图+bbox → 轮询结果
   → 结果页展示 composedUrl 与所用模型
+  → 导出 2K → pages/hd-output → 保存到相册（真机须配 downloadFile 域名，见 SETUP_USER.md §7）
 ```
 
 详见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
@@ -80,6 +81,9 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 | 文件 | 职责 |
 |------|------|
 | `pages/try-on-static/index.js` | 试戴页（选款、上传、Mock 手照、万相模型下拉） |
+| `pages/hd-output/index.js` | 2K 出图页（保存相册、分享） |
+| `utils/hd-output-nav.js` | 出图页跳转（storage 传 hdUrl） |
+| `utils/image.js` | 远程图下载 + 保存相册（`saveRemoteImageToAlbum`） |
 | `services/try-on.service.js` | 试戴入口，按 flag 选 Cloud / Mock |
 | `services/adapters/tryon-cloud-adapter.js` | 上传 + 提交 job + 轮询（2.7 延长超时） |
 | `cloudfunctions/tryon/handler.js` | 试戴编排（handler v7） |

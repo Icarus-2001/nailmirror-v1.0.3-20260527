@@ -9,25 +9,15 @@ Component({
   methods: {
     async onSave() {
       if (!this.data.url) return;
-      wx.showLoading({ title: '保存中…' });
+      wx.showLoading({ title: '保存中…', mask: true });
       try {
-        // 下载再保存
-        wx.downloadFile({
-          url: this.data.url,
-          success: async (res) => {
-            try {
-              await imageUtil.saveToAlbum(res.tempFilePath);
-              wx.hideLoading();
-              wx.showToast({ title: '已保存相册' });
-              this.triggerEvent('saved', { url: this.data.url });
-            } catch (e) {
-              wx.hideLoading();
-            }
-          },
-          fail: () => { wx.hideLoading(); wx.showToast({ title: '保存失败', icon: 'none' }); }
-        });
+        await imageUtil.saveRemoteImageToAlbum(this.data.url);
+        wx.hideLoading();
+        wx.showToast({ title: '已保存相册' });
+        this.triggerEvent('saved', { url: this.data.url });
       } catch (e) {
         wx.hideLoading();
+        imageUtil.showSaveError(e, this.data.url);
       }
     },
     onCopyCaption() {

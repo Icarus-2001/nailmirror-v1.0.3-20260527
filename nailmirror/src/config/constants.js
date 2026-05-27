@@ -16,6 +16,7 @@ module.exports = {
   STORAGE_MERCHANT:   'np_merchant',
   STORAGE_LAST_REMOVE:'np_last_remove_date',
   STORAGE_DAILY_QUOTA:'np_daily_quota',
+  STORAGE_HD_OUTPUT:  'np_hd_output_url',
 
   // 分页
   PAGE_SIZE: 20,

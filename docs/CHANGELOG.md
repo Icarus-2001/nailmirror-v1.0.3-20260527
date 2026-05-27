@@ -1,5 +1,22 @@
 # 变更记录
 
+## 2026-05-27 · 2K 出图保存相册 + 万相 OSS 域名文档
+
+### 2K 保存（真机）
+
+- 修复出图页「保存到相册」：真机 downloadFile 域名校验 + 相册权限 + loading 遮挡 Toast 等问题
+- 新增 `utils/hd-output-nav.js`：经 `storage` / `globalData` 传递 `hdUrl`，避免 OSS 长 URL 在页面 query 中被截断
+- 增强 `utils/image.js`：`saveRemoteImageToAlbum`（getImageInfo → downloadFile → 复制重试 → saveToAlbum）、失败弹窗 `showSaveError`
+- `pages/hd-output` 挂载 `privacy-popup`；试戴 / AR / 历史页跳转统一走 `hd-output-nav`
+- `utils/cloud.js` 新增 `downloadCloudFile`（支持 `cloud://` 路径）
+
+### 文档
+
+- `SETUP_USER.md`：万相全区域 downloadFile 域名清单、工具 vs 真机差异、2K 保存链路与 FAQ
+- 真机须配置乌兰察布等 OSS 域名（如 `dashscope-result-wlcb-acdr-1.oss-cn-wulanchabu-acdr-1.aliyuncs.com`）
+
+---
+
 ## 2026-05-27 · 真机封面 HTTPS + 试戴拍照/相册 + CodeGraph 图谱
 
 ### 数据（真机图片加载）

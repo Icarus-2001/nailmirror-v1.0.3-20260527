@@ -51,4 +51,21 @@ function uploadFile(cloudPath, filePath) {
   });
 }
 
-module.exports = { initCloud, isCloudReady, callFunction, uploadFile };
+function downloadCloudFile(fileID) {
+  return new Promise((resolve, reject) => {
+    if (!initCloud()) {
+      reject(new Error('云开发未就绪'));
+      return;
+    }
+    wx.cloud.downloadFile({
+      fileID,
+      success: (res) => {
+        if (res.tempFilePath) resolve(res.tempFilePath);
+        else reject(new Error('云文件下载失败'));
+      },
+      fail: (err) => reject(err || new Error('云文件下载失败'))
+    });
+  });
+}
+
+module.exports = { initCloud, isCloudReady, callFunction, uploadFile, downloadCloudFile };

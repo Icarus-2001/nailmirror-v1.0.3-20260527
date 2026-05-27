@@ -336,10 +336,14 @@ flowchart LR
 
 ### 10.3 上线前域名配置
 
-微信公众平台 → 开发 → 开发管理 → 服务器域名 → **downloadFile 合法域名**：
+微信公众平台 → 开发 → 开发管理 → 服务器域名 → **downloadFile 合法域名**（须带 `https://`）。
 
-- `https://dashscope-result-bj.oss-cn-beijing.aliyuncs.com`（万相结果图）
+完整清单见 [SETUP_USER.md §7](./SETUP_USER.md#7-下载域名与-2k-保存上线前--真机必配)。至少包含：
+
+- 万相结果 OSS（多区域，含 `dashscope-result-wlcb-acdr-1.oss-cn-wulanchabu-acdr-1.aliyuncs.com` 等）
 - `https://p0.meituan.net`、`https://p1.meituan.net`（款式封面）
+
+**2K 保存必须在真机验证**；开发者工具勾选「不校验合法域名」时保存可能成功，真机仍会失败。
 
 ---
 
@@ -352,6 +356,7 @@ flowchart LR
 | 云函数上传失败 / 包过大 | 删除 `cloudfunctions/tryon/node_modules`，用「云端安装依赖」重传 |
 | `Model not exist`（2.7） | 百炼未开通 2.7 → 试戴页下拉改选 2.1 |
 | 相册点不开 / 无隐私弹窗 | 隐私指引未审核通过；审核通过后删小程序重进；或先用评测手照 |
+| 工具能保存、真机 2K 不能 | 配置 downloadFile 万相 OSS 域名；iOS 开「所有照片」；杀微信重进 |
 | 试戴几乎无变化 | 换光线清晰、五指可见的手照；查看云函数日志中 VL / 万相步骤 |
 | 首页 / 热榜封面空白（真机） | CDN 须为 **https://**；配置 downloadFile 域名 `p0/p1.meituan.net` |
 | 首页 / 热榜仍是乱图 | 确认 `USE_REAL_STYLES: true` 并重新编译 |

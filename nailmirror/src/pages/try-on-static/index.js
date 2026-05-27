@@ -393,7 +393,7 @@ Page({
         hdUrl: hd.hdUrl
       });
       wx.hideLoading();
-      wx.navigateTo({ url: '/pages/hd-output/index?styleId=' + this.data.styleId + '&hdUrl=' + encodeURIComponent(hd.hdUrl) });
+      require('../../utils/hd-output-nav').navigateTo(this.data.styleId, hd.hdUrl);
     } catch (e) {
       wx.hideLoading();
       wx.showToast({ title: '导出失败', icon: 'none' });

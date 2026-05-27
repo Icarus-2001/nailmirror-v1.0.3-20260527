@@ -15,7 +15,7 @@ Page({
       const r = await historyService.reGenerate(id);
       wx.hideLoading();
       const target = this.data.list.find((x) => x.id === id);
-      if (target) wx.navigateTo({ url: '/pages/hd-output/index?styleId=' + target.styleId + '&hdUrl=' + encodeURIComponent(r.hdUrl) });
+      if (target) require('../../utils/hd-output-nav').navigateTo(target.styleId, r.hdUrl);
     } catch (e) {
       wx.hideLoading();
       wx.showToast({ title: '出图失败', icon: 'none' });

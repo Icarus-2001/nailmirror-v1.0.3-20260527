@@ -18,3 +18,4 @@
     <view class="np-btn np-btn--ghost np-btn--block" bindtap="onShareAndGrant">已分享 · 领取 +1 额度</view>
   </view>
 </view>
+<privacy-popup />

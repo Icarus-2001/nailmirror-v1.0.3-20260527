@@ -13,7 +13,8 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.6.0-mvp'
+    version: '1.6.0-mvp',
+    pendingHdUrl: ''
   },
 
   registerPrivacyPopup(popup) {

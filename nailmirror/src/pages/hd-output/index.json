@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "高清出片",
   "usingComponents": {
-    "rewarded-ad-btn": "/components/rewarded-ad-btn/index"
+    "rewarded-ad-btn": "/components/rewarded-ad-btn/index",
+    "privacy-popup": "/components/privacy-popup/index"
   }
 }
