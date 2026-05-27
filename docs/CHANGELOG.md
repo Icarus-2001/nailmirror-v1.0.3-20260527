@@ -1,5 +1,28 @@
 # 变更记录
 
+## 2026-05-27 · 真机封面 HTTPS + 试戴拍照/相册 + CodeGraph 图谱
+
+### 数据（真机图片加载）
+
+- 款式与评测手照 CDN URL 全部由 `http://` 改为 **`https://`**（`mock/styles.real.js`、`mock/eval-hands.js`）
+- 导入脚本 `import-styles.js`、`import-eval-hands.js` 新增 `toHttpsUrl()`，重新导入 Excel 时自动 HTTPS
+- 真机需在公众平台配置 **downloadFile 合法域名**：`https://p0.meituan.net`、`https://p1.meituan.net`
+
+### 试戴页（上传照片）
+
+- **拍照 / 从相册选择** 与 **13 张评测手照** 同时可用，不再互斥
+- 取消进入「上传照片」步骤时自动加载默认评测手照
+- 预览区右上角 **✕** 可清除当前手照；选用评测手照时缩略图高亮
+- `USE_MOCK_HAND_PHOTO` 语义更新：控制是否显示评测手照列表（不再表示「跳过相册」）
+
+### 文档与工具
+
+- 新增 [`CODEGRAPH.md`](./CODEGRAPH.md)：模块依赖、试戴链路、Mock/真实分界、改动速查
+- 项目根目录 `codegraph init && codegraph index` 已可用；`.codegraph/` 加入 `.gitignore`
+- `.cursor/rules/codegraph.mdc`：Cursor AI 使用 CodeGraph MCP 的规则
+
+---
+
 ## 2026-05-25 · 万相 2.7 双图试戴 + 模型对比下拉
 
 ### 云函数（handler v7）

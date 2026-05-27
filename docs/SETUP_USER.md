@@ -87,7 +87,7 @@ module.exports = { ENV_ID: '你的环境ID' };
 |------|--------|------|
 | `USE_REAL_STYLES` | `true` | 25 条美团真实款式 |
 | `USE_CLOUD_TRYON` | `true` | 走云函数 + DashScope |
-| `USE_MOCK_HAND_PHOTO` | `true`（调试）/ `false`（正式相册） | 跳过相册，用默认或评测手照 |
+| `USE_MOCK_HAND_PHOTO` | `true` | 显示评测手照列表（与拍照/相册并存） |
 | `SHOW_WAN_MODEL_PICKER` | `true`（对比）/ `false`（上线） | 试戴页万相模型下拉 |
 
 ---
@@ -95,9 +95,9 @@ module.exports = { ENV_ID: '你的环境ID' };
 ## 6. 试戴测试步骤
 
 1. 编译 → 首页 → **试戴** → 选款式 → **开始试戴**
-2. 选手照方式：
-   - **Mock 模式**：点「使用默认手照」或下方 **13 张评测手照**
-   - **相册模式**：`USE_MOCK_HAND_PHOTO: false` 后点上传（需隐私指引生效）
+2. 选手照方式（三选一）：
+   - **拍照 / 从相册选择**（需隐私指引已发布，见第 4 节）
+   - 或下方 **13 张评测手照 / 本地手型**
 3. 上传步骤可选 **万相模型**（2.1 / 2.7），固定评测手照后各生成一次对比
 4. 等待约 30–90 秒（2.7 可能更久），预览页显示「模型：xxx」
 
@@ -119,7 +119,8 @@ module.exports = { ENV_ID: '你的环境ID' };
 | 云函数上传失败 / 包过大 | 删除 `cloudfunctions/tryon/node_modules`，用「云端安装依赖」 |
 | `Model not exist` | 2.7 需在百炼开通；或下拉改回 2.1 |
 | `hasDashScopeKey: false` | 在云函数环境变量配置 `DASHSCOPE_API_KEY` |
-| 相册点不开 | 检查隐私指引 + `privacy-popup`；或先用 Mock 手照 |
+| 相册点不开 / 无隐私弹窗 | 隐私指引未审核通过；或先用评测手照 |
+| 首页 / 热榜封面空白（真机） | 款式 CDN 须 **https://**；配置 downloadFile 域名 |
 | 试戴几乎无变化 | 换光线清晰、五指可见的手照；查看云函数日志中 VL / 万相步骤 |
 | 首页 / 热榜仍是乱图 | 确认 `USE_REAL_STYLES: true` 并重新编译 |
 | 依赖分析报错 `utils/privacy.js` | 已移除，改用 `components/privacy-popup` |

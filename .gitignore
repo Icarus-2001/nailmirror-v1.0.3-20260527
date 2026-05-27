@@ -29,3 +29,6 @@ nailmirror/src/cloudfunctions/**/node_modules/
 
 # Understand Anything (local analysis artifacts)
 .understand-anything/
+
+# CodeGraph index (local, run codegraph init/index)
+.codegraph/

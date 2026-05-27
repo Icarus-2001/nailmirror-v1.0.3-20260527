@@ -122,6 +122,12 @@
   background: rgba(255,94,138,0.92); color: #fff;
   font-size: 22rpx; padding: 8rpx 18rpx; border-radius: 999rpx;
 }
+.ts__upload-clear {
+  position: absolute; right: 20rpx; top: 20rpx;
+  width: 52rpx; height: 52rpx; border-radius: 50%;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 28rpx; line-height: 52rpx; text-align: center;
+}
 
 .ts__eval { margin-top: 24rpx; }
 .ts__eval-title { font-size: 26rpx; color: #666; margin-bottom: 16rpx; }

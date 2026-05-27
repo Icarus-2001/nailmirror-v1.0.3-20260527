@@ -17,6 +17,12 @@ const DEFAULT_COLORS = ['裸透粉', '奶茶色', '酒红', '樱花粉', '雾霾
 const DEFAULT_DESIGNS = ['纯色', '法式', '渐变', '猫眼', '亮片', '晕染'];
 const DEFAULT_SHAPES = ['杏仁', '方形', '圆形', '梯形', '短圆'];
 
+/** 小程序真机要求 HTTPS，Excel 中可能是 http:// */
+function toHttpsUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  return url.replace(/^http:\/\//i, 'https://');
+}
+
 function loadXlsxRows() {
   const { execSync } = require('child_process');
   const pyScript = path.join(__dirname, 'read_styles_xlsx.py');
@@ -76,12 +82,15 @@ function toNailStyle(row, tags) {
   const title = tags.name || (tags.color + '·' + tags.design);
   const idx = row.idx;
 
+  const enhanced = toHttpsUrl(row.enhanced);
+  const orig = toHttpsUrl(row.orig);
+
   return {
     id: 'real-' + idx,
     title,
-    coverUrl: row.enhanced,
-    sourceUrl: row.orig,
-    previewUrls: [row.enhanced, row.orig].filter(Boolean),
+    coverUrl: enhanced,
+    sourceUrl: orig,
+    previewUrls: [enhanced, orig].filter(Boolean),
     color: tags.color,
     design: tags.design,
     styleLabel,
@@ -115,7 +124,7 @@ async function main() {
     let tags;
     if (useVlm) {
       try {
-        tags = await tagWithVlm(row.enhanced, apiKey);
+        tags = await tagWithVlm(toHttpsUrl(row.enhanced), apiKey);
         console.log('VLM', row.idx, tags.name || tags.color);
         await new Promise((r) => setTimeout(r, 500));
       } catch (e) {

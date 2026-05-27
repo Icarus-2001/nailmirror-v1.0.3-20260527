@@ -226,7 +226,7 @@ module.exports = {
 |------|--------|------|
 | `USE_REAL_STYLES` | `true` | 25 条真实款式（非 Mock 乱图） |
 | `USE_CLOUD_TRYON` | `true` | 静态试戴走云函数 + DashScope |
-| `USE_MOCK_HAND_PHOTO` | `true` | 跳过相册，用默认 / 评测手照（调试友好） |
+| `USE_MOCK_HAND_PHOTO` | `true` | 显示评测手照快捷选择（与拍照/相册并存） |
 | `SHOW_WAN_MODEL_PICKER` | `true` | 试戴页显示万相 2.1 / 2.7 下拉对比 |
 
 修改后重新编译小程序。
@@ -234,9 +234,9 @@ module.exports = {
 ### 8.2 试戴操作路径
 
 1. 编译 → 首页 → **试戴** → 选一款 → **开始试戴**
-2. 手照步骤（`USE_MOCK_HAND_PHOTO: true` 时）：
-   - 点「使用默认手照」，或
-   - 在下方 **13 张评测手照** 中任选一张
+2. 手照步骤（三选一或组合）：
+   - 点 **「拍照」** 或 **「从相册选择」**（需隐私指引已发布，见 8.4）
+   - 或在下方 **13 张评测手照 + 本地手型** 中任选一张
 3. 上传步骤可选 **万相模型**（2.1 / 2.7），选择会保存到本地
 4. 等待约 **30–90 秒**（2.7 可能更久）
 5. 结果页显示 AI 合成图及本次使用的模型名
@@ -252,15 +252,15 @@ module.exports = {
 
 试戴页下拉选择会作为 `wanModel` 传给云函数，**覆盖** env 默认值，无需重新部署云函数。
 
-### 8.4 隐私与相册（可选）
+### 8.4 隐私与相册
 
-正式使用相册时：
+使用拍照/相册前：
 
 1. [微信公众平台](https://mp.weixin.qq.com) → 开发 → 用户隐私保护指引 → 填写并发布
-2. 需声明：**相册（选图）**、**云开发相关能力**
-3. 将 `USE_MOCK_HAND_PHOTO` 改为 `false` 后测试相册上传
+2. 需声明：**选中的照片或视频**、**摄像头**、**相册（仅写入）**、云开发相关能力
+3. 审核通过后（约 1–3 工作日）删除小程序重新进入，试戴页会弹出隐私授权弹窗
 
-开发阶段建议保持 `USE_MOCK_HAND_PHOTO: true`，避免隐私指引未生效导致相册失败。
+隐私指引未通过审核时，拍照/相册会失败；可先用下方 **评测手照** 测试云试戴链路。
 
 ---
 
@@ -351,8 +351,9 @@ flowchart LR
 | `hasDashScopeKey: false` | 联系负责人检查云函数环境变量 `DASHSCOPE_API_KEY` |
 | 云函数上传失败 / 包过大 | 删除 `cloudfunctions/tryon/node_modules`，用「云端安装依赖」重传 |
 | `Model not exist`（2.7） | 百炼未开通 2.7 → 试戴页下拉改选 2.1 |
-| 相册点不开 | 检查隐私指引；或保持 `USE_MOCK_HAND_PHOTO: true` 用评测手照 |
+| 相册点不开 / 无隐私弹窗 | 隐私指引未审核通过；审核通过后删小程序重进；或先用评测手照 |
 | 试戴几乎无变化 | 换光线清晰、五指可见的手照；查看云函数日志中 VL / 万相步骤 |
+| 首页 / 热榜封面空白（真机） | CDN 须为 **https://**；配置 downloadFile 域名 `p0/p1.meituan.net` |
 | 首页 / 热榜仍是乱图 | 确认 `USE_REAL_STYLES: true` 并重新编译 |
 | 依赖分析报错 | 项目已移除 `utils/privacy.js`，改用 `components/privacy-popup` |
 
@@ -365,6 +366,7 @@ flowchart LR
 | [SETUP_USER.md](./SETUP_USER.md) | 部署与密钥配置清单 |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 试戴链路、云函数、分层架构 |
 | [DATA_SCHEMA.md](./DATA_SCHEMA.md) | 款式字段、云函数 API |
+| [CODEGRAPH.md](./CODEGRAPH.md) | 代码图谱、试戴链路、改动速查 |
 | [PROJECT.md](./PROJECT.md) | 项目概述与目录结构 |
 | [CHANGELOG.md](./CHANGELOG.md) | 迭代记录 |
 

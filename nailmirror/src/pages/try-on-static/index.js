@@ -140,9 +140,6 @@ Page({
     const idx = keys.indexOf(key);
     if (idx < 0) return;
     this.setData({ step: key, stepIndex: idx });
-    if (key === 'photo' && featureFlags.USE_MOCK_HAND_PHOTO) {
-      this._applyMockHandPhoto(this.data.selectedEvalHandId || mockHand.DEFAULT_EVAL_ID);
-    }
   },
 
   async _applyMockHandPhoto(handId) {
@@ -240,7 +237,13 @@ Page({
   async _setPhotoFromPick(mode) {
     try {
       const tempPath = await pickHandPhoto(mode);
-      this.setData({ photoPath: tempPath, photoUploadPath: tempPath, useMockHand: false });
+      this.setData({
+        photoPath: tempPath,
+        photoUploadPath: tempPath,
+        useMockHand: false,
+        selectedEvalHandId: '',
+        mockHandLabel: ''
+      });
     } catch (e) {
       const msg = (e && e.message) || (e && e.errMsg) || '';
       if (msg.indexOf('cancel') > -1 || msg.indexOf('取消') > -1) return;
@@ -256,6 +259,15 @@ Page({
   },
   onPickFromCamera() {
     this._setPhotoFromPick('camera');
+  },
+  onClearPhoto() {
+    this.setData({
+      photoPath: '',
+      photoUploadPath: '',
+      useMockHand: false,
+      selectedEvalHandId: '',
+      mockHandLabel: ''
+    });
   },
   onUseMockHand() {
     this._applyMockHandPhoto(this.data.selectedEvalHandId || mockHand.DEFAULT_EVAL_ID);
@@ -319,7 +331,15 @@ Page({
     if (this.data.step === 'preview') {
       this.setData({ composedUrl: '', usedWanModel: '', usedWanModelLabel: '' });
     }
-    if (this.data.step === 'photo') this.setData({ photoPath: '', photoUploadPath: '', useMockHand: false });
+    if (this.data.step === 'photo') {
+      this.setData({
+        photoPath: '',
+        photoUploadPath: '',
+        useMockHand: false,
+        selectedEvalHandId: '',
+        mockHandLabel: ''
+      });
+    }
     this._gotoStep(prev);
   },
 

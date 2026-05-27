@@ -10,5 +10,6 @@
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 试戴链路、云函数、数据流（精简版） |
 | [DATA_SCHEMA.md](./DATA_SCHEMA.md) | 款式字段、云函数 API、评测数据集 |
 | [CHANGELOG.md](./CHANGELOG.md) | 迭代记录（含 2026-05-25 万相 2.7 + 模型对比） |
+| [CODEGRAPH.md](./CODEGRAPH.md) | **代码图谱**：模块依赖、试戴链路、Mock/真实分界、改动速查（CodeGraph 索引） |
 
 快速启动见 [nailmirror/src/README.md](../nailmirror/src/README.md)。

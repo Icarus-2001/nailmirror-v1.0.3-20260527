@@ -39,7 +39,7 @@ nailmirror-v1.6-20260519-r3/
 | 款式库 / 详情 / 收藏 | ✅ 真实数据 | `USE_REAL_STYLES: true` |
 | 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 2.1/2.7（试戴页可切换对比） |
 | 首页推荐 / 热款榜 | ✅ 真实封面 | `coverUrl` 来自美团 CDN |
-| 评测手照 | ✅ | 13 张，可跳过相册 |
+| 评测手照 | ✅ | 13 张，可与拍照/相册并存 |
 | 商家 / 预约 / 订单 | Mock | 演示流程 |
 | AR / AI 同款 / 爬虫 | Mock | 页面未全部接入 app.json |
 
@@ -50,7 +50,7 @@ nailmirror-v1.6-20260519-r3/
 ```javascript
 USE_REAL_STYLES: true,      // 真实款式
 USE_CLOUD_TRYON: true,      // 云试戴（false 则本地 Mock）
-USE_MOCK_HAND_PHOTO: true,  // true：默认 Mock 手照，可跳过相册
+  USE_MOCK_HAND_PHOTO: true,  // true：试戴页显示评测手照列表（与拍照/相册并存）
 ```
 
 **`config/cloud-env.js`**
@@ -103,4 +103,5 @@ node scripts/import-eval-hands.js      # 从 ../../data/命题三美甲评测数
 
 - 部署与密钥：[SETUP_USER.md](./SETUP_USER.md)
 - API 与字段：[DATA_SCHEMA.md](./DATA_SCHEMA.md)
+- 代码图谱：[CODEGRAPH.md](./CODEGRAPH.md)
 - 今日变更：[CHANGELOG.md](./CHANGELOG.md)

@@ -3,11 +3,11 @@ module.exports = [
   {
     "id": "real-1",
     "title": "裸透粉·纯色",
-    "coverUrl": "http://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
-      "http://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png"
+      "https://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
+      "https://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png"
     ],
     "color": "裸透粉",
     "design": "纯色",
@@ -33,11 +33,11 @@ module.exports = [
   {
     "id": "real-2",
     "title": "奶茶色·法式",
-    "coverUrl": "http://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
-      "http://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png"
+      "https://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
+      "https://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png"
     ],
     "color": "奶茶色",
     "design": "法式",
@@ -63,11 +63,11 @@ module.exports = [
   {
     "id": "real-3",
     "title": "酒红·渐变",
-    "coverUrl": "http://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
-      "http://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png"
+      "https://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
+      "https://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png"
     ],
     "color": "酒红",
     "design": "渐变",
@@ -93,11 +93,11 @@ module.exports = [
   {
     "id": "real-4",
     "title": "樱花粉·猫眼",
-    "coverUrl": "http://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg",
+    "coverUrl": "https://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
-      "http://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg"
+      "https://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
+      "https://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg"
     ],
     "color": "樱花粉",
     "design": "猫眼",
@@ -123,11 +123,11 @@ module.exports = [
   {
     "id": "real-5",
     "title": "雾霾蓝·亮片",
-    "coverUrl": "http://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg",
+    "coverUrl": "https://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
-      "http://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg"
+      "https://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
+      "https://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg"
     ],
     "color": "雾霾蓝",
     "design": "亮片",
@@ -153,11 +153,11 @@ module.exports = [
   {
     "id": "real-6",
     "title": "纯黑·晕染",
-    "coverUrl": "http://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
-      "http://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png"
+      "https://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
+      "https://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png"
     ],
     "color": "纯黑",
     "design": "晕染",
@@ -183,11 +183,11 @@ module.exports = [
   {
     "id": "real-7",
     "title": "奶白·纯色",
-    "coverUrl": "http://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
-      "http://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png"
+      "https://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
+      "https://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png"
     ],
     "color": "奶白",
     "design": "纯色",
@@ -213,11 +213,11 @@ module.exports = [
   {
     "id": "real-8",
     "title": "焦糖棕·法式",
-    "coverUrl": "http://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
-      "http://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png"
+      "https://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
+      "https://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png"
     ],
     "color": "焦糖棕",
     "design": "法式",
@@ -243,11 +243,11 @@ module.exports = [
   {
     "id": "real-9",
     "title": "裸透粉·渐变",
-    "coverUrl": "http://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
-      "http://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png"
+      "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
+      "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png"
     ],
     "color": "裸透粉",
     "design": "渐变",
@@ -273,11 +273,11 @@ module.exports = [
   {
     "id": "real-10",
     "title": "奶茶色·猫眼",
-    "coverUrl": "http://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
-      "http://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png"
+      "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
+      "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png"
     ],
     "color": "奶茶色",
     "design": "猫眼",
@@ -303,11 +303,11 @@ module.exports = [
   {
     "id": "real-11",
     "title": "酒红·亮片",
-    "coverUrl": "http://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
-      "http://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png"
+      "https://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
+      "https://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png"
     ],
     "color": "酒红",
     "design": "亮片",
@@ -333,11 +333,11 @@ module.exports = [
   {
     "id": "real-12",
     "title": "樱花粉·晕染",
-    "coverUrl": "http://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
-      "http://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png"
+      "https://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
+      "https://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png"
     ],
     "color": "樱花粉",
     "design": "晕染",
@@ -363,11 +363,11 @@ module.exports = [
   {
     "id": "real-13",
     "title": "雾霾蓝·纯色",
-    "coverUrl": "http://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
-      "http://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png"
+      "https://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
+      "https://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png"
     ],
     "color": "雾霾蓝",
     "design": "纯色",
@@ -393,11 +393,11 @@ module.exports = [
   {
     "id": "real-14",
     "title": "纯黑·法式",
-    "coverUrl": "http://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
-      "http://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png"
+      "https://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
+      "https://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png"
     ],
     "color": "纯黑",
     "design": "法式",
@@ -423,11 +423,11 @@ module.exports = [
   {
     "id": "real-15",
     "title": "奶白·渐变",
-    "coverUrl": "http://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
-      "http://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png"
+      "https://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
+      "https://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png"
     ],
     "color": "奶白",
     "design": "渐变",
@@ -453,11 +453,11 @@ module.exports = [
   {
     "id": "real-16",
     "title": "焦糖棕·猫眼",
-    "coverUrl": "http://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
-      "http://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png"
+      "https://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
+      "https://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png"
     ],
     "color": "焦糖棕",
     "design": "猫眼",
@@ -483,11 +483,11 @@ module.exports = [
   {
     "id": "real-17",
     "title": "裸透粉·亮片",
-    "coverUrl": "http://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
-      "http://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png"
+      "https://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
+      "https://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png"
     ],
     "color": "裸透粉",
     "design": "亮片",
@@ -513,11 +513,11 @@ module.exports = [
   {
     "id": "real-18",
     "title": "奶茶色·晕染",
-    "coverUrl": "http://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
-      "http://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png"
+      "https://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
+      "https://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png"
     ],
     "color": "奶茶色",
     "design": "晕染",
@@ -543,11 +543,11 @@ module.exports = [
   {
     "id": "real-19",
     "title": "酒红·纯色",
-    "coverUrl": "http://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
-      "http://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png"
+      "https://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
+      "https://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png"
     ],
     "color": "酒红",
     "design": "纯色",
@@ -573,11 +573,11 @@ module.exports = [
   {
     "id": "real-20",
     "title": "樱花粉·法式",
-    "coverUrl": "http://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
-      "http://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png"
+      "https://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
+      "https://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png"
     ],
     "color": "樱花粉",
     "design": "法式",
@@ -603,11 +603,11 @@ module.exports = [
   {
     "id": "real-21",
     "title": "雾霾蓝·渐变",
-    "coverUrl": "http://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
-      "http://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png"
+      "https://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
+      "https://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png"
     ],
     "color": "雾霾蓝",
     "design": "渐变",
@@ -633,11 +633,11 @@ module.exports = [
   {
     "id": "real-22",
     "title": "纯黑·猫眼",
-    "coverUrl": "http://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
-      "http://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png"
+      "https://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
+      "https://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png"
     ],
     "color": "纯黑",
     "design": "猫眼",
@@ -663,11 +663,11 @@ module.exports = [
   {
     "id": "real-23",
     "title": "奶白·亮片",
-    "coverUrl": "http://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
-      "http://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png"
+      "https://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
+      "https://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png"
     ],
     "color": "奶白",
     "design": "亮片",
@@ -693,11 +693,11 @@ module.exports = [
   {
     "id": "real-24",
     "title": "焦糖棕·晕染",
-    "coverUrl": "http://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
-    "sourceUrl": "http://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png",
+    "coverUrl": "https://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
+    "sourceUrl": "https://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png",
     "previewUrls": [
-      "http://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
-      "http://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png"
+      "https://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
+      "https://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png"
     ],
     "color": "焦糖棕",
     "design": "晕染",
@@ -723,11 +723,11 @@ module.exports = [
   {
     "id": "real-25",
     "title": "裸透粉·纯色",
-    "coverUrl": "http://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
-    "sourceUrl": "http://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png",
+    "coverUrl": "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png",
     "previewUrls": [
-      "http://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
-      "http://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png"
+      "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
+      "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png"
     ],
     "color": "裸透粉",
     "design": "纯色",

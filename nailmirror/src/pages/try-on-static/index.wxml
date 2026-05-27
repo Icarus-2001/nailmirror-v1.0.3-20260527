@@ -61,8 +61,7 @@
   <!-- Step：上传照片 -->
   <block wx:if="{{step === 'photo'}}">
     <view class="ts__title">上传你的手部照片</view>
-    <view class="ts__sub" wx:if="{{useMockHand}}">测试模式：{{mockHandLabel || '评测手照'}}，可切换下方手照后点「开始合成」</view>
-    <view class="ts__sub" wx:else>建议手部正面、五指张开、光线均匀，效果更佳</view>
+    <view class="ts__sub">拍照或从相册选择；也可在下方选用评测手照快速体验</view>
 
     <view wx:if="{{style}}" class="ts__chosen">
       <text class="ts__chosen-tag">已选款式</text>
@@ -85,27 +84,25 @@
       <block wx:if="{{!photoPath}}">
         <view class="ts__upload-icon">+</view>
         <view class="ts__upload-text">选择手部照片</view>
-        <view class="ts__upload-tip">JPG / PNG · 不超过 10MB</view>
-        <view class="ts__upload-actions">
-          <button wx:if="{{useMockHand}}" class="ts__pick-btn ts__pick-btn--primary" plain hover-class="ts__pick-btn--hover" catchtap="onUseMockHand">使用测试手照</button>
-          <block wx:else>
-            <button class="ts__pick-btn" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromCamera">拍照</button>
-            <button class="ts__pick-btn ts__pick-btn--primary" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromAlbum">从相册选择</button>
-            <button class="ts__pick-btn" plain hover-class="ts__pick-btn--hover" catchtap="onUseMockHand">使用测试手照</button>
-          </block>
-        </view>
+        <view class="ts__upload-tip">建议手部正面、五指张开、光线均匀</view>
       </block>
       <block wx:else>
         <image src="{{photoPath}}" class="ts__upload-img ts__upload-img--fit" mode="widthFix"></image>
-        <view wx:if="{{useMockHand}}" class="ts__mock-tag">{{mockHandLabel || '测试手照'}}</view>
+        <view wx:if="{{useMockHand}}" class="ts__mock-tag">{{mockHandLabel || '评测手照'}}</view>
+        <view class="ts__upload-clear" catchtap="onClearPhoto">✕</view>
       </block>
     </view>
 
-    <view wx:if="{{useMockHand && evalHands.length}}" class="ts__eval">
-      <view class="ts__eval-title">切换评测手照（共 {{evalHands.length}} 张）</view>
+    <view class="ts__upload-actions">
+      <button class="ts__pick-btn" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromCamera">拍照</button>
+      <button class="ts__pick-btn ts__pick-btn--primary" plain hover-class="ts__pick-btn--hover" catchtap="onPickFromAlbum">从相册选择</button>
+    </view>
+
+    <view wx:if="{{evalHands.length}}" class="ts__eval">
+      <view class="ts__eval-title">或选用评测手照（共 {{evalHands.length}} 张）</view>
       <scroll-view scroll-x class="ts__eval-scroll" enhanced show-scrollbar="{{false}}">
         <view
-          class="ts__eval-item {{selectedEvalHandId === 'local' ? 'on' : ''}}"
+          class="ts__eval-item {{useMockHand && selectedEvalHandId === 'local' ? 'on' : ''}}"
           data-id="local"
           catchtap="onSelectEvalHand">
           <image src="/data/hand-mock.jpg" class="ts__eval-thumb ts__eval-thumb--local" mode="aspectFit"/>
@@ -113,7 +110,7 @@
         </view>
         <view
           wx:for="{{evalHands}}" wx:key="id"
-          class="ts__eval-item {{selectedEvalHandId === item.id ? 'on' : ''}}"
+          class="ts__eval-item {{useMockHand && selectedEvalHandId === item.id ? 'on' : ''}}"
           data-id="{{item.id}}"
           catchtap="onSelectEvalHand">
           <image src="{{item.handUrl}}" class="ts__eval-thumb" mode="aspectFit"/>
