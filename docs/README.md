@@ -4,6 +4,7 @@
 
 | 文档 | 用途 |
 |------|------|
+| [GITHUB_COLLABORATION.md](./GITHUB_COLLABORATION.md) | **GitHub 协作**：协作者权限、分支 + PR 流程、合并后安全回滚 |
 | [TEAMMATE_ONBOARDING.md](./TEAMMATE_ONBOARDING.md) | **队友接入**：AppID、云环境、阿里云、云函数部署、验收、后端接入指引 |
 | [PROJECT.md](./PROJECT.md) | 项目概述、目录结构、当前能力、关键配置 |
 | [SETUP_USER.md](./SETUP_USER.md) | **你需要做的**：DashScope、云开发、部署、试戴测试 |
