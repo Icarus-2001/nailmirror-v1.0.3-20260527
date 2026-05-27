@@ -4,6 +4,8 @@
 
 | 文档 | 用途 |
 |------|------|
+| [后端及运营优化方案0527.md](./后端及运营优化方案0527.md) | **6.6 交付方案**：微信云运营闭环、排期、验收清单 |
+| [智能运营层.md](./智能运营层.md) | 智能运营原始设计（dashboard / scoring / 日报） |
 | [GITHUB_COLLABORATION.md](./GITHUB_COLLABORATION.md) | **GitHub 协作**：协作者权限、分支 + PR 流程、合并后安全回滚 |
 | [TEAMMATE_ONBOARDING.md](./TEAMMATE_ONBOARDING.md) | **队友接入**：AppID、云环境、阿里云、云函数部署、验收、后端接入指引 |
 | [PROJECT.md](./PROJECT.md) | 项目概述、目录结构、当前能力、关键配置 |
