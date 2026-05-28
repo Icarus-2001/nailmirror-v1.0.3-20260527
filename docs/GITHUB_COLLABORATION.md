@@ -160,6 +160,7 @@ A：至少在微信开发者工具中跑通：编译 → 选手照 → 云试戴
 
 | 文档 | 用途 |
 |------|------|
+| [COLLABORATION_SOP.md](./COLLABORATION_SOP.md) | 双人协作日常 SOP（分支、PR、分工、检查清单） |
 | [TEAMMATE_ONBOARDING.md](./TEAMMATE_ONBOARDING.md) | 环境配置、云函数、验收清单 |
 | [SETUP_USER.md](./SETUP_USER.md) | DashScope、云开发、试戴测试 |
 | [PROJECT.md](./PROJECT.md) | 目录结构与能力概览 |
