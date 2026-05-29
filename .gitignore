@@ -1,8 +1,22 @@
-.env
-.env.local
-__pycache__/
-*.pyc
+# 云函数依赖（微信开发者工具云端安装）
+cloudfunctions/ops/node_modules/
+
+# Python 虚拟环境
+.venv/
+
+# 数据库文件
 *.db
 *.db-journal
-.venv/
+
+# 环境变量
+.env
+.env.local
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 系统文件
 .DS_Store
+Thumbs.db

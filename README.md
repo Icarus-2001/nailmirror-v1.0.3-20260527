@@ -1,30 +1,84 @@
-# 美甲AI智能运营系统（运营端）
+# NailMirror 运营云函数 (ops)
 
-黑客松 Demo：采集 UGC 趋势、AI 生成运营日报、自动调整款式推荐权重。
-
-## 快速启动
-
-```powershell
-cd nail-ops
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-- 健康检查：<http://127.0.0.1:8000/>
-- API 文档：<http://127.0.0.1:8000/docs>
-- 数据库表验收：<http://127.0.0.1:8000/api/dashboard/tables>
+美甲试戴小程序运营端——微信云开发范式。
 
 ## 目录结构
 
-- `app/` — FastAPI 应用、ORM 模型、路由与服务
-- `crawler/` — 小红书 / 抖音爬虫与打标
-- `scheduler/` — APScheduler 定时任务
-- `frontend/` — 运营后台静态页
+```
+cloudfunctions/ops/       ← 部署到微信云开发的运营云函数
+  index.js                  入口调度器（action 路由）
+  handlers/
+    getSummary.js           运营数据快照（热款/飙升/冷款/外部趋势）
+    computeWeights.js       三因子确定性调权计算
+    generateReport.js       每日运营日报生成（LLM + scoring）
+    approveReport.js        日报审批通过/驳回
+    executeReport.js        执行调权策略，写 styles.rankWeight
+    tagExternal.js          外部趋势录入 + Qwen-VL 自动打标
+  utils/
+    db.js                   云数据库分页查询工具
+    llm.js                  DashScope API（qwen-plus / qwen-vl-plus）
+  package.json
 
-## 环境变量
+archive/                  ← 原 FastAPI 实现（业务逻辑参考，不部署）
+  app/                      FastAPI 路由与 SQLAlchemy 模型
+  crawler/                  爬虫模块（存根）
+  scheduler/                定时任务模块（存根）
+  requirements.txt
+```
 
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `DATABASE_URL` | `sqlite:///./nail_ops.db` | SQLite 连接串 |
+## 云函数 action 一览
+
+| action | 说明 | 写操作 |
+|--------|------|--------|
+| `ping` | 健康检查 | 否 |
+| `getSummary` | 运营数据快照 | 否 |
+| `computeWeights` | 三因子调权计算（只算不写） | 否 |
+| `generateReport` | 生成今日日报（幂等） | 是 |
+| `approveReport` | 日报审批通过 | 是 |
+| `rejectReport` | 日报驳回 | 是 |
+| `executeReport` | 执行调权，写 styles + operation_logs | 是 |
+| `tagExternal` | 外部趋势录入 + VLM 打标 | 是 |
+
+## 云数据库 Collections
+
+| Collection | 说明 |
+|------------|------|
+| `styles` | 款式库，含 `rankWeight`、`isActive` |
+| `try_on_logs` | 用户试戴记录（由 tryon 云函数写入） |
+| `external_trends` | 外部平台趋势帖子 |
+| `daily_reports` | 每日运营日报（pending/approved/rejected/executed） |
+| `operation_logs` | 权重变更审计记录 |
+| `users` | 用户信息与收藏 |
+
+## 部署步骤
+
+1. 在微信开发者工具中打开团队仓库 `nailmirror/`
+2. 将 `cloudfunctions/ops/` 整个目录复制到 `nailmirror/src/cloudfunctions/ops/`
+3. 右键点击 `ops` 目录 → **上传并部署：云端安装依赖**
+4. 在云开发控制台 → 云函数 → ops → 配置环境变量：
+   - `DASHSCOPE_API_KEY`：阿里云 DashScope API Key
+   - `ADMIN_OPENIDS`：管理员 openid 列表（逗号分隔）
+5. 测试：云开发控制台 → ops → 测试 → `{"action":"ping"}`
+
+## 调用方式（小程序端）
+
+```javascript
+// 读操作（任意页面）
+const res = await wx.cloud.callFunction({
+  name: 'ops',
+  data: { action: 'getSummary' }
+})
+
+// 写操作（B 端，自动携带 callerOpenid）
+const res = await wx.cloud.callFunction({
+  name: 'ops',
+  data: { action: 'generateReport' }
+})
+```
+
+## 环境变量说明
+
+| 变量 | 必填 | 说明 |
+|------|------|------|
+| `DASHSCOPE_API_KEY` | 是 | 阿里云 DashScope Key（qwen-plus + qwen-vl-plus） |
+| `ADMIN_OPENIDS` | 建议配置 | 逗号分隔的管理员 openid，空则开发模式放行所有人 |

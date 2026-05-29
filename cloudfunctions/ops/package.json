@@ -1,0 +1,9 @@
+{
+  "name": "ops",
+  "version": "1.0.0",
+  "description": "NailMirror 运营云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
