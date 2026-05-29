@@ -1,0 +1,78 @@
+---
+description: NailMirror 团队 AI 编程 Git 工作流——需求→实现→验证→commit，失败则 reset
+alwaysApply: true
+---
+
+# Git 工作流策略
+
+## 核心循环
+
+```
+提出需求 → AI实现 → 验证无 bug → git commit → 提下一个需求
+                        ↓
+                     失败/bug
+                        ↓
+                   git reset（回退）
+```
+
+## 分支结构
+
+| 分支 | 用途 |
+|------|------|
+| `main` | 稳定可演示版本，只接受已验证的 merge |
+| `backend/nail-ops` | 后端 FastAPI 日常开发分支（本地主力分支） |
+| `feat/<功能名>` | 较大功能的独立分支，完成后 PR 到 backend/nail-ops |
+
+## 何时 commit
+
+- 每完成**一个可验证的功能点**立即 commit（小步快跑）
+- commit 前确认：API 返回正常 / 无 Python 异常 / 前端联调通过
+- 每次 commit 前自动执行 `git add -A`（排除 .venv、*.db、__pycache__）
+
+## commit message 格式
+
+```
+<type>(<scope>): <简短描述>
+
+type: feat | fix | refactor | docs | chore
+scope: api | crawler | scheduler | frontend | db
+
+示例：
+feat(api): 添加款式推荐权重自动调整接口
+fix(crawler): 修复小红书爬虫解析异常
+```
+
+## 何时 reset
+
+- 实现后验证失败（接口报错、逻辑错误）且无法快速修复
+- 执行：`git reset --hard HEAD`（回到上一个稳定 commit）
+- 如果还未 commit，执行：`git checkout -- .`
+
+## push 时机
+
+- 每天结束前 push 一次到 `origin backend/nail-ops`
+- 功能完整可演示时，从 `backend/nail-ops` 向 `main` 发 PR
+
+## Agent 自动执行规范
+
+每当用户说"功能实现完了"或"验证通过"：
+1. 自动运行 `git add -A`
+2. 自动生成符合规范的 commit message
+3. 自动执行 `git commit`
+4. 询问是否需要 push
+
+每当用户说"失败了"、"reset"、"回退"：
+1. 自动执行 `git reset --hard HEAD`（有 commit 时）
+2. 或 `git checkout -- .`（尚未 commit 时）
+
+## .gitignore 必须包含
+
+```
+.venv/
+__pycache__/
+*.pyc
+*.db
+*.db-journal
+.env
+.env.local
+```

@@ -1,0 +1,26 @@
+# Agent Executive Behavior and Security Constraints
+
+## 1. Core Security Directive (CRITICAL)
+- You are STRICTLY FORBIDDEN from deleting, renaming, overwriting, or moving any files or metadata inside the following protected directories:
+  * `/data/raw/` (Contains original, immutable source datasets)
+  * `/.git/` (Version control repository)
+  * `/config/secrets/` (Production credentials and API keys)
+- Do NOT attempt to use `rm`, `mv`, `truncate`, or rewrite scripts targeting these directories.
+
+## 2. Safe Failure & Error Handling
+- If any process, script, or operation requires modifying data in the protected directories listed above, you MUST HALT immediately.
+- Do NOT attempt to "fix" a path error by bypassing these restrictions. Instead, print a clear warning message in the chat explaining why the operation was stopped, and wait for human instruction.
+
+## 3. Data Modification Protocol
+- If you need to perform data cleaning, processing, or filtering, you must follow the "Copy-on-Write" pattern:
+  1. Read from the protected data directory.
+  2. Write the modified or processed output into a designated temporary directory, such as `/data/processed/` or `/tmp/`.
+  3. Never alter the original source file.
+
+## 4. Execution Loop Protection
+- If a command or script fails more than 3 consecutive times with the same or similar error, DO NOT continue modifying and retrying blindly.
+- Stop execution, summarize what you have attempted, and ask the user for guidance.
+
+## 5. Git Commit Guardrails (Auto-Snapshot)
+- Before making any structural or multi-file changes, you MUST ask the user: "Should we create a Git backup snapshot now?"
+- After successfully implementing a new feature or fixing a bug, prompt the user to commit the changes with a clear version note (e.g., "v1.1 - Added data export feature").
