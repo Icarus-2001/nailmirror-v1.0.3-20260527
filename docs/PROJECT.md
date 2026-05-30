@@ -22,6 +22,8 @@ nailmirror-v1.6-20260519-r3/
     │   ├── cloud-env.js           ← 云环境 ID
     │   ├── feature-flags.js       ← 功能开关
     │   ├── tag-vocabulary.js      ← 标准标签词表（与 docs/美甲标签与标准词表.md 一致）
+    │   ├── enums.js               ← 甲型/风格枚举；并导出词表供 filter-drawer 等组件使用
+    │   ├── tryon-prompt.js        ← 试戴英文 prompt（由 VLM 标签生成）
     │   └── mock-hand.js           ← 默认 Mock 手照
     ├── cloudfunctions/tryon/      ← 试戴云函数
     ├── components/privacy-popup/  ← 隐私授权弹窗

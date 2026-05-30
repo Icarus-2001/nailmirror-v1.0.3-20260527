@@ -1,5 +1,25 @@
 # 变更记录
 
+## 2026-05-30 · 款式库筛选抽屉编译/运行修复
+
+### 问题
+
+- WXML 编译：`filter-drawer` 引用外部 `./index.wxs` 报 `index.wxs not found`
+- 运行时：组件内 `require('../../config/tag-vocabulary')` 报 `module is not defined`
+
+### 修复
+
+- **`components/filter-drawer/index.wxml`**：`includes` 逻辑内联到 `<wxs module="f">`，删除独立 `index.wxs`
+- **`components/filter-drawer/index.js`**：筛选词表改从 `config/enums.js` 引入（`COLOR_FAMILIES` / `DESIGNS` / `NAIL_SHAPE_LABELS` / `NAIL_STYLE_LABELS`），不在组件内直接 require `tag-vocabulary.js`
+- **`config/enums.js`**：再导出标准词表数组（与 `tag-vocabulary.js` 同源）
+- **`app.js`**：启动时 `require('./config/tag-vocabulary')`，确保主包依赖图包含该模块
+
+### 开发注意
+
+自定义组件请优先 `require('../../config/enums')` 或经页面传入数据；**避免**在组件里直接 `require` 新建的 `config/*.js`，否则易出现微信子上下文 `not defined`。
+
+---
+
 ## 2026-05-30 · 试戴修复（英文 prompt + 2.7 框选 + 部署说明）
 
 ### 问题与原因
@@ -34,7 +54,7 @@
 
 - **列表卡片**：仅展示色系 + 工艺
 - **商详**：四枚 `displayTags` 中文小标签
-- **款式库筛选抽屉**（真实款）：标准词表四维度多选；修复 WXML `indexOf` 导致标签无法点选（`index.wxs`）
+- **款式库筛选抽屉**（真实款）：标准词表四维度多选；标签选中态用 WXML 内联 `wxs` 的 `includes`（见上方编译修复条目）
 - **热门搜索词**：`hot-data.service` 从真实款式聚合 TOP20，替换旧 mock「法式极简」等
 
 ### 协作与安全
