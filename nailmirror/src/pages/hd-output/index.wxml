@@ -1,5 +1,5 @@
 <view class="hd np-container">
-  <view class="hd__quota">今日剩余免费出图：{{quotaLeft}}</view>
+  <view class="hd__quota" wx:if="{{showQuota}}">今日剩余免费出图：{{quotaLeft}}</view>
 
   <view class="hd__stage">
     <image src="{{hdUrl}}" class="hd__img" mode="aspectFill" wx:if="{{hdUrl}}"></image>
@@ -12,10 +12,10 @@
   </view>
 
   <view class="hd__actions">
-    <button class="np-btn np-btn--block" bindtap="onSave" loading="{{saving}}">保存到相册</button>
+    <button class="np-btn np-btn--block" bindtap="onSave" disabled="{{saving}}">{{saving ? '保存中…' : '保存到相册'}}</button>
     <rewarded-ad-btn label="观看 30s 广告 · 去水印" bind:result="onRemoveWatermark" wx:if="{{watermark}}"></rewarded-ad-btn>
     <button class="np-btn np-btn--ghost np-btn--block" open-type="share">分享给朋友</button>
-    <view class="np-btn np-btn--ghost np-btn--block" bindtap="onShareAndGrant">已分享 · 领取 +1 额度</view>
+    <view class="np-btn np-btn--ghost np-btn--block" bindtap="onShareAndGrant" wx:if="{{showQuota}}">已分享 · 领取 +1 额度</view>
   </view>
 </view>
 <privacy-popup />

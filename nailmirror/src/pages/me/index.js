@@ -1,4 +1,5 @@
 const { userStore } = require('../../stores/user.store');
+const { BRAND_LOGO } = require('../../config/constants');
 const { favoriteStore } = require('../../stores/favorite.store');
 const { REMOVE_CYCLE_DAYS } = require('../../config/constants');
 const { daysBetween } = require('../../utils/formatter');
@@ -7,6 +8,7 @@ const historyService = require('../../services/history.service');
 Page({
   data: {
     user: null,
+    needLogin: true,
     favCount: 0,
     historyCount: 0,
     countdownDays: 21
@@ -15,6 +17,7 @@ Page({
     userStore.init();
     favoriteStore.init();
     const hist = await historyService.list();
+    const loggedIn = !!userStore.openid;
     let days = REMOVE_CYCLE_DAYS;
     if (userStore.lastRemoveDate) {
       const last = new Date(userStore.lastRemoveDate).getTime();
@@ -23,9 +26,10 @@ Page({
       days = Math.max(0, REMOVE_CYCLE_DAYS - passed);
     }
     this.setData({
+      needLogin: !loggedIn,
       user: {
-        nickname: userStore.nickname || '未登录',
-        avatarUrl: userStore.avatarUrl || 'https://picsum.photos/seed/avatar/120/120',
+        nickname: loggedIn ? (userStore.nickname || '微信用户') : '未登录',
+        avatarUrl: userStore.avatarUrl || BRAND_LOGO,
         role: userStore.role,
         membershipLevel: userStore.membershipLevel
       },
@@ -33,6 +37,10 @@ Page({
       historyCount: hist.length,
       countdownDays: days
     });
+  },
+  onGoLogin() {
+    if (!this.data.needLogin) return;
+    wx.navigateTo({ url: '/pages/login/index' });
   },
   onGoHistory() { wx.navigateTo({ url: '/pages/me-history/index' }); },
   onGoFavorite() { wx.navigateTo({ url: '/pages/me-favorite/index' }); },

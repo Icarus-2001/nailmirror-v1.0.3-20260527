@@ -3,8 +3,7 @@
   "version": "1.0.0-mvp",
   "description": "NailMirror 美甲 AI 试戴 + 智能运营 微信小程序 MVP",
   "scripts": {
-    "test": "jest",
-    "preview": "node scripts/preview.js"
+    "test": "jest"
   },
   "dependencies": {
     "mobx-miniprogram": "^4.13.2",

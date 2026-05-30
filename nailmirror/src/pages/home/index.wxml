@@ -12,7 +12,7 @@
       <view class="home__main-icon">✋</view>
       <view class="home__main-text">
         <view class="home__main-title">立即试戴</view>
-        <view class="home__main-sub">选甲型 → 上传照片 → 一键合成</view>
+        <view class="home__main-sub">选甲型 → 选款式 → 上传照片 → 一键合成</view>
       </view>
       <view class="home__main-arrow">›</view>
     </view>

@@ -1,6 +1,7 @@
 const tryOnService = require('../../services/try-on.service');
 const styleService = require('../../services/style.service');
 const historyService = require('../../services/history.service');
+const quotaService = require('../../services/quota.service');
 const { getDeviceLevel } = require('../../utils/device');
 const { tryOnStore } = require('../../stores/try-on.store');
 const eventBus = require('../../utils/event-bus');
@@ -71,9 +72,16 @@ Page({
   },
   async onShoot() {
     if (!this.data.style) return;
+    try {
+      quotaService.assertFreeHD();
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '今日出图次数已用完', icon: 'none' });
+      return;
+    }
     wx.showLoading({ title: '出片中…' });
     try {
       const hd = await tryOnService.generateHD({ sessionId: this.data.sessionId, styleId: this.data.styleId });
+      quotaService.consumeFreeHDOnSuccess();
       await historyService.append({
         userOpenid: 'me',
         styleId: this.data.styleId,
@@ -86,7 +94,7 @@ Page({
       require('../../utils/hd-output-nav').navigateTo(this.data.styleId, hd.hdUrl);
     } catch (e) {
       wx.hideLoading();
-      wx.showToast({ title: '出片失败', icon: 'none' });
+      wx.showToast({ title: (e && e.message) || '出片失败', icon: 'none' });
     }
   },
   onGoStatic() { wx.redirectTo({ url: '/pages/try-on-static/index?styleId=' + this.data.styleId }); },

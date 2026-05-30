@@ -1,7 +1,6 @@
 const styleService = require('../../services/style.service');
 const favoriteService = require('../../services/favorite.service');
 const merchantService = require('../../services/merchant.service');
-const { favoriteStore } = require('../../stores/favorite.store');
 const { tryOnStore } = require('../../stores/try-on.store');
 const { buildDisplayTags } = require('../../config/tag-vocabulary');
 
@@ -26,7 +25,7 @@ Page({
       this.setData({
         style,
         displayTags: resolveDisplayTags(style),
-        faved: favoriteStore.has(id)
+        faved: favoriteService.has(id)
       });
       tryOnStore.setStyle(id);
       if (style.merchantId) {

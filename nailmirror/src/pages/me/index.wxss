@@ -1,5 +1,7 @@
 .me { padding: 24rpx; }
 .me__header { background: linear-gradient(135deg,#ffd8e3,#f0e5ff); border-radius: 20rpx; padding: 40rpx 28rpx; display: flex; align-items: center; }
+.me__header-arrow { color: var(--np-primary); font-size: 40rpx; margin-left: 8rpx; }
+.me__name--login { color: var(--np-primary); }
 .me__avatar { width: 120rpx; height: 120rpx; border-radius: 50%; background: #eee; margin-right: 24rpx; }
 .me__name { font-size: 36rpx; font-weight: 600; }
 .me__role { color: var(--np-text-weak); font-size: 24rpx; margin-top: 6rpx; }

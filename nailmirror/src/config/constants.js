@@ -21,10 +21,13 @@ module.exports = {
   // 分页
   PAGE_SIZE: 20,
 
+  // 品牌资源（相对小程序根目录）
+  BRAND_LOGO: '/assets/logo.jpg',
+
   // 业务默认值
   REMOVE_CYCLE_DAYS: 21,
   DAILY_FREE_HD: 2,
 
-  // 占位图
-  PLACEHOLDER_IMAGE: 'https://picsum.photos/seed/nailmirror/400/533'
+  // 占位图（本地品牌资源，勿用外链 mock）
+  PLACEHOLDER_IMAGE: '/assets/logo.jpg'
 };

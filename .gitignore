@@ -9,6 +9,7 @@ project.private.config.json
 .env.*
 *.local
 nailmirror/src/.local/
+nailmirror/src/config/feature-flags.local.js
 
 # OS & IDE
 .DS_Store

@@ -2,6 +2,7 @@ const tryOnService = require('../../services/try-on.service');
 const adService = require('../../services/ad.service');
 const imageUtil = require('../../utils/image');
 const hdOutputNav = require('../../utils/hd-output-nav');
+const quotaService = require('../../services/quota.service');
 const { userStore } = require('../../stores/user.store');
 
 Page({
@@ -11,25 +12,30 @@ Page({
     caption: '',
     watermark: true,
     saving: false,
-    quotaLeft: 2
+    quotaLeft: 2,
+    showQuota: false
   },
   async onLoad(query) {
-    userStore.init();
+    const showQuota = quotaService.isFreeHDQuotaEnabled();
     const hdUrl = hdOutputNav.resolveHdUrl(query);
     this.setData({
       styleId: query.styleId || '',
       hdUrl,
-      quotaLeft: userStore.dailyFreeHDLeft
+      showQuota,
+      quotaLeft: showQuota ? quotaService.getQuotaLeft() : 0
     });
     if (!this.data.hdUrl) {
       // 直接进入：再生成一次
       try {
+        quotaService.assertFreeHD();
         const hd = await tryOnService.generateHD({ styleId: this.data.styleId || 'french-01' });
+        quotaService.consumeFreeHDOnSuccess();
         this.setData({ hdUrl: hd.hdUrl, caption: hd.caption, watermark: hd.watermark });
-        userStore.consumeFreeHD();
-        this.setData({ quotaLeft: userStore.dailyFreeHDLeft });
+        if (this.data.showQuota) {
+          this.setData({ quotaLeft: quotaService.getQuotaLeft() });
+        }
       } catch (e) {
-        wx.showToast({ title: '出片失败', icon: 'none' });
+        wx.showToast({ title: (e && e.message) || '出片失败', icon: 'none' });
       }
     } else {
       // 从 AR/Static 跳来
@@ -40,19 +46,21 @@ Page({
     }
   },
   async onSave() {
-    if (!this.data.hdUrl) {
-      wx.showToast({ title: '图片未就绪', icon: 'none' });
+    if (!this.data.hdUrl || this.data.saving) {
+      if (!this.data.hdUrl) wx.showToast({ title: '图片未就绪', icon: 'none' });
       return;
     }
+    const privacyUtil = require('../../utils/privacy');
     this.setData({ saving: true });
-    wx.showLoading({ title: '保存中…', mask: true });
     try {
       await imageUtil.saveRemoteImageToAlbum(this.data.hdUrl);
-      wx.hideLoading();
       wx.showToast({ title: '已保存相册' });
     } catch (e) {
-      wx.hideLoading();
-      imageUtil.showSaveError(e, this.data.hdUrl);
+      if (privacyUtil.isPrivacyDeclinedError(e)) {
+        wx.showToast({ title: e.message || '需同意隐私协议', icon: 'none' });
+      } else {
+        imageUtil.showSaveError(e, this.data.hdUrl);
+      }
     } finally {
       this.setData({ saving: false });
     }
@@ -76,9 +84,9 @@ Page({
     wx.setClipboardData({ data: this.data.caption });
   },
   async onShareAndGrant() {
-    // 模拟分享回调 +1
+    if (!quotaService.isFreeHDQuotaEnabled()) return;
     userStore.grantFreeHD(1);
-    this.setData({ quotaLeft: userStore.dailyFreeHDLeft });
+    this.setData({ quotaLeft: quotaService.getQuotaLeft() });
     wx.showToast({ title: '已 +1 出图额度' });
   }
 });

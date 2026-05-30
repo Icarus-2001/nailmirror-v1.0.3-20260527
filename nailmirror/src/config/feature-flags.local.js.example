@@ -1,0 +1,7 @@
+// 复制为 feature-flags.local.js（已 gitignore）可覆盖默认开关
+module.exports = {
+  // USE_MOCK_HAND_PHOTO: false,
+  // SHOW_WAN_MODEL_PICKER: false,
+  // USE_CLOUD_LOGIN: false
+  // ENABLE_FREE_HD_QUOTA: true
+};

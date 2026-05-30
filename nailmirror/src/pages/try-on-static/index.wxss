@@ -196,8 +196,18 @@
 
 /* ===== 选款式 step（首页直接进试戴时） ===== */
 .ts__empty { text-align: center; color: #999; font-size: 26rpx; padding: 60rpx 0; }
+.ts__style-hint {
+  font-size: 24rpx; color: #999; margin-bottom: 20rpx; line-height: 1.5;
+}
 .ts__style-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx;
+}
+.ts__style-cover--upload {
+  background: linear-gradient(135deg, #fff0f5, #f3eeff);
+  border: 2rpx dashed #ffb8cc;
+}
+.ts__style-upload-icon {
+  font-size: 64rpx; color: #ff5e8a; font-weight: 300; line-height: 1;
 }
 .ts__style-card {
   background: #fff; border-radius: 18rpx; overflow: hidden;
@@ -262,11 +272,64 @@
 .ts__wan-model-tip { font-size: 22rpx; color: #999; margin-top: 10rpx; }
 .ts__current-model { font-size: 24rpx; color: #666; margin-top: 8rpx; }
 
-/* loading */
-.ts__loading {
-  position: absolute; top: 50%; left: 50%;
+/* 合成等待动效（CSS 动画，无需外链 GIF） */
+.ts__compose-overlay {
+  position: absolute; inset: 0; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48rpx 40rpx;
+  background: linear-gradient(165deg, rgba(255,94,138,0.92), rgba(155,108,255,0.88));
+  color: #fff;
+  text-align: center;
+}
+.ts__compose-anim {
+  position: relative;
+  width: 188rpx; height: 188rpx;
+  margin-bottom: 36rpx;
+  flex-shrink: 0;
+}
+.ts__compose-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 5rpx solid rgba(255,255,255,0.22);
+  border-top-color: #fff;
+  border-right-color: rgba(255,255,255,0.7);
+  animation: ts-compose-spin 0.95s linear infinite;
+  box-sizing: border-box;
+}
+.ts__compose-logo {
+  position: absolute;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.6); color: #fff;
-  padding: 16rpx 32rpx; border-radius: 12rpx;
-  font-size: 26rpx;
+  width: 148rpx; height: 148rpx;
+  border-radius: 50%;
+  z-index: 2;
+}
+.ts__compose-title {
+  font-size: 34rpx; font-weight: 700; margin-bottom: 16rpx;
+  letter-spacing: 2rpx;
+}
+.ts__compose-msg {
+  font-size: 28rpx; line-height: 1.5;
+  min-height: 84rpx;
+  opacity: 0.95;
+  transition: opacity 0.3s;
+}
+.ts__compose-bar {
+  width: 100%; max-width: 480rpx; height: 12rpx;
+  margin-top: 32rpx; border-radius: 999rpx;
+  background: rgba(255,255,255,0.25);
+  overflow: hidden;
+}
+.ts__compose-bar-fill {
+  height: 100%; border-radius: 999rpx;
+  background: #fff;
+  transition: width 1s linear;
+  max-width: 92%;
+}
+.ts__compose-hint {
+  margin-top: 20rpx; font-size: 22rpx; opacity: 0.85;
+}
+
+@keyframes ts-compose-spin {
+  to { transform: rotate(360deg); }
 }

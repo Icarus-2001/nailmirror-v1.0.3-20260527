@@ -1,11 +1,17 @@
 const tryOnService = require('../../services/try-on.service');
 const styleService = require('../../services/style.service');
 const historyService = require('../../services/history.service');
+const cloudAdapter = require('../../services/adapters/tryon-cloud-adapter');
+const cloudUtil = require('../../utils/cloud');
+const { userStore } = require('../../stores/user.store');
 const { pickHandPhoto, resolveBundledPhoto, downloadRemoteHand } = require('../../utils/image');
 const { tryOnStore } = require('../../stores/try-on.store');
 const { NAIL_SHAPES } = require('../../config/enums');
 const featureFlags = require('../../config/feature-flags');
 const mockHand = require('../../config/mock-hand');
+const composeWaiting = require('../../utils/compose-waiting');
+const { BRAND_LOGO } = require('../../config/constants');
+const { ESTIMATE_COMPOSE_SEC } = require('../../config/tryon-strategy');
 
 const WAN_MODEL_STORAGE_KEY = 'tryon_wan_model';
 
@@ -67,6 +73,10 @@ Page({
     altStyles: [],
     composing: false,
     composeProgress: '',
+    composeWaitSec: 0,
+    composeWaitTotal: ESTIMATE_COMPOSE_SEC,
+    composeWaitPercent: 0,
+    brandLogo: BRAND_LOGO,
 
     showWanModelPicker: false,
     wanModelOptions: [],
@@ -223,7 +233,9 @@ Page({
     try {
       const style = await styleService.get(id);
       this.setData({ style });
-    } catch (e2) {}
+    } catch (e2) {
+      this.setData({ style: null });
+    }
   },
   onStyleNext() {
     if (!this.data.styleId) {
@@ -288,7 +300,43 @@ Page({
   },
 
   _tryonOpts() {
-    return this.data.selectedWanModel ? { wanModel: this.data.selectedWanModel } : {};
+    const opts = this.data.selectedWanModel ? { wanModel: this.data.selectedWanModel } : {};
+    if (this.data.style && this.data.style.styleSource === 'custom-upload') {
+      opts.customStyle = this.data.style;
+    }
+    return opts;
+  },
+
+  async onUploadCustomStyle() {
+    if (!cloudUtil.isCloudReady()) {
+      wx.showToast({ title: '云开发未就绪，无法上传参考图', icon: 'none' });
+      return;
+    }
+    try {
+      const tempPath = await pickHandPhoto('album');
+      wx.showLoading({ title: '上传参考图…', mask: true });
+      const fileID = await cloudAdapter.uploadStyleRef(tempPath);
+      const id = 'custom-' + Date.now();
+      const customStyle = {
+        id,
+        title: '自定义参考图',
+        styleSource: 'custom-upload',
+        styleImageFileID: fileID,
+        coverUrl: tempPath
+      };
+      this.setData({ styleId: id, style: customStyle });
+      tryOnStore.setStyle(id);
+      wx.showToast({ title: '已选择参考图', icon: 'success' });
+    } catch (e) {
+      const msg = (e && e.message) || (e && e.errMsg) || '';
+      if (msg.indexOf('cancel') > -1 || msg.indexOf('取消') > -1) return;
+      wx.showToast({
+        title: msg.length > 20 ? msg.slice(0, 20) + '…' : (msg || '上传失败'),
+        icon: 'none'
+      });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   async onCompose() {
@@ -301,7 +349,7 @@ Page({
       return;
     }
     this._gotoStep('preview');
-    this.setData({ composing: true, composeProgress: '分析款式与指甲位置…' });
+    composeWaiting.start(this);
     try {
       const r = await tryOnService.startStatic(
         this._photoForUpload(),
@@ -311,15 +359,18 @@ Page({
       );
       this.setData({
         composedUrl: r.composedUrl,
-        composeProgress: '',
         usedWanModel: r.wanModel || this.data.selectedWanModel,
         usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
       });
     } catch (e) {
       wx.showToast({ title: e.message || '合成失败', icon: 'none' });
     } finally {
-      this.setData({ composing: false, composeProgress: '' });
+      composeWaiting.stop(this);
     }
+  },
+
+  onUnload() {
+    composeWaiting.stop(this);
   },
 
   // ---- 通用：返回上一步 ----
@@ -347,10 +398,8 @@ Page({
   async onSwitchStyle(e) {
     const id = e.currentTarget.dataset.id;
     if (id === this.data.styleId) return;
-    this.setData({ styleId: id });
-    tryOnStore.setStyle(id);
     if (this.data.photoPath) {
-      this.setData({ composing: true, composeProgress: '换款合成中…' });
+      composeWaiting.start(this, '换款合成中，请稍候…');
       try {
         const r = await tryOnService.startStatic(
           this._photoForUpload(),
@@ -359,22 +408,40 @@ Page({
           this._tryonOpts()
         );
         this.setData({
+          styleId: id,
           composedUrl: r.composedUrl,
           usedWanModel: r.wanModel || this.data.selectedWanModel,
           usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
         });
+        tryOnStore.setStyle(id);
+        try {
+          const style = await styleService.get(id);
+          this.setData({ style });
+        } catch (e) { /* ignore */ }
+      } catch (e) {
+        wx.showToast({ title: (e && e.message) || '换款失败', icon: 'none' });
       } finally {
-        this.setData({ composing: false, composeProgress: '' });
+        composeWaiting.stop(this);
       }
+      return;
     }
+    this.setData({ styleId: id });
+    tryOnStore.setStyle(id);
     try {
       const style = await styleService.get(id);
       this.setData({ style });
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   },
   async onSaveAndOutput() {
     if (!this.data.composedUrl) {
       wx.showToast({ title: '请先合成预览', icon: 'none' });
+      return;
+    }
+    const quotaService = require('../../services/quota.service');
+    try {
+      quotaService.assertFreeHD();
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '今日出图次数已用完', icon: 'none' });
       return;
     }
     wx.showLoading({ title: '生成 2K 中…' });
@@ -384,19 +451,27 @@ Page({
         styleId: this.data.styleId,
         sourceUrl: this.data.composedUrl
       });
-      await historyService.append({
-        userOpenid: 'me',
+      quotaService.consumeFreeHDOnSuccess();
+      const hist = {
+        userOpenid: userStore.openid || 'guest',
         styleId: this.data.styleId,
         nailShape: this.data.selectedShape,
         mode: 'static',
         thumbUrl: this.data.composedUrl,
         hdUrl: hd.hdUrl
-      });
+      };
+      if (this.data.style && this.data.style.styleSource === 'custom-upload') {
+        hist.styleSource = 'custom-upload';
+        hist.styleTitle = this.data.style.title || '自定义参考图';
+        hist.displayTags = ['上传参考图'];
+        hist.referenceStyleFileID = this.data.style.styleImageFileID || '';
+      }
+      await historyService.append(hist);
       wx.hideLoading();
       require('../../utils/hd-output-nav').navigateTo(this.data.styleId, hd.hdUrl);
     } catch (e) {
       wx.hideLoading();
-      wx.showToast({ title: '导出失败', icon: 'none' });
+      wx.showToast({ title: (e && e.message) || '导出失败', icon: 'none' });
     }
   }
 });

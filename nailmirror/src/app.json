@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/home/index",
     "pages/login/index",
+    "pages/home/index",
     "pages/style-library/index",
     "pages/style-detail/index",
     "pages/try-on-static/index",
@@ -59,7 +59,6 @@
     "scope.writePhotosAlbum": { "desc": "用于保存高清出片" },
     "scope.camera": { "desc": "用于拍摄手部照片进行 AI 试戴" }
   },
-  "requiredPrivateInfos": ["getLocation"],
   "__usePrivacyCheck__": true,
   "sitemapLocation": "sitemap.json",
   "style": "v2"

@@ -1,7 +1,7 @@
 <view class="ar">
   <!-- AR 占位（Mock）：camera 真实环境用 <camera>；这里用首帧图模拟 -->
   <view class="ar__stage">
-    <image src="{{firstFrameUrl || 'https://picsum.photos/seed/ar-stage/750/1334'}}" class="ar__frame" mode="aspectFill" wx:if="{{!starting}}"></image>
+    <image src="{{firstFrameUrl}}" class="ar__frame" mode="aspectFill" wx:if="{{firstFrameUrl && !starting}}"></image>
     <view class="ar__hint" wx:if="{{!starting}}">五指识别中…保持手部居中</view>
     <loading visible="{{starting}}" text="AR 启动中… ({{deviceLevel}})"></loading>
   </view>

@@ -4,6 +4,7 @@ const logger = require('./utils/logger');
 const eventBus = require('./utils/event-bus');
 const { initCloud } = require('./utils/cloud');
 const { EVT_USER_LOGIN } = require('./config/constants');
+const { userStore } = require('./stores/user.store');
 // 纳入主包依赖图，避免组件上下文 require tag-vocabulary 报 not defined
 require('./config/tag-vocabulary');
 
@@ -16,7 +17,9 @@ App({
     systemInfo: null,
     eventBus,
     version: '1.6.0-mvp',
-    pendingHdUrl: ''
+    pendingHdUrl: '',
+    /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
+    skipLoginAutoRedirect: false
   },
 
   registerPrivacyPopup(popup) {
@@ -31,6 +34,7 @@ App({
     try {
       if (wx.onNeedPrivacyAuthorization) {
         wx.onNeedPrivacyAuthorization((resolve) => {
+          if (wx.hideLoading) wx.hideLoading();
           const popup = this._privacyPopup;
           if (popup && popup.show) {
             popup.show(resolve);
@@ -41,6 +45,11 @@ App({
       }
 
       initCloud();
+      userStore.init();
+      if (userStore.openid) {
+        this.globalData.skipLoginAutoRedirect = true;
+        wx.switchTab({ url: '/pages/home/index' });
+      }
       const info = wx.getSystemInfoSync();
       this.globalData.systemInfo = info;
       this.globalData.deviceLevel = getDeviceLevel();

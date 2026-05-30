@@ -1,10 +1,12 @@
 <view class="me">
-  <view class="me__header">
+  <view class="me__header" bindtap="onGoLogin">
     <image class="me__avatar" src="{{user.avatarUrl}}"/>
     <view class="me__info">
-      <view class="me__name">{{user.nickname}}</view>
-      <view class="me__role">{{user.role === 'b' ? '商家身份' : '用户身份'}} · 会员 L{{user.membershipLevel}}</view>
+      <view class="me__name {{needLogin ? 'me__name--login' : ''}}">{{user.nickname}}</view>
+      <view class="me__role" wx:if="{{needLogin}}">点击登录 · 同步试戴与收藏</view>
+      <view class="me__role" wx:else>{{user.role === 'b' ? '商家身份' : '用户身份'}} · 会员 L{{user.membershipLevel}}</view>
     </view>
+    <text wx:if="{{needLogin}}" class="me__header-arrow">›</text>
   </view>
 
   <view class="me__stats">

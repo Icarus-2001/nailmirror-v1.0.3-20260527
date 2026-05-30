@@ -75,6 +75,17 @@ sequenceDiagram
 - Node.js（可选，仅运行 `scripts/import-*.js` 重新导入 Excel 数据时需要）
 - 由负责人将你添加为小程序**开发者**（见下一节）
 
+### 本地单元测试（可选）
+
+在 `nailmirror/src/` 目录：
+
+```bash
+npm ci
+npm test -- --runInBand
+```
+
+本地调试评测手照、万相模型下拉时，可复制 `config/feature-flags.local.js.example` 为 `config/feature-flags.local.js` 并改开关（该文件不入库）。
+
 ---
 
 ## 4. 加入小程序开发团队
@@ -169,13 +180,25 @@ module.exports = {
 
 ---
 
-## 7. 云函数 `tryon` 部署与验证
+## 7. 云函数部署与验证
 
-### 7.1 何时需要部署
+### 7.0 云函数 `login`（微信一键登录）
+
+| 项 | 说明 |
+|----|------|
+| 作用 | 从小程序调用上下文返回真实 `OPENID`（`user.service` + `USE_CLOUD_LOGIN`） |
+| 何时部署 | 首次接入、或 `cloudfunctions/login/` 有代码变更 |
+| 步骤 | 与 tryon 相同：先为 **`cloudfunctions` 根目录** 选择云环境 → 右键 **`cloudfunctions/login`** → **上传并部署：云端安装依赖** |
+| 验证 | 真机预览 → 登录页「微信一键登录」→ 我的页或 Storage `np_user` 中 `openid` 应为真实值（非 `mock-openid-*`） |
+
+云未就绪时会自动降级 Mock 登录，不影响「先随便逛逛」。
+
+### 7.1 云函数 `tryon` — 何时需要部署
 
 - 首次接入项目
 - 云函数代码有更新（`cloudfunctions/tryon/` 目录变更）
 - ping 测试失败或返回旧 runtime 标识
+- 使用 **上传参考款式图**（`styleFileID`）时需确保 tryon 已部署最新版
 
 若负责人已部署且 ping 正常，可跳过部署直接验收。
 
@@ -228,10 +251,15 @@ module.exports = {
 |------|--------|------|
 | `USE_REAL_STYLES` | `true` | 25 条真实款式（非 Mock 乱图） |
 | `USE_CLOUD_TRYON` | `true` | 静态试戴走云函数 + DashScope |
+| `USE_CLOUD_LOGIN` | `true` | 微信一键登录走云函数 `login` |
 | `USE_MOCK_HAND_PHOTO` | `true` | 显示评测手照快捷选择（与拍照/相册并存） |
 | `SHOW_WAN_MODEL_PICKER` | `true` | 试戴页显示万相 2.1 / 2.7 下拉对比 |
+| `DEFAULT_WAN_MODEL` | `wan2.7-image-pro` | 0531 稳定出图默认模型 |
+| `ENABLE_FREE_HD_QUOTA` | `false` | **调试期**关闭每日免费 2K 限额；上线前改 `true` |
 
-修改后重新编译小程序。
+本地覆盖：复制 `config/feature-flags.local.js.example` → `feature-flags.local.js`（已 gitignore）。
+
+修改后重新编译小程序。变更摘要见 [`CHANGELOG.md`](./CHANGELOG.md) **2026-05-31** 与 [`TRYON_0531稳定出图策略.md`](./TRYON_0531稳定出图策略.md)。
 
 ### 8.2 试戴操作路径
 
@@ -276,6 +304,9 @@ module.exports = {
 - [ ] 云试戴至少成功出图 **1 次**（2.1 或 2.7 均可）
 - [ ] 款式库共 **25 条**、详情页、收藏功能正常
 - [ ] 控制台无 `[tryon-cloud]` 致命错误
+- [ ] **登录**：云函数 `login` 已部署；首屏/我的页登录流程正常
+- [ ] **试戴历史**：无 picsum 假图；自定义参考款标题正确
+- [ ] **保存相册**：同意隐私后可保存 2K（OSS 域名已配置）
 
 更详细的冒烟步骤见 [`nailmirror/src/tests/e2e-smoke.md`](../nailmirror/src/tests/e2e-smoke.md)。
 

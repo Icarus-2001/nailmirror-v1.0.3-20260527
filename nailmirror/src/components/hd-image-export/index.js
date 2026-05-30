@@ -9,15 +9,17 @@ Component({
   methods: {
     async onSave() {
       if (!this.data.url) return;
-      wx.showLoading({ title: '保存中…', mask: true });
+      const privacyUtil = require('../../utils/privacy');
       try {
         await imageUtil.saveRemoteImageToAlbum(this.data.url);
-        wx.hideLoading();
         wx.showToast({ title: '已保存相册' });
         this.triggerEvent('saved', { url: this.data.url });
       } catch (e) {
-        wx.hideLoading();
-        imageUtil.showSaveError(e, this.data.url);
+        if (privacyUtil.isPrivacyDeclinedError(e)) {
+          wx.showToast({ title: e.message || '需同意隐私协议', icon: 'none' });
+        } else {
+          imageUtil.showSaveError(e, this.data.url);
+        }
       }
     },
     onCopyCaption() {

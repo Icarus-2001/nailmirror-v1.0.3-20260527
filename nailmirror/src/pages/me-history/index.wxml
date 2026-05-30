@@ -3,8 +3,9 @@
     <view class="mh__card">
       <image class="mh__thumb" src="{{item.thumbUrl}}" mode="aspectFill"/>
       <view class="mh__info">
-        <view class="mh__style">{{item.styleId}}</view>
-        <view class="mh__meta">{{item.mode}} · {{item.nailShape}} · {{item.createdAt}}</view>
+        <view class="mh__style">{{item.styleTitle}}</view>
+        <view class="mh__tags" wx:if="{{item.displayTagsText}}">{{item.displayTagsText}}</view>
+        <view class="mh__meta">{{item.metaLine}}</view>
         <view class="mh__actions">
           <view class="np-btn mh__btn" data-id="{{item.id}}" bindtap="onRegenerate">重新出图</view>
           <view class="np-btn np-btn--ghost mh__btn" data-id="{{item.id}}" bindtap="onRemove">删除</view>

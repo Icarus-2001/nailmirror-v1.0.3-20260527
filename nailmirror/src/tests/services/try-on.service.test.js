@@ -23,4 +23,41 @@ describe('TryOnService', () => {
     expect(r.hdUrl).toMatch(/^https?:\/\//);
     expect(typeof r.caption).toBe('string');
   });
+
+  test('startStatic 支持自定义上传参考款式，不强查款式库', async () => {
+    jest.resetModules();
+    const runTryon = jest.fn().mockResolvedValue({
+      composedUrl: 'wxfile://tmp/result.png',
+      outputUrl: 'https://dashscope.example.com/out.png',
+      jobId: 'job-custom',
+      wanModel: 'wan2.7-image-pro',
+      wanBackend: 'multimodal_edit'
+    });
+    jest.doMock('../../config/feature-flags', () => ({
+      USE_CLOUD_TRYON: true,
+      WATERMARK_DEFAULT: true
+    }));
+    jest.doMock('../../utils/cloud', () => ({
+      isCloudReady: () => true
+    }));
+    jest.doMock('../../services/style.service', () => ({
+      get: jest.fn(() => { throw new Error('should not lookup custom style'); })
+    }));
+    jest.doMock('../../services/adapters/tryon-cloud-adapter', () => ({
+      runTryon
+    }));
+    const svc = require('../../services/try-on.service');
+    const customStyle = {
+      id: 'custom-style-1',
+      title: '自定义参考图',
+      styleSource: 'custom-upload',
+      styleImageFileID: 'cloud://env/style.png',
+      styleImageUrl: 'https://tmp.example.com/style.png'
+    };
+
+    const r = await svc.startStatic('/tmp/hand.jpg', customStyle.id, 'almond', { customStyle });
+
+    expect(runTryon).toHaveBeenCalledWith('/tmp/hand.jpg', customStyle, 'almond', '');
+    expect(r.composedUrl).toBe('wxfile://tmp/result.png');
+  });
 });

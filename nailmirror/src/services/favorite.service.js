@@ -12,7 +12,16 @@ function getAllStyles() {
   return allStyles;
 }
 
+let _inited = false;
+function ensureInit() {
+  if (!_inited) {
+    favoriteStore.init();
+    _inited = true;
+  }
+}
+
 async function add(styleId) {
+  ensureInit();
   return mockDelay(() => {
     favoriteStore.add(styleId);
     eventBus.emit(EVT_NAIL_STYLE_FAVORITED, styleId);
@@ -21,6 +30,7 @@ async function add(styleId) {
 }
 
 async function remove(styleId) {
+  ensureInit();
   return mockDelay(() => {
     favoriteStore.remove(styleId);
     eventBus.emit(EVT_NAIL_STYLE_UNFAVORITED, styleId);
@@ -29,6 +39,7 @@ async function remove(styleId) {
 }
 
 async function list() {
+  ensureInit();
   return mockDelay(() => {
     const ids = favoriteStore.ids.slice();
     const styles = getAllStyles();
@@ -40,6 +51,7 @@ async function list() {
 }
 
 function has(styleId) {
+  ensureInit();
   return favoriteStore.has(styleId);
 }
 

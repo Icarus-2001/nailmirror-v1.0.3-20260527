@@ -1,4 +1,7 @@
 // 万相 2.1 Mask + 2.7 双图/bbox 后端
+// 稳定策略：0531-stable — 见 docs/TRYON_0531稳定出图策略.md（与 config/tryon-strategy.js 同步）
+const TRYON_STRATEGY_ID = '0531-stable';
+
 const https = require('https');
 const { URL } = require('url');
 
@@ -100,19 +103,17 @@ function unionBbox(boxes) {
   return [x1, y1, x2, y2];
 }
 
-function bboxArea(box) {
-  return Math.max(0, box[2] - box[0]) * Math.max(0, box[3] - box[1]);
-}
-
-/** VL 指甲椭圆 → wan2.7 bbox_list（API 单图最多 2 框：取面积最大的两根指甲，避免半掌大框） */
+/**
+ * VL 指甲 → wan2.7 bbox_list（单图最多 2 框）。
+ * 3 指及以上：所有指甲并成 1 个紧 bbox，避免左右半掌大框在指缝间生成「浮空甲」。
+ * 1–2 指：各用单甲框。
+ */
 function mergeNailsToBboxList(nails, width, height) {
   const list = (nails || []).map((n) => nailToBbox(n, width, height));
   if (!list.length) return [];
   if (list.length <= 2) return list;
-  const ranked = list
-    .map((box) => ({ box, area: bboxArea(box) }))
-    .sort((a, b) => b.area - a.area);
-  return [ranked[0].box, ranked[1].box];
+  const all = unionBbox(list);
+  return all ? [all] : list.slice(0, 2);
 }
 
 function bboxListForImages(hasStyle, nails, width, height) {
@@ -137,16 +138,19 @@ function parseTaskOutput(output) {
 }
 
 function buildWan27Prompt(prompt, hasStyle) {
+  const guard = 'Do not add floating nails or patterns in the background or between fingers. Edit only inside the boxes on existing fingernails.';
   if (hasStyle) {
     return [
       'Apply the nail art style from image 1 to the boxed fingernail areas in image 2 ONLY.',
       'Do not modify skin tone, fingers, knuckles, cuticles, or background.',
+      guard,
       prompt
     ].join(' ');
   }
   return [
     'Repaint ONLY the boxed fingernail areas with bold salon gel nail polish.',
     'Do not modify skin, fingers, or background outside the boxes.',
+    guard,
     prompt
   ].join(' ');
 }
@@ -264,6 +268,7 @@ async function queryWanJob(taskId) {
 }
 
 module.exports = {
+  TRYON_STRATEGY_ID,
   DASH_BASE,
   SUPPORTED_MODELS,
   BACKEND_MASK,

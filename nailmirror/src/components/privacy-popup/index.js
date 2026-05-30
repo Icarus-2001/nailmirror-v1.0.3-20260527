@@ -15,17 +15,20 @@ Component({
       this._resolve = resolve;
       this.setData({ visible: true });
     },
-    _finish(event) {
+    _finishAgree() {
       const resolve = this._resolve;
       this._resolve = null;
       this.setData({ visible: false });
-      if (resolve) resolve({ buttonId: 'privacy-agree-btn', event });
+      if (resolve) resolve({ buttonId: 'privacy-agree-btn', event: 'agree' });
     },
     onAgree() {
-      this._finish('agree');
+      this._finishAgree();
     },
     onDisagree() {
-      this._finish('disagree');
+      const resolve = this._resolve;
+      this._resolve = null;
+      this.setData({ visible: false });
+      if (resolve) resolve({ event: 'disagree' });
     },
     onOpenContract() {
       if (wx.openPrivacyContract) wx.openPrivacyContract();

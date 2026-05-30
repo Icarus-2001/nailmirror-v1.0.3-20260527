@@ -38,10 +38,27 @@
 
     <view wx:if="{{styleLoading && !styleList.length}}" class="ts__empty">加载中…</view>
 
+    <view class="ts__style-hint">请使用你有权参考的图片；指甲清晰时效果更好</view>
+
     <view class="ts__style-grid">
       <view
+        class="ts__style-card ts__style-card--upload {{style && style.styleSource === 'custom-upload' ? 'on' : ''}}"
+        bindtap="onUploadCustomStyle">
+        <view class="ts__style-cover ts__style-cover--upload">
+          <image
+            wx:if="{{style && style.styleSource === 'custom-upload' && style.coverUrl}}"
+            src="{{style.coverUrl}}"
+            class="ts__style-img"
+            mode="aspectFill"/>
+          <view wx:else class="ts__style-upload-icon">+</view>
+          <view wx:if="{{style && style.styleSource === 'custom-upload'}}" class="ts__style-check">✓</view>
+        </view>
+        <view class="ts__style-name">上传参考款式</view>
+      </view>
+
+      <view
         wx:for="{{styleList}}" wx:key="id"
-        class="ts__style-card {{styleId === item.id ? 'on' : ''}}"
+        class="ts__style-card {{styleId === item.id && (!style || style.styleSource !== 'custom-upload') ? 'on' : ''}}"
         data-id="{{item.id}}" bindtap="onPickStyle">
         <view class="ts__style-cover">
           <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" class="ts__style-img" mode="aspectFill"/>
@@ -131,7 +148,18 @@
   <block wx:if="{{step === 'preview'}}">
     <view class="ts__stage">
       <image wx:if="{{composedUrl}}" src="{{composedUrl}}" class="ts__photo" mode="aspectFill"></image>
-      <view wx:if="{{composing}}" class="ts__loading">{{composeProgress || 'AI 试戴合成中，约 15–30 秒…'}}</view>
+      <view wx:if="{{composing}}" class="ts__compose-overlay">
+        <view class="ts__compose-anim" aria-hidden="true">
+          <view class="ts__compose-ring"></view>
+          <image class="ts__compose-logo" src="{{brandLogo}}" mode="aspectFit" />
+        </view>
+        <view class="ts__compose-title">AI 试戴合成中</view>
+        <view class="ts__compose-msg">{{composeProgress}}</view>
+        <view class="ts__compose-bar">
+          <view class="ts__compose-bar-fill" style="width: {{composeWaitPercent}}%;"></view>
+        </view>
+        <view class="ts__compose-hint">预计约 {{composeWaitTotal}} 秒，请保持页面开启</view>
+      </view>
       <view class="ts__retake" bindtap="onPrevStep">重新拍照</view>
     </view>
 

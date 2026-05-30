@@ -1,5 +1,56 @@
 # 变更记录
 
+## 2026-05-31 · 云登录、参考图试戴、体验与 0531 稳定出图
+
+### 一句话（小程序版本说明可用）
+
+**接入微信云一键登录与上传参考款式试戴，试戴历史/收藏去 Mock，优化登录与相册保存体验，调试期关闭每日免费出图限额，默认万相 2.7 稳定出图策略。**
+
+### 登录与用户
+
+- 新增云函数 **`cloudfunctions/login`**：`getWXContext().OPENID` 返回真实 openid
+- **`user.service`**：`USE_CLOUD_LOGIN` 走云登录，失败降级 Mock
+- **`app.json`**：首屏为登录页；已登录冷启动 `app.onLaunch` 直跳首页
+- 登录页：品牌 **logo** 替代 picsum；修复登录闪烁（去 `button loading` + 防重复 `switchTab`）
+- **我的**：未登录显示「未登录」，点击进入登录页
+
+### 试戴与云函数
+
+- **上传参考款式**：试戴页首位「上传参考图」→ 云存储 `styleFileID` → `tryon` 支持自定义款式图
+- **`tryon` handler**：目录款有客户端 `stylePrompt` 时跳过款式 VLM；轮询默认不转存（减轻慢/白屏）；`styleFileID` 解析
+- **0531 稳定策略**：`config/tryon-strategy.js` + [`TRYON_0531稳定出图策略.md`](./TRYON_0531稳定出图策略.md)（≥3 甲 union 单 bbox）
+- 合成等待 UI：`utils/compose-waiting.js`（轮播文案 + logo + 转圈）
+- 首页副标题：四步流程「选甲型 → 选款式 → 上传照片 → 一键合成」
+
+### 历史 / 收藏 / 去 Mock
+
+- **`history.service`**：移除 mock seed；剔除 legacy（`h-100x`、`picsum`）；真实款式 enrich；自定义款 `styleSource: custom-upload`
+- 时间格式：`YYYY-MM-DD hh:mm`（国内习惯）
+- **`favorite.service`**：持久化收藏 ID
+- 界面：去掉 picsum 占位（登录、我的头像、AR 占位、`PLACEHOLDER_IMAGE` → 本地 logo）
+
+### 高清出片与保存
+
+- **`quota.service`** + `ENABLE_FREE_HD_QUOTA: false`（调试期不限额，接口保留）
+- **`utils/privacy.js`**：保存/选图前主动隐私授权
+- 修复保存卡死：`showLoading({ mask: true })` 遮挡隐私弹窗；保存前去遮罩 loading；远程图「正在下载高清图…」
+- **`privacy-popup`**：「不同意」不再误当作同意
+
+### 配置与部署
+
+| 项 | 说明 |
+|----|------|
+| 云函数 | 部署 **`login`**、**`tryon`**（`cloudfunctions` 根目录先选云环境） |
+| 开关 | `feature-flags.js`；本地覆盖 `feature-flags.local.js`（已 gitignore） |
+| 真机保存 | 公众平台 **downloadFile** 配置 DashScope OSS 域名（见 `SETUP_USER.md`） |
+| 资源 | `nailmirror/src/assets/logo.jpg` |
+
+### 测试
+
+- 新增/更新：`login/handler.test.js`、`tryon/handler.test.js`、`quota.service.test.js`、`privacy.test.js`、`history` / `user` / `try-on` 相关单测
+
+---
+
 ## 2026-05-30 · 款式库筛选抽屉编译/运行修复
 
 ### 问题

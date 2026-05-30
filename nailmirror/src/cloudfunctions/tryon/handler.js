@@ -6,6 +6,7 @@ const wanBackends = require('./wan-backends');
 const DASH_BASE = wanBackends.DASH_BASE;
 const BACKEND_MASK = wanBackends.BACKEND_MASK;
 const MASK_SCALE = 1.28;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 let _cloud = null;
 let _Jimp = null;
@@ -106,33 +107,76 @@ function httpJson(method, urlStr, headers, bodyObj) {
 function httpBuffer(urlStr) {
   return new Promise((resolve, reject) => {
     https.get(urlStr, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        res.resume();
+        reject(new Error('图片下载失败 HTTP ' + (res.statusCode || '?')));
+        return;
+      }
       const chunks = [];
-      res.on('data', (c) => chunks.push(c));
+      let total = 0;
+      res.on('data', (c) => {
+        total += c.length;
+        if (total > MAX_IMAGE_BYTES) {
+          res.destroy(new Error('图片过大，请压缩后重试（最大 8MB）'));
+          return;
+        }
+        chunks.push(c);
+      });
       res.on('end', () => resolve(Buffer.concat(chunks)));
     }).on('error', reject);
   });
+}
+
+function allowAltImageInput() {
+  return getEnv('TRYON_ALLOW_URL', '') === '1';
+}
+
+function assertImageSize(buf) {
+  if (!buf || !buf.length) {
+    throw new Error('图片为空，请重试');
+  }
+  if (buf.length > MAX_IMAGE_BYTES) {
+    throw new Error('图片过大，请压缩后重试（最大 8MB）');
+  }
 }
 
 async function getImageBufferFromFileID(fileID) {
   const cloud = getCloud();
   const r = await cloud.downloadFile({ fileID });
   if (!r.fileContent) throw new Error('下载图片失败');
+  assertImageSize(r.fileContent);
   return r.fileContent;
 }
 
 async function resolveInputImage(event) {
-  const { fileID, imageBase64, imageUrl } = event || {};
-  if (imageUrl) return { type: 'url', value: imageUrl };
+  const { fileID, imageBase64, imageUrl, _internalUrl } = event || {};
+  const altOk = allowAltImageInput();
+  if (imageUrl) {
+    // 云函数内部（如 submitTryonJob 已上传手照后的临时 URL）允许；仅拦截客户端直传
+    if (!altOk && !_internalUrl) throw new Error('不支持 imageUrl，请使用云存储 fileID');
+    return { type: 'url', value: imageUrl };
+  }
   if (imageBase64) {
+    if (!altOk && !_internalUrl) throw new Error('不支持 imageBase64，请使用云存储 fileID');
     const b64 = imageBase64.indexOf('data:') === 0
       ? imageBase64.replace(/^data:[^;]+;base64,/, '')
       : imageBase64;
-    return { type: 'buffer', value: Buffer.from(b64, 'base64') };
+    const buf = Buffer.from(b64, 'base64');
+    assertImageSize(buf);
+    return { type: 'buffer', value: buf };
   }
   if (fileID) {
     return { type: 'buffer', value: await getImageBufferFromFileID(fileID) };
   }
-  throw new Error('缺少图片（fileID / imageUrl / imageBase64）');
+  throw new Error('缺少图片 fileID');
+}
+
+function requireOpenId() {
+  const cloud = getCloud();
+  const ctx = cloud.getWXContext();
+  const openid = ctx && ctx.OPENID;
+  if (!openid) throw new Error('未授权：请从小程序内调用');
+  return openid;
 }
 
 async function uploadBufferGetUrl(buf, ext) {
@@ -149,6 +193,29 @@ async function imageInputToUrl(input) {
   if (input.type === 'url') return input.value;
   const r = await uploadBufferGetUrl(input.value, guessExt(input.value));
   return r.url;
+}
+
+function resultCloudPath(jobId, buf) {
+  const safeJobId = String(jobId || Date.now()).replace(/[^\w.-]/g, '_');
+  return 'tryon/results/' + safeJobId + '.' + guessExt(buf);
+}
+
+async function materializeTryonOutput(job, deps) {
+  const info = job || {};
+  if (info.status !== 'succeeded' || !info.outputUrl) {
+    return Object.assign({}, info, { outputFileID: info.outputFileID || '' });
+  }
+  const downloadBuffer = (deps && deps.downloadBuffer) || httpBuffer;
+  const uploadBuffer = (deps && deps.uploadBuffer) || ((buf, cloudPath) => {
+    const cloud = getCloud();
+    return cloud.uploadFile({ cloudPath, fileContent: buf });
+  });
+  const buf = await downloadBuffer(info.outputUrl);
+  assertImageSize(buf);
+  const cloudPath = resultCloudPath(info.jobId, buf);
+  const up = await uploadBuffer(buf, cloudPath);
+  if (!up || !up.fileID) throw new Error('云存储未返回 fileID');
+  return Object.assign({}, info, { outputFileID: up.fileID });
 }
 
 async function callQwenVL(imageUrl, textPrompt) {
@@ -263,9 +330,32 @@ async function analyzeDualForTryon(styleImageUrl, handImageUrl, shapePrompt) {
   };
 }
 
-async function resolveStylePrompt(event, handImageUrl) {
-  const styleUrl = event.styleCoverUrl || event.styleImageUrl;
-  const merged = Object.assign({}, event);
+async function resolveStyleImageUrl(event) {
+  const ev = event || {};
+  if (ev.styleFileID) {
+    const buf = await getImageBufferFromFileID(ev.styleFileID);
+    return imageInputToUrl({ type: 'buffer', value: buf });
+  }
+  return ev.styleCoverUrl || ev.styleImageUrl || '';
+}
+
+function hasCatalogStylePrompt(event) {
+  const p = (event && event.stylePrompt) || '';
+  return typeof p === 'string' && p.trim().length > 16;
+}
+
+async function resolveStylePrompt(event, handImageUrl, styleUrlCached) {
+  const styleUrl = styleUrlCached || await resolveStyleImageUrl(event);
+  const merged = Object.assign({}, event, {
+    styleCoverUrl: styleUrl,
+    styleImageUrl: styleUrl
+  });
+
+  // 目录款已带英文 prompt：跳过双图/单图 VLM，缩短 submit 耗时（万相仍用 styleUrl + prompt）
+  if (!(event && event.styleFileID) && hasCatalogStylePrompt(event)) {
+    console.log('[tryon] catalog fast path: skip style VL');
+    return merged;
+  }
 
   if (styleUrl && handImageUrl) {
     let dual = null;
@@ -328,6 +418,16 @@ function normalizeNails(nails) {
     cy: Math.min(1, Math.max(0, Number(n.cy) || 0.5)),
     rx: Math.min(0.12, Math.max(0.018, Number(n.rx) || 0.035)) * MASK_SCALE,
     ry: Math.min(0.14, Math.max(0.022, Number(n.ry) || 0.05)) * MASK_SCALE
+  }));
+}
+
+/** 万相 2.7 bbox 用更紧的甲面框（mask 路径仍用 MASK_SCALE 放大） */
+function nailsForWan27Bbox(nails) {
+  return (nails || []).map((n) => ({
+    cx: Math.min(1, Math.max(0, Number(n.cx) || 0.5)),
+    cy: Math.min(1, Math.max(0, Number(n.cy) || 0.5)),
+    rx: Math.min(0.08, Math.max(0.018, (Number(n.rx) || 0.035) / MASK_SCALE)),
+    ry: Math.min(0.10, Math.max(0.022, (Number(n.ry) || 0.05) / MASK_SCALE))
   }));
 }
 
@@ -439,10 +539,15 @@ async function submitTryonJob(event) {
   const input = await resolveInputImage(event);
   const handBuf = input.type === 'buffer' ? input.value : await httpBuffer(input.value);
   const baseUrl = await imageInputToUrl({ type: 'buffer', value: handBuf });
+  const styleUrl = await resolveStyleImageUrl(event);
 
-  const promptEvent = await resolveStylePrompt(event, baseUrl);
+  const promptEvent = await resolveStylePrompt(event, baseUrl, styleUrl);
 
-  const nailAnalysis = await analyzeNails(Object.assign({}, event, { fileID: '', imageUrl: baseUrl }));
+  const nailAnalysis = await analyzeNails(Object.assign({}, event, {
+    fileID: '',
+    imageUrl: baseUrl,
+    _internalUrl: true
+  }));
   if (nailAnalysis.code !== 0 || !nailAnalysis.data.handDetected) {
     return fail('未检测到手部或指甲，请换一张清晰的手部照片');
   }
@@ -451,7 +556,6 @@ async function submitTryonJob(event) {
   }
 
   const prompt = buildTryonPrompt(promptEvent);
-  const styleUrl = event.styleCoverUrl || event.styleImageUrl || '';
   const nails = nailAnalysis.data.nails;
   let wanResolved;
   try {
@@ -479,7 +583,7 @@ async function submitTryonJob(event) {
       baseUrl,
       styleUrl,
       prompt,
-      nails,
+      nails: nailsForWan27Bbox(nails),
       imageWidth: handImg.bitmap.width,
       imageHeight: handImg.bitmap.height,
       wanModelOverride: event.wanModel,
@@ -500,6 +604,11 @@ async function submitTryonJob(event) {
   });
 }
 
+function shouldMaterializeOnQuery(event) {
+  if (event && event.materialize === true) return true;
+  return getEnv('TRYON_MATERIALIZE_ON_QUERY', '') === '1';
+}
+
 async function queryTryonJob(event) {
   const { jobId } = event || {};
   if (!jobId) return fail('缺少 jobId');
@@ -507,11 +616,26 @@ async function queryTryonJob(event) {
   let status = 'processing';
   if (r.status === 'SUCCEEDED') status = 'succeeded';
   else if (r.status === 'FAILED') status = 'failed';
-  return ok({
+  let output = {
     jobId,
     status,
     outputUrl: r.outputUrl || '',
+    outputFileID: '',
     error: status === 'failed' ? (r.message || '生图失败') : ''
+  };
+  if (status === 'succeeded' && output.outputUrl && shouldMaterializeOnQuery(event)) {
+    try {
+      output = await materializeTryonOutput(output);
+    } catch (e) {
+      throw new Error('成图转存失败: ' + (e && e.message ? e.message : String(e)));
+    }
+  }
+  return ok({
+    jobId: output.jobId,
+    status: output.status,
+    outputUrl: output.outputUrl || '',
+    outputFileID: output.outputFileID || '',
+    error: output.error || ''
   });
 }
 
@@ -527,7 +651,8 @@ async function ping() {
     wanModel: wanResolved.model,
     wanBackend: wanResolved.backend,
     supportedModels: wanBackends.SUPPORTED_MODELS,
-    runtime: 'handler-v7-wan27-dual',
+    tryonStrategy: wanBackends.TRYON_STRATEGY_ID,
+    runtime: 'handler-v7-wan27-dual-0531',
     deps
   });
 }
@@ -548,6 +673,7 @@ async function handle(event) {
   try {
     const action = (event && event.action) || '';
     if (action === 'ping') return await ping();
+    requireOpenId();
     if (action === 'analyzeStyleReference') return await analyzeStyleReference(event);
     if (action === 'analyzeNails') return await analyzeNails(event);
     if (action === 'submitTryonJob') return await submitTryonJob(event);
@@ -559,4 +685,4 @@ async function handle(event) {
   }
 }
 
-module.exports = { handle };
+module.exports = { handle, materializeTryonOutput };

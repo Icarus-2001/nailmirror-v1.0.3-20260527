@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "timeout": 20,
+  "memorySize": 256,
+  "runtime": "Nodejs16"
+}

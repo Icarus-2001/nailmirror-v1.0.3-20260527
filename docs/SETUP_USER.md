@@ -28,12 +28,17 @@ module.exports = { ENV_ID: '你的环境ID' };
 
 ---
 
-## 3. 部署云函数 `tryon`
+## 3. 部署云函数
 
 1. **右键 `cloudfunctions` 文件夹** → **选择云环境** → `cloud1-d2g3df4y16873034b`（须与 `config/cloud-env.js` 的 `ENV_ID` 一致；未选环境会上传失败）
-2. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**
-3. **不要**在 `cloudfunctions/tryon` 下本地 `npm install`（会导致上传包过大失败）
-4. 云函数目录内 **不要提交** `node_modules`
+2. 右键 `cloudfunctions/login` → **上传并部署：云端安装依赖**（微信一键登录，返回真实 OPENID）
+3. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**（试戴 / 自定义参考图）
+4. **不要**在云函数目录下本地 `npm install`（会导致上传包过大失败）
+5. 云函数目录内 **不要提交** `node_modules`
+
+### 自定义参考款式图
+
+试戴流程 **选甲型 → 选款式** 步网格首位为「上传参考款式」：从相册选择小红书等保存的参考图 → 上传至云存储 `tryon/refs/` → 万相 2.7 双图试戴。须已部署 `tryon` 且 `USE_CLOUD_TRYON: true`。
 
 试戴英文 prompt 与 2.7 指甲框选逻辑见 [`CHANGELOG.md`](./CHANGELOG.md)（2026-05-30 试戴修复）。
 

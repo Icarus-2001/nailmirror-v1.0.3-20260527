@@ -1,6 +1,7 @@
 // 图片工具：压缩 / 保存相册 / 选图
 const logger = require('./logger');
 const cloudUtil = require('./cloud');
+const privacyUtil = require('./privacy');
 
 function compress(srcPath, quality = 80) {
   return new Promise((resolve, reject) => {
@@ -176,16 +177,29 @@ function showSaveError(err, url) {
 }
 
 async function saveRemoteImageToAlbum(url) {
+  await privacyUtil.ensurePrivacyAuthorized();
   await ensureWritePhotosAlbum();
-  const filePath = await resolveImageLocalPath(url);
+  const isRemote = /^https?:\/\//i.test(url || '') || String(url || '').indexOf('cloud://') === 0;
+  let showedDownloadLoading = false;
+  if (isRemote && wx.showLoading) {
+    wx.showLoading({ title: '正在下载高清图…', mask: false });
+    showedDownloadLoading = true;
+  }
   try {
-    await saveToAlbum(filePath);
-    return true;
-  } catch (e1) {
-    logger.warn('[image] direct save fail, retry with copy', _errMsg(e1, ''));
-    const copied = await copyToUserDataPath(filePath);
-    await saveToAlbum(copied);
-    return true;
+    const filePath = await resolveImageLocalPath(url);
+    if (showedDownloadLoading && wx.hideLoading) wx.hideLoading();
+    showedDownloadLoading = false;
+    try {
+      await saveToAlbum(filePath);
+      return true;
+    } catch (e1) {
+      logger.warn('[image] direct save fail, retry with copy', _errMsg(e1, ''));
+      const copied = await copyToUserDataPath(filePath);
+      await saveToAlbum(copied);
+      return true;
+    }
+  } finally {
+    if (showedDownloadLoading && wx.hideLoading) wx.hideLoading();
   }
 }
 

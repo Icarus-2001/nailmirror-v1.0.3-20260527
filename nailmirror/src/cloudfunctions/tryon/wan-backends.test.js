@@ -16,7 +16,7 @@ function testMergeFiveNails() {
     { cx: 0.8, cy: 0.3, rx: 0.04, ry: 0.05 }
   ];
   const boxes = mergeNailsToBboxList(nails, 1000, 800);
-  assert.strictEqual(boxes.length, 2);
+  assert.strictEqual(boxes.length, 1);
 }
 
 function testMergeTwoNails() {

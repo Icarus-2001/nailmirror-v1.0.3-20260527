@@ -24,9 +24,12 @@ async function startStatic(photoPath, styleId, shapeId, opts) {
   if (!photoPath) throw makeError(ERR.UPLOAD_ERR, '未选择手照');
   if (!styleId) throw makeError(ERR.NOT_FOUND, '缺少款式');
 
+  const customStyle = opts && opts.customStyle;
+  const styleMeta = customStyle || null;
+
   if (featureFlags.USE_CLOUD_TRYON && cloudUtil.isCloudReady()) {
     try {
-      const style = await styleService.get(styleId);
+      const style = styleMeta || await styleService.get(styleId);
       const wanModel = (opts && opts.wanModel) || '';
       const r = await cloudAdapter.runTryon(photoPath, style, shapeId, wanModel);
       return {
