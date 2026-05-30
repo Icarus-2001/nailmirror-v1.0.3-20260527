@@ -24,5 +24,11 @@ Page({
   onItemTap(e) {
     const id = e.currentTarget.dataset.id;
     if (id) wx.navigateTo({ url: '/pages/style-detail/index?id=' + id });
+  },
+  onKeywordTap(e) {
+    const word = (e.detail && e.detail.word) || '';
+    if (word) {
+      wx.navigateTo({ url: '/pages/style-library/index?keyword=' + encodeURIComponent(word) });
+    }
   }
 });

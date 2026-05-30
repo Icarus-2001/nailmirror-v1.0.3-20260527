@@ -17,9 +17,11 @@ Page({
     fallback: false,
     drawerVisible: false,
     filters: { styleTags: [], materialTags: [], shapeTags: [] },
+    drawerFilters: { colors: [], designs: [], styleLabels: [], shapeLabels: [] },
     useReal: false
   },
-  onLoad() {
+  onLoad(query) {
+    const keyword = query && query.keyword ? decodeURIComponent(query.keyword) : '';
     const useReal = featureFlags.USE_REAL_STYLES;
     let styleTabs = [{ id: '', label: '全部' }].concat(NAIL_STYLES);
     let colorTabs = [{ id: '', label: '全部颜色' }];
@@ -32,7 +34,10 @@ Page({
         cats.colors.map((c) => ({ id: c, label: c, type: 'color' }))
       );
     }
-    this.setData({ useReal, styleTabs, colorTabs });
+    const drawerFilters = useReal
+      ? { colors: [], designs: [], styleLabels: [], shapeLabels: [] }
+      : { styleTags: [], materialTags: [], shapeTags: [] };
+    this.setData({ useReal, styleTabs, colorTabs, drawerFilters, filters: drawerFilters, keyword });
     this.loadList(true);
   },
   async loadList(reset) {
@@ -40,10 +45,14 @@ Page({
     this.setData({ loading: true });
     try {
       const page = reset ? 1 : this.data.page + 1;
-      const filters = Object.assign({}, this.data.filters);
+      const filters = Object.assign({}, this.data.drawerFilters);
       if (this.data.useReal) {
-        if (this.data.currentStyle) filters.styleLabel = this.data.currentStyle;
-        if (this.data.currentColor) filters.color = this.data.currentColor;
+        if (this.data.currentStyle) {
+          filters.styleLabels = [this.data.currentStyle];
+        }
+        if (this.data.currentColor) {
+          filters.colors = [this.data.currentColor];
+        }
       } else if (this.data.currentStyle) {
         filters.styleTags = [this.data.currentStyle];
       }
@@ -85,7 +94,7 @@ Page({
   onOpenFilter() { this.setData({ drawerVisible: true }); },
   onDrawerClose() { this.setData({ drawerVisible: false }); },
   onFilterChange(e) {
-    this.setData({ filters: e.detail, drawerVisible: false });
+    this.setData({ drawerFilters: e.detail, drawerVisible: false });
     this.loadList(true);
   },
   onReachBottom() {

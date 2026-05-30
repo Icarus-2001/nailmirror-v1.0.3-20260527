@@ -8,16 +8,8 @@
   <view class="sd__body np-container">
     <view class="sd__title">{{style.title}}</view>
     <view class="sd__brief">{{style.brief}}</view>
-    <view class="sd__tags" wx:if="{{style.color || style.design}}">
-      <text class="np-tag" wx:if="{{style.color}}">{{style.color}}</text>
-      <text class="np-tag" wx:if="{{style.design}}">{{style.design}}</text>
-      <text class="np-tag" wx:if="{{style.shapeLabel}}">{{style.shapeLabel}}</text>
-      <text class="np-tag" wx:if="{{style.styleLabel}}">{{style.styleLabel}}</text>
-    </view>
-    <view class="sd__tags">
-      <text class="np-tag" wx:for="{{style.styleTags}}" wx:for-item="t" wx:key="*this">#{{t}}</text>
-      <text class="np-tag" wx:for="{{style.materialTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
-      <text class="np-tag" wx:for="{{style.shapeTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+    <view class="sd__tags" wx:if="{{displayTags.length}}">
+      <text class="np-tag" wx:for="{{displayTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
     </view>
 
     <view class="sd__heat">🔥 热度 {{style.heat}}</view>

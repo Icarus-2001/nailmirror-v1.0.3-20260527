@@ -1,14 +1,23 @@
 // V1.6 主页 — 自包含兜底数据 + 异步服务可选
 const featureFlags = require('../../config/feature-flags');
 
-const FALLBACK_KEYWORDS = [
-  { word: '法式极简', platform: 'xhs', heat: 98210 },
-  { word: '猫眼美甲', platform: 'xhs', heat: 95340 },
-  { word: '奶茶色系', platform: 'douyin', heat: 92105 },
-  { word: '星河流光', platform: 'xhs', heat: 89010 },
-  { word: '复古酒红', platform: 'weibo', heat: 85622 },
-  { word: '镜面银', platform: 'xhs', heat: 82014 }
-];
+function getInitialHotKeywords() {
+  if (featureFlags.USE_REAL_STYLES) {
+    try {
+      const { buildRealHotKeywords } = require('../../services/hot-data.service');
+      const kws = buildRealHotKeywords();
+      if (kws.length) return kws.slice(0, 6);
+    } catch (e) { /* ignore */ }
+  }
+  return [
+    { word: '法式极简', platform: 'xhs', heat: 98210 },
+    { word: '猫眼美甲', platform: 'xhs', heat: 95340 },
+    { word: '奶茶色系', platform: 'douyin', heat: 92105 },
+    { word: '星河流光', platform: 'xhs', heat: 89010 },
+    { word: '复古酒红', platform: 'weibo', heat: 85622 },
+    { word: '镜面银', platform: 'xhs', heat: 82014 }
+  ];
+}
 
 const FALLBACK_STYLES = [
   { id: 'french-01', title: '法式极简·裸粉', coverUrl: '', heat: 98210, styleTags: ['法式', '极简'] },
@@ -33,7 +42,7 @@ Page({
   data: {
     userName: '美甲控',
     quickStyles: getInitialStyles(),
-    hotKeywords: FALLBACK_KEYWORDS,
+    hotKeywords: getInitialHotKeywords(),
     loaded: true
   },
   onLoad() {
@@ -81,6 +90,8 @@ Page({
   },
   onKeywordTap(e) {
     const word = e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.word;
-    if (word) wx.navigateTo({ url: '/pages/style-library/index' });
+    if (word) {
+      wx.navigateTo({ url: '/pages/style-library/index?keyword=' + encodeURIComponent(word) });
+    }
   }
 });

@@ -30,9 +30,12 @@ module.exports = { ENV_ID: '你的环境ID' };
 
 ## 3. 部署云函数 `tryon`
 
-1. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**
-2. **不要**在 `cloudfunctions/tryon` 下本地 `npm install`（会导致上传包过大失败）
-3. 云函数目录内 **不要提交** `node_modules`
+1. **右键 `cloudfunctions` 文件夹** → **选择云环境** → `cloud1-d2g3df4y16873034b`（须与 `config/cloud-env.js` 的 `ENV_ID` 一致；未选环境会上传失败）
+2. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**
+3. **不要**在 `cloudfunctions/tryon` 下本地 `npm install`（会导致上传包过大失败）
+4. 云函数目录内 **不要提交** `node_modules`
+
+试戴英文 prompt 与 2.7 指甲框选逻辑见 [`CHANGELOG.md`](./CHANGELOG.md)（2026-05-30 试戴修复）。
 
 ### 环境变量（云开发控制台 → 云函数 → tryon → 配置）
 
