@@ -1,6 +1,15 @@
 // TryOn 云函数适配层
 const cloudUtil = require('../../utils/cloud');
 const logger = require('../../utils/logger');
+const { buildTryonCloudFields } = require('../../config/tryon-prompt');
+
+/** 由当前款式 VLM 标签生成英文试戴 payload（与列表展示同源） */
+function resolveTryonFields(styleMeta, shapeId) {
+  if (!styleMeta || !styleMeta.id) {
+    return buildTryonCloudFields({ title: '', color: '', design: '纯色' }, shapeId);
+  }
+  return buildTryonCloudFields(styleMeta, shapeId);
+}
 
 function _checkResult(r) {
   if (!r) throw new Error('云函数无响应');
@@ -49,16 +58,17 @@ function pollMaxAttempts(wanModel) {
 
 async function runTryon(localPhotoPath, styleMeta, shapeId, wanModel) {
   const fileID = await uploadHandPhoto(localPhotoPath);
+  const tryon = resolveTryonFields(styleMeta, shapeId);
   const submitPayload = {
     fileID,
     styleId: styleMeta.id,
-    styleTitle: styleMeta.title,
+    styleTitle: tryon.styleTitle,
     styleCoverUrl: styleMeta.coverUrl || '',
     styleImageUrl: styleMeta.sourceUrl || styleMeta.coverUrl || '',
-    stylePrompt: styleMeta.stylePrompt,
-    color: styleMeta.color,
-    design: styleMeta.design,
-    shapePrompt: shapeId || (styleMeta.shapeTags && styleMeta.shapeTags[0]) || 'almond'
+    stylePrompt: tryon.stylePrompt,
+    color: tryon.color,
+    design: tryon.design,
+    shapePrompt: tryon.shapePrompt
   };
   if (wanModel) submitPayload.wanModel = wanModel;
   const submitted = await submitTryonJob(submitPayload);
@@ -73,4 +83,12 @@ async function runTryon(localPhotoPath, styleMeta, shapeId, wanModel) {
   };
 }
 
-module.exports = { ping, uploadHandPhoto, submitTryonJob, queryTryonJob, pollTryonJob, runTryon };
+module.exports = {
+  ping,
+  uploadHandPhoto,
+  submitTryonJob,
+  queryTryonJob,
+  pollTryonJob,
+  runTryon,
+  resolveTryonFields
+};

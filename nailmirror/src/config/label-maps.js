@@ -98,13 +98,20 @@ function inferMaterialTags(color, design) {
   return [...new Set(tags)];
 }
 
-function buildStylePrompt(color, design, styleLabel) {
+/** 试戴兜底英文 prompt（具体色名，不用 8 大色系） */
+function buildTryonStylePrompt(color, design, styleLabel) {
   const parts = [];
-  if (color) parts.push('solid ' + color + ' color family');
+  if (color) parts.push('solid ' + color + ' color');
   if (design && design !== '纯色') parts.push(design + ' nail art pattern');
   if (styleLabel) parts.push(styleLabel + ' style');
   parts.push('gel nail polish, natural finish');
   return parts.join(', ');
+}
+
+/** @deprecated 请用 config/tryon-prompt.buildTryonEnglishPrompt */
+function buildStylePrompt(color, design, styleLabel) {
+  const { buildTryonEnglishPrompt } = require('./tryon-prompt');
+  return buildTryonEnglishPrompt({ color, design, styleLabel, title: '' });
 }
 
 module.exports = {
@@ -116,5 +123,6 @@ module.exports = {
   mapStyleCn,
   mapShapeCn,
   inferMaterialTags,
+  buildTryonStylePrompt,
   buildStylePrompt
 };

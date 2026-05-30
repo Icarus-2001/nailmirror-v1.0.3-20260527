@@ -181,10 +181,12 @@ module.exports = {
 
 ### 7.2 部署步骤
 
-1. 在微信开发者工具左侧文件树找到 `cloudfunctions/tryon`
-2. 右键 → **上传并部署：云端安装依赖**（必须选此项）
-3. **禁止**在 `cloudfunctions/tryon` 下本地执行 `npm install`（会导致上传包过大失败）
-4. 确认 `cloudfunctions/tryon/node_modules` 不在 git 中、未被打包上传
+1. 确认项目目录为 **`nailmirror/src`**（含 `project.config.json` 与 `cloudfunctionRoot`）
+2. 在文件树 **右键 `cloudfunctions` 文件夹**（云函数根目录，不是单个 `tryon`）→ **选择云环境** → 选 **`cloud1-d2g3df4y16873034b`**
+   - 若跳过此步，上传会失败：`请在编辑器云函数根目录 (cloudfunctionRoot) 选择一个云环境`
+3. 展开 `cloudfunctions/tryon` → 右键 → **上传并部署：云端安装依赖**（必须选此项）
+4. **禁止**在 `cloudfunctions/tryon` 下本地执行 `npm install`（会导致上传包过大失败）
+5. 确认 `cloudfunctions/tryon/node_modules` 不在 git 中、未被打包上传
 
 ### 7.3 云函数规格
 

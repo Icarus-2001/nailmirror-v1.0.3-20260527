@@ -1,5 +1,25 @@
 # 变更记录
 
+## 2026-05-30 · 试戴修复（英文 prompt + 2.7 框选 + 部署说明）
+
+### 问题与原因
+
+- VLM 打标后，试戴兜底 prompt 使用 8 大色系等粗标签，与款式封面（如「奶牛斑点」）不一致，万相 2.7 效果变差。
+- 万相 2.7 在检测到 3 根以上指甲时，曾将指甲合并为「左半掌 + 右半掌」两个超大 bbox，出现巨型贴纸式错位。
+
+### 修复
+
+- 新增 [`config/tryon-prompt.js`](../nailmirror/src/config/tryon-prompt.js)：与列表**同源**的 `color` / `design` / `styleLabel` / `title` → 英文 `stylePrompt`；标题含「奶牛」等时追加具象图案描述。
+- `tryon-cloud-adapter` 提交云函数前调用 `buildTryonCloudFields`；`shapeLabel` → `mapShapeCn` 作为 `shapePrompt`（用户手选甲型仍可覆盖）。
+- `cloudfunctions/tryon/wan-backends.js`：指甲 &gt;2 时取**面积最大的 2 个单甲 bbox**，不再半掌合并。
+- 文档补充：上传云函数前须在 **`cloudfunctions` 根目录**选择云环境（见 `SETUP_USER.md` / `TEAMMATE_ONBOARDING.md` §7.2）。
+
+### 部署提醒
+
+修改云函数后须：**右键 `cloudfunctions/tryon` → 上传并部署：云端安装依赖**（且 `cloudfunctions` 已绑定 `cloud1-d2g3df4y16873034b`）。仅重编译小程序不够。
+
+---
+
 ## 2026-05-30 · 标准词表 VLM 打标 + 款式库筛选 + 真实热词
 
 ### 数据与打标

@@ -100,16 +100,19 @@ function unionBbox(boxes) {
   return [x1, y1, x2, y2];
 }
 
-/** VL 指甲椭圆 → wan2.7 bbox_list（单图最多 2 框） */
+function bboxArea(box) {
+  return Math.max(0, box[2] - box[0]) * Math.max(0, box[3] - box[1]);
+}
+
+/** VL 指甲椭圆 → wan2.7 bbox_list（API 单图最多 2 框：取面积最大的两根指甲，避免半掌大框） */
 function mergeNailsToBboxList(nails, width, height) {
   const list = (nails || []).map((n) => nailToBbox(n, width, height));
   if (!list.length) return [];
   if (list.length <= 2) return list;
-  const sorted = list.slice().sort((a, b) => a[0] - b[0]);
-  const mid = Math.ceil(sorted.length / 2);
-  const left = unionBbox(sorted.slice(0, mid));
-  const right = unionBbox(sorted.slice(mid));
-  return [left, right].filter(Boolean);
+  const ranked = list
+    .map((box) => ({ box, area: bboxArea(box) }))
+    .sort((a, b) => b.area - a.area);
+  return [ranked[0].box, ranked[1].box];
 }
 
 function bboxListForImages(hasStyle, nails, width, height) {

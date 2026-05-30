@@ -33,7 +33,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "莫兰蒂色系·纯色·中长圆·日常百搭",
-    "stylePrompt": "solid 莫兰蒂色系 color family, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. muted dusty rose, sage mauve and grey-pink gel. solid uniform color on all nails. everyday salon-ready look. clean sheer nude tone. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -69,7 +69,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黄绿色系·纯色·中长圆·日常百搭",
-    "stylePrompt": "solid 黄绿色系 color family, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. fresh lime, chartreuse and olive green gel polish. solid uniform color on all nails. everyday salon-ready look. Reference style name: 橄榄绿拼色. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -105,7 +105,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·手绘·中长方·酷飒个性",
-    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. hand-painted nail art with clear illustrated details. edgy bold statement look. Reference style name: 红黑格纹. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -141,7 +141,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·碎钻·中长方·日常百搭",
-    "stylePrompt": "solid 黑白灰色系 color family, 碎钻 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. dense micro-glitter sparkle across the nail. everyday salon-ready look. Reference style name: 银灰点缀. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -177,7 +177,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·手绘·短方圆·日常百搭",
-    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. hand-painted nail art with clear illustrated details. everyday salon-ready look. black and white cow print spots on milky white base. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -213,7 +213,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "莫兰蒂色系·镶钻/珍珠·中长杏仁·甜美少女",
-    "stylePrompt": "solid 莫兰蒂色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. muted dusty rose, sage mauve and grey-pink gel. rhinestone crystals and pearl embellishments. sweet soft feminine look. Reference style name: 晶莹幻梦. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -249,7 +249,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·碎钻·中长杏仁·酷飒个性",
-    "stylePrompt": "solid 黑白灰色系 color family, 碎钻 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. dense micro-glitter sparkle across the nail. edgy bold statement look. animal leopard print pattern. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -285,7 +285,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·镶钻/珍珠·长尖形·酷飒个性",
-    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. rhinestone crystals and pearl embellishments. edgy bold statement look. crystal rhinestone and pearl decor. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -321,7 +321,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·手绘·中长杏仁·酷飒个性",
-    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. hand-painted nail art with clear illustrated details. edgy bold statement look. Reference style name: 星夜黑. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -357,7 +357,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·法式·中长杏仁·甜美少女",
-    "stylePrompt": "solid 红粉色系 color family, 法式 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. classic French manicure with crisp white tips and sheer pink base. sweet soft feminine look. French tip manicure. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -393,7 +393,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "莫兰蒂色系·手绘·中长杏仁·甜美少女",
-    "stylePrompt": "solid 莫兰蒂色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. muted dusty rose, sage mauve and grey-pink gel. hand-painted nail art with clear illustrated details. sweet soft feminine look. Reference style name: 花语轻纱. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -429,7 +429,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·手绘·中长杏仁·创意小众",
-    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 创意小众 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. hand-painted nail art with clear illustrated details. creative artistic niche look. Reference style name: 黑花雅韵. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -465,7 +465,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·镶钻/珍珠·中长杏仁·甜美少女",
-    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. rhinestone crystals and pearl embellishments. sweet soft feminine look. Reference style name: 晶莹剔透. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -501,7 +501,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·纯色·加长杏仁·日常百搭",
-    "stylePrompt": "solid 黑白灰色系 color family, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. solid uniform color on all nails. everyday salon-ready look. clean sheer nude tone. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -537,7 +537,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·手绘·中长圆·甜美少女",
-    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. hand-painted nail art with clear illustrated details. sweet soft feminine look. Reference style name: 春日花语. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -573,7 +573,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·手绘·中长圆·甜美少女",
-    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. hand-painted nail art with clear illustrated details. sweet soft feminine look. Reference style name: 彩点花语. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -609,7 +609,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "黑白灰色系·镶钻/珍珠·中长杏仁·甜美少女",
-    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. high-contrast black, pure white and soft grey gel polish. rhinestone crystals and pearl embellishments. sweet soft feminine look. crystal rhinestone and pearl decor. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -645,7 +645,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "多巴胺色系·镶钻/珍珠·中长方·创意小众",
-    "stylePrompt": "solid 多巴胺色系 color family, 镶钻/珍珠 nail art pattern, 创意小众 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. bold saturated candy-bright multicolor gel. rhinestone crystals and pearl embellishments. creative artistic niche look. Reference style name: 彩钻点缀. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -681,7 +681,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "金属色系·镶钻/珍珠·中长杏仁·甜美少女",
-    "stylePrompt": "solid 金属色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. metallic chrome, mirror silver and gold shimmer gel. rhinestone crystals and pearl embellishments. sweet soft feminine look. Reference style name: 金钻幻梦. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -717,7 +717,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·镶钻/珍珠·加长杏仁·甜美少女",
-    "stylePrompt": "solid 红粉色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. rhinestone crystals and pearl embellishments. sweet soft feminine look. animal leopard print pattern. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -753,7 +753,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "美拉德色系·镶钻/珍珠·中长方·日常百搭",
-    "stylePrompt": "solid 美拉德色系 color family, 镶钻/珍珠 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. warm caramel, mocha brown and toasted amber gel. rhinestone crystals and pearl embellishments. everyday salon-ready look. French tip manicure. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -789,7 +789,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "金属色系·魔镜粉·中长方·酷飒个性",
-    "stylePrompt": "solid 金属色系 color family, 魔镜粉 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. metallic chrome, mirror silver and gold shimmer gel. mirror chrome powder with reflective metallic finish. edgy bold statement look. Reference style name: 玫瑰金魔镜. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -825,7 +825,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "莫兰蒂色系·镶钻/珍珠·中长杏仁·甜美少女",
-    "stylePrompt": "solid 莫兰蒂色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. muted dusty rose, sage mauve and grey-pink gel. rhinestone crystals and pearl embellishments. sweet soft feminine look. clean sheer nude tone. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -861,7 +861,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "金属色系·碎钻·中长方·酷飒个性",
-    "stylePrompt": "solid 金属色系 color family, 碎钻 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. metallic chrome, mirror silver and gold shimmer gel. dense micro-glitter sparkle across the nail. edgy bold statement look. Reference style name: 幻彩金属. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   },
   {
@@ -897,7 +897,7 @@ module.exports = [
     "isActive": true,
     "merchantId": null,
     "brief": "红粉色系·法式·中长杏仁·甜美少女",
-    "stylePrompt": "solid 红粉色系 color family, 法式 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
+    "stylePrompt": "Professional salon gel manicure, photorealistic, sharp nail edges, high-gloss finish. vivid rose, coral pink and cherry red gel polish. classic French manicure with crisp white tips and sheer pink base. sweet soft feminine look. French tip manicure. Match the reference style image colors and pattern exactly on nail plates only.",
     "createdAt": "2026-05-24"
   }
 ];

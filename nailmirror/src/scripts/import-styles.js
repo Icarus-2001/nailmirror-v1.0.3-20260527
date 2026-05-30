@@ -111,9 +111,9 @@ function toNailStyle(row, tags) {
   const {
     mapStyleCn,
     mapShapeCn,
-    inferMaterialTags,
-    buildStylePrompt
+    inferMaterialTags
   } = require('../config/label-maps');
+  const { buildTryonEnglishPrompt } = require('../config/tryon-prompt');
 
   const color = tags.color;
   const design = tags.design;
@@ -123,13 +123,14 @@ function toNailStyle(row, tags) {
   const shapeTag = mapShapeCn(shapeLabel);
   const title = tags.name || (color + '·' + design);
   const idx = row.idx;
+  const styleId = 'real-' + idx;
   const enhanced = toHttpsUrl(row.enhanced);
   const orig = toHttpsUrl(row.orig);
   const displayTags = buildDisplayTags(color, design, shapeLabel, styleLabel);
   const prev = row.prev || {};
 
   return {
-    id: 'real-' + idx,
+    id: styleId,
     title,
     coverUrl: enhanced,
     sourceUrl: orig,
@@ -147,7 +148,12 @@ function toNailStyle(row, tags) {
     isActive: prev.isActive !== false,
     merchantId: prev.merchantId != null ? prev.merchantId : null,
     brief: [color, design, shapeLabel, styleLabel].filter(Boolean).join('·'),
-    stylePrompt: buildStylePrompt(color, design, styleLabel),
+    stylePrompt: buildTryonEnglishPrompt({
+      color,
+      design,
+      styleLabel,
+      title
+    }),
     createdAt: prev.createdAt || '2026-05-24'
   };
 }
