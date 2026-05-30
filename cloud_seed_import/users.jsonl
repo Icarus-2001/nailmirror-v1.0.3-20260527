@@ -1,0 +1,5 @@
+{"openid": "mock_openid_user1", "nickname": "测试用户A", "avatarUrl": null, "isMember": true, "memberExpiresAt": "2026-08-21T13:50:07.090187Z", "favoriteStyleIds": [], "createdAt": "2026-05-23T13:50:07.092268Z"}
+{"openid": "mock_openid_user2", "nickname": "测试用户B", "avatarUrl": null, "isMember": false, "memberExpiresAt": null, "favoriteStyleIds": [], "createdAt": "2026-05-23T13:50:07.092268Z"}
+{"openid": "mock_openid_user3", "nickname": "测试用户C", "avatarUrl": null, "isMember": false, "memberExpiresAt": null, "favoriteStyleIds": [], "createdAt": "2026-05-23T13:50:07.092268Z"}
+{"openid": "mock_openid_user4", "nickname": "测试用户D", "avatarUrl": null, "isMember": false, "memberExpiresAt": null, "favoriteStyleIds": [], "createdAt": "2026-05-23T13:50:07.092268Z"}
+{"openid": "mock_openid_user5", "nickname": "测试用户E", "avatarUrl": null, "isMember": false, "memberExpiresAt": null, "favoriteStyleIds": [], "createdAt": "2026-05-23T13:50:07.092268Z"}
