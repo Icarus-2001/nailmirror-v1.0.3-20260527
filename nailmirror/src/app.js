@@ -4,6 +4,8 @@ const logger = require('./utils/logger');
 const eventBus = require('./utils/event-bus');
 const { initCloud } = require('./utils/cloud');
 const { EVT_USER_LOGIN } = require('./config/constants');
+// 纳入主包依赖图，避免组件上下文 require tag-vocabulary 报 not defined
+require('./config/tag-vocabulary');
 
 App({
   _privacyPopup: null,

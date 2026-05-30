@@ -1,10 +1,12 @@
-const { NAIL_STYLES, NAIL_MATERIALS, NAIL_SHAPES } = require('../../config/enums');
 const {
+  NAIL_STYLES,
+  NAIL_MATERIALS,
+  NAIL_SHAPES,
   COLOR_FAMILIES,
   DESIGNS,
-  SHAPES,
-  STYLES
-} = require('../../config/tag-vocabulary');
+  NAIL_SHAPE_LABELS,
+  NAIL_STYLE_LABELS
+} = require('../../config/enums');
 
 function toOptions(list) {
   return list.map((label) => ({ id: label, label: label }));
@@ -22,8 +24,8 @@ Component({
     shapes: NAIL_SHAPES,
     colors: toOptions(COLOR_FAMILIES),
     designs: toOptions(DESIGNS),
-    shapeLabels: toOptions(SHAPES),
-    styleLabels: toOptions(STYLES),
+    shapeLabels: toOptions(NAIL_SHAPE_LABELS),
+    styleLabels: toOptions(NAIL_STYLE_LABELS),
     selStyles: [],
     selMaterials: [],
     selShapes: [],

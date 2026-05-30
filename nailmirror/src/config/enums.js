@@ -36,4 +36,22 @@ const TRY_ON_MODES = {
 
 const DEVICE_LEVELS = { HIGH: 'high', MID: 'mid', LOW: 'low' };
 
-module.exports = { NAIL_SHAPES, NAIL_STYLES, NAIL_MATERIALS, TRY_ON_MODES, DEVICE_LEVELS };
+// 标准词表（与 tag-vocabulary 同源，经 enums 导出供组件 require）
+const {
+  COLOR_FAMILIES,
+  DESIGNS,
+  SHAPES: NAIL_SHAPE_LABELS,
+  STYLES: NAIL_STYLE_LABELS
+} = require('./tag-vocabulary');
+
+module.exports = {
+  NAIL_SHAPES,
+  NAIL_STYLES,
+  NAIL_MATERIALS,
+  TRY_ON_MODES,
+  DEVICE_LEVELS,
+  COLOR_FAMILIES,
+  DESIGNS,
+  NAIL_SHAPE_LABELS,
+  NAIL_STYLE_LABELS
+};
