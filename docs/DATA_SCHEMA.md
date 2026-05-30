@@ -11,20 +11,58 @@
 | 款式名称 | `name` | |
 | 封面图 | `coverUrl` | 美团 CDN |
 | 详情图 | `imageUrl` | 可多图，取第一张为主图 |
-| 色系 | `color` | 映射到 `enums/color` |
-| 款式类型 | `design` | 纯色 / 法式 / 渐变等 |
-| 甲型 | `shape` | 映射到 `shapePrompt` |
+| 色系 | `color` | **8 大色系**（见 `docs/美甲标签与标准词表.md`），供筛选 |
+| 款式类型 | `design` | 封闭工艺词表（纯色、法式、猫眼等） |
+| 甲型 | `shapeLabel` | 封闭甲型词表；`shapeTags[0]` 供试戴英文甲型 |
+| 风格 | `styleLabel` | 5 类风格；商详 `displayTags` 第四项 |
+| 商详标签 | `displayTags` | `[color, design, shapeLabel, styleLabel]` |
 | 价格 | `price` | 数字 |
 | 热度 | `heat` | 热榜排序 |
 | 标签 | `tags` | 字符串数组 |
 
-重新导入：
+重新导入 / 重打标：
 
 ```bash
-cd nailmirror/src && node scripts/import-styles.js
+cd nailmirror/src
+node scripts/import-styles.js --retag
+DASHSCOPE_API_KEY=sk-xxx node scripts/import-styles.js --vlm --retag
 ```
 
-可选 VLM 重打标签：`node scripts/import-styles.js --vlm`（需 `DASHSCOPE_API_KEY`）
+词表：[`docs/美甲标签与标准词表.md`](./美甲标签与标准词表.md) → `config/tag-vocabulary.js`。
+
+**本地 API Key（勿提交 Git）**：可复制云函数同款 Key 到 `nailmirror/src/.local/dashscope_api_key`（一行），或设置环境变量 `DASHSCOPE_API_KEY`。目录已加入 `.gitignore`。
+
+### 1.1 标准词表封闭集合
+
+| 维度 | 字段 | 允许值（各 1） |
+|------|------|----------------|
+| 色系 | `color` | 红粉色系、黄绿色系、蓝紫色系、黑白灰色系、金属色系、美拉德色系、莫兰蒂色系、多巴胺色系 |
+| 工艺 | `design` | 纯色、法式、猫眼、魔镜粉、手绘、镶钻/珍珠、碎钻、微雕 |
+| 甲型 | `shapeLabel` | 短方圆、短椭圆、中长方、中长圆、中长杏仁、长梯形、长尖形、加长杏仁 |
+| 风格 | `styleLabel` | 日常百搭、酷飒个性、甜美少女、中式典雅、创意小众 |
+
+VLM 提示词要求从上述词表逐字匹配；`normalizeTag()` 做归一化兜底。
+
+### 1.2 前端展示约定
+
+| 页面 | 展示 |
+|------|------|
+| 列表卡片 `style-card` | `color` + `design` 两枚标签 |
+| 商详 `style-detail` | `displayTags` 四枚（色系 / 工艺 / 甲型 / 风格） |
+| 款式库顶部 Tab | 风格、色系（来自 `styleService.getCategories()`） |
+| 款式库筛选抽屉 `filter-drawer`（`useReal`） | 颜色（色系）、工艺、甲型、风格；多选 OR |
+
+内部仍保留 `styleTags` / `shapeTags`（slug）供试戴 `shapePrompt`，不面向用户展示。
+
+### 1.3 热门搜索词（真实款式）
+
+`USE_REAL_STYLES === true` 时，`hot-data.service.fetchTop20()` 从 `styles.real.js` 聚合：
+
+- 词条：色系、工艺、风格、以及 `色系·工艺` 组合
+- 热度：对应款式 `heat` 求和
+- 返回 20 条，字段仍为 `word` / `platform` / `heat` / `fetchedAt` / `relatedStyleIds`
+
+适用：B 端看板 `pages-b/dashboard`、C 端 `pages/hot-rank`、首页异步热词。点击热词跳转款式库并带 `?keyword=` 搜索。
 
 ---
 

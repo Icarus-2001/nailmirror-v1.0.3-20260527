@@ -24,5 +24,5 @@
 
   <loading wx:if="{{loading}}" text="加载中"></loading>
 
-  <filter-drawer visible="{{drawerVisible}}" initial="{{filters}}" bind:close="onDrawerClose" bind:change="onFilterChange"></filter-drawer>
+  <filter-drawer visible="{{drawerVisible}}" use-real="{{useReal}}" initial="{{drawerFilters}}" bind:close="onDrawerClose" bind:change="onFilterChange"></filter-drawer>
 </view>

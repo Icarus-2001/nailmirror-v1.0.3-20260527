@@ -3,10 +3,18 @@ const favoriteService = require('../../services/favorite.service');
 const merchantService = require('../../services/merchant.service');
 const { favoriteStore } = require('../../stores/favorite.store');
 const { tryOnStore } = require('../../stores/try-on.store');
+const { buildDisplayTags } = require('../../config/tag-vocabulary');
+
+function resolveDisplayTags(style) {
+  if (!style) return [];
+  if (style.displayTags && style.displayTags.length) return style.displayTags;
+  return buildDisplayTags(style.color, style.design, style.shapeLabel, style.styleLabel);
+}
 
 Page({
   data: {
     style: null,
+    displayTags: [],
     faved: false,
     merchant: null
   },
@@ -15,7 +23,11 @@ Page({
     if (!id) return;
     try {
       const style = await styleService.get(id);
-      this.setData({ style, faved: favoriteStore.has(id) });
+      this.setData({
+        style,
+        displayTags: resolveDisplayTags(style),
+        faved: favoriteStore.has(id)
+      });
       tryOnStore.setStyle(id);
       if (style.merchantId) {
         const m = await merchantService.getConfig(style.merchantId);

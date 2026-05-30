@@ -1,5 +1,29 @@
 # 变更记录
 
+## 2026-05-30 · 标准词表 VLM 打标 + 款式库筛选 + 真实热词
+
+### 数据与打标
+
+- 标准词表移至 [`docs/美甲标签与标准词表.md`](./美甲标签与标准词表.md)
+- 新增 `config/tag-vocabulary.js`：8 色系 / 8 工艺 / 8 甲型 / 5 风格 + `normalizeTag`
+- 重写 `scripts/import-styles.js`：`--retag` 从现有 `styles.real.js` 读图；`--vlm` 调 DashScope **qwen-vl-max** 识图打标
+- 25 款 `mock/styles.real.js` 已用 VLM 真实识图更新（`color` / `design` / `shapeLabel` / `styleLabel` / `displayTags`）
+- 扩展 `config/label-maps.js` 映射新甲型、风格 → 试戴 slug
+
+### 前端
+
+- **列表卡片**：仅展示色系 + 工艺
+- **商详**：四枚 `displayTags` 中文小标签
+- **款式库筛选抽屉**（真实款）：标准词表四维度多选；修复 WXML `indexOf` 导致标签无法点选（`index.wxs`）
+- **热门搜索词**：`hot-data.service` 从真实款式聚合 TOP20，替换旧 mock「法式极简」等
+
+### 协作与安全
+
+- 本地 Key：`nailmirror/src/.local/dashscope_api_key`（`.gitignore`，勿提交）
+- 新增 `AGENTS.md` 工作区记忆（可选阅读）
+
+---
+
 ## 2026-05-27 · 2K 出图保存相册 + 万相 OSS 域名文档
 
 ### 2K 保存（真机）

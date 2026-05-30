@@ -11,7 +11,8 @@
 | [PROJECT.md](./PROJECT.md) | 项目概述、目录结构、当前能力、关键配置 |
 | [SETUP_USER.md](./SETUP_USER.md) | **你需要做的**：DashScope、云开发、部署、试戴测试 |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 试戴链路、云函数、数据流（精简版） |
-| [DATA_SCHEMA.md](./DATA_SCHEMA.md) | 款式字段、云函数 API、评测数据集 |
+| [美甲标签与标准词表.md](./美甲标签与标准词表.md) | **封闭标签词表**（色系 / 工艺 / 甲型 / 风格） |
+| [DATA_SCHEMA.md](./DATA_SCHEMA.md) | 款式字段、VLM 打标、筛选与热词、云函数 API |
 | [CHANGELOG.md](./CHANGELOG.md) | 迭代记录（含 2026-05-25 万相 2.7 + 模型对比） |
 | [CODEGRAPH.md](./CODEGRAPH.md) | **代码图谱**：模块依赖、试戴链路、Mock/真实分界、改动速查（CodeGraph 索引） |
 

@@ -1,23 +1,27 @@
 #!/usr/bin/env node
 /**
- * 从 data/*.xlsx 导入真实款式 → nailmirror/src/mock/styles.real.js
- * 用法：
- *   node scripts/import-styles.js              # 无 VLM，用默认标签
- *   DASHSCOPE_API_KEY=sk-xxx node scripts/import-styles.js --vlm  # Qwen-VL 打标
+ * 导入 / 重打标真实款式 → mock/styles.real.js
+ *
+ *   node scripts/import-styles.js                    # 词表轮转默认标签
+ *   node scripts/import-styles.js --retag            # 从现有 styles.real.js 读图 URL
+ *   DASHSCOPE_API_KEY=sk-xxx node scripts/import-styles.js --vlm --retag
+ *
+ * 词表：docs/美甲标签与标准词表.md → config/tag-vocabulary.js
  */
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DATA_DIR = path.join(ROOT, 'data');
-const OUT = path.join(ROOT, 'nailmirror', 'src', 'mock', 'styles.real.js');
+const OUT = path.join(ROOT, 'mock', 'styles.real.js');
 
-const DEFAULT_STYLES = ['gentle', 'french', 'minimal', 'cream', 'glitter', 'cool', 'vintage', 'fairy'];
-const DEFAULT_COLORS = ['裸透粉', '奶茶色', '酒红', '樱花粉', '雾霾蓝', '纯黑', '奶白', '焦糖棕'];
-const DEFAULT_DESIGNS = ['纯色', '法式', '渐变', '猫眼', '亮片', '晕染'];
-const DEFAULT_SHAPES = ['杏仁', '方形', '圆形', '梯形', '短圆'];
+const {
+  normalizeTag,
+  buildVlmPrompt,
+  defaultTags,
+  buildDisplayTags
+} = require('../config/tag-vocabulary');
 
-/** 小程序真机要求 HTTPS，Excel 中可能是 http:// */
 function toHttpsUrl(url) {
   if (!url || typeof url !== 'string') return url;
   return url.replace(/^http:\/\//i, 'https://');
@@ -30,60 +34,99 @@ function loadXlsxRows() {
   return JSON.parse(raw.trim());
 }
 
-async function tagWithVlm(imageUrl, apiKey) {
-  const axios = require('axios');
-  const prompt = [
-    '你是美甲款式识别器。分析图片，只输出 JSON，禁止任何解释。',
-    'schema: {"color":"...","design":"...","shape":"...","style":"...","name":"..."}',
-    'color=颜色标签, design=图案(纯色/法式/猫眼等), shape=甲型, style=风格, name=10字内展示名'
-  ].join('\n');
-
-  const res = await axios.post(
-    'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-    {
-      model: process.env.QWEN_VL_MODEL || 'qwen-vl-max',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image_url', image_url: { url: imageUrl } },
-          { type: 'text', text: prompt }
-        ]
-      }]
-    },
-    { headers: { Authorization: 'Bearer ' + apiKey }, timeout: 60000 }
-  );
-
-  const text = res.data.choices[0].message.content || '';
-  const m = text.match(/\{[\s\S]*\}/);
-  if (!m) throw new Error('VLM 未返回 JSON: ' + text.slice(0, 200));
-  return JSON.parse(m[0]);
+function loadRetagRows() {
+  const stylesPath = path.join(ROOT, 'mock', 'styles.real.js');
+  delete require.cache[require.resolve(stylesPath)];
+  const styles = require(stylesPath);
+  return styles.map((s, i) => {
+    const m = String(s.id || '').match(/real-(\d+)/);
+    const idx = m ? parseInt(m[1], 10) : i + 1;
+    return {
+      idx,
+      enhanced: s.coverUrl,
+      orig: s.sourceUrl || s.coverUrl,
+      prev: s
+    };
+  });
 }
 
-function defaultTags(idx) {
-  const i = idx - 1;
-  const styleId = DEFAULT_STYLES[i % DEFAULT_STYLES.length];
-  const styleLabels = { gentle: '温柔', french: '法式', minimal: '极简', cream: '奶油', glitter: '亮闪', cool: '甜酷', vintage: '复古', fairy: '甜美' };
-  const color = DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-  const design = DEFAULT_DESIGNS[i % DEFAULT_DESIGNS.length];
-  const shape = DEFAULT_SHAPES[i % DEFAULT_SHAPES.length];
+function normalizeVlmTags(raw) {
   return {
-    color, design, shape,
-    style: styleLabels[styleId] || '温柔',
-    name: color + '·' + design
+    color: normalizeTag('color', raw.color),
+    design: normalizeTag('design', raw.design),
+    shape: normalizeTag('shape', raw.shape),
+    style: normalizeTag('style', raw.style),
+    name: (raw.name || '').trim()
   };
 }
 
-function toNailStyle(row, tags) {
-  const { mapStyleCn, mapShapeCn, inferMaterialTags, STYLE_ID_TO_LABEL, SHAPE_ID_TO_LABEL } = require('../nailmirror/src/config/label-maps');
-  const styleTag = mapStyleCn(tags.style);
-  const shapeTag = mapShapeCn(tags.shape);
-  const styleLabel = tags.style || STYLE_ID_TO_LABEL[styleTag];
-  const shapeLabel = tags.shape || SHAPE_ID_TO_LABEL[shapeTag];
-  const title = tags.name || (tags.color + '·' + tags.design);
-  const idx = row.idx;
+function loadApiKey() {
+  const fromEnv = (process.env.DASHSCOPE_API_KEY || '').trim();
+  if (fromEnv) return fromEnv;
+  const keyFile = path.join(ROOT, '.local', 'dashscope_api_key');
+  if (fs.existsSync(keyFile)) {
+    return fs.readFileSync(keyFile, 'utf8').trim();
+  }
+  return '';
+}
 
+async function tagWithVlm(imageUrl, apiKey) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60000);
+  let res;
+  try {
+    res = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: process.env.QWEN_VL_MODEL || 'qwen-vl-max',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: imageUrl } },
+            { type: 'text', text: buildVlmPrompt() }
+          ]
+        }]
+      }),
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  const body = await res.json();
+  if (!res.ok) {
+    throw new Error(body.error?.message || body.message || ('HTTP ' + res.status));
+  }
+  const text = body.choices?.[0]?.message?.content || '';
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('VLM 未返回 JSON: ' + text.slice(0, 200));
+  return normalizeVlmTags(JSON.parse(m[0]));
+}
+
+function toNailStyle(row, tags) {
+  const {
+    mapStyleCn,
+    mapShapeCn,
+    inferMaterialTags,
+    buildStylePrompt
+  } = require('../config/label-maps');
+
+  const color = tags.color;
+  const design = tags.design;
+  const shapeLabel = tags.shape;
+  const styleLabel = tags.style;
+  const styleTag = mapStyleCn(styleLabel);
+  const shapeTag = mapShapeCn(shapeLabel);
+  const title = tags.name || (color + '·' + design);
+  const idx = row.idx;
   const enhanced = toHttpsUrl(row.enhanced);
   const orig = toHttpsUrl(row.orig);
+  const displayTags = buildDisplayTags(color, design, shapeLabel, styleLabel);
+  const prev = row.prev || {};
 
   return {
     id: 'real-' + idx,
@@ -91,55 +134,74 @@ function toNailStyle(row, tags) {
     coverUrl: enhanced,
     sourceUrl: orig,
     previewUrls: [enhanced, orig].filter(Boolean),
-    color: tags.color,
-    design: tags.design,
+    color,
+    design,
     styleLabel,
     shapeLabel,
+    displayTags,
     styleTags: [styleTag],
-    materialTags: inferMaterialTags(tags.color, tags.design),
+    materialTags: inferMaterialTags(color, design),
     shapeTags: [shapeTag],
-    heat: Math.round((1 + (25 - idx) * 0.04) * 1000),
-    rankWeight: 1 + (25 - idx) * 0.04,
-    isActive: true,
-    merchantId: null,
-    brief: [tags.color, tags.design, styleLabel].filter(Boolean).join('·'),
-    stylePrompt: require('../nailmirror/src/config/label-maps').buildStylePrompt(tags.color, tags.design, styleLabel),
-    createdAt: '2026-05-24'
+    heat: prev.heat != null ? prev.heat : Math.round((1 + (25 - idx) * 0.04) * 1000),
+    rankWeight: prev.rankWeight != null ? prev.rankWeight : 1 + (25 - idx) * 0.04,
+    isActive: prev.isActive !== false,
+    merchantId: prev.merchantId != null ? prev.merchantId : null,
+    brief: [color, design, shapeLabel, styleLabel].filter(Boolean).join('·'),
+    stylePrompt: buildStylePrompt(color, design, styleLabel),
+    createdAt: prev.createdAt || '2026-05-24'
   };
 }
 
 async function main() {
   const useVlm = process.argv.includes('--vlm');
-  const apiKey = process.env.DASHSCOPE_API_KEY || '';
+  const retag = process.argv.includes('--retag');
+  const apiKey = loadApiKey();
+
   if (useVlm && !apiKey) {
-    console.error('需要环境变量 DASHSCOPE_API_KEY');
+    console.error('需要 DASHSCOPE_API_KEY 环境变量或 .local/dashscope_api_key 文件');
     process.exit(1);
   }
 
-  const rows = loadXlsxRows();
-  console.log('读取', rows.length, '条款式');
+  let rows;
+  if (retag) {
+    rows = loadRetagRows();
+    console.log('--retag：从 styles.real.js 读取', rows.length, '条');
+  } else {
+    rows = loadXlsxRows();
+    console.log('从 xlsx 读取', rows.length, '条');
+  }
 
+  const failed = [];
   const items = [];
+
   for (const row of rows) {
     let tags;
     if (useVlm) {
       try {
         tags = await tagWithVlm(toHttpsUrl(row.enhanced), apiKey);
-        console.log('VLM', row.idx, tags.name || tags.color);
+        console.log('VLM', row.idx, tags.color, tags.design, tags.shape, tags.style);
         await new Promise((r) => setTimeout(r, 500));
       } catch (e) {
-        console.warn('VLM 失败', row.idx, e.message, '→ 默认标签');
-        tags = defaultTags(row.idx);
+        console.warn('VLM 失败', row.idx, e.message, '→ 词表默认');
+        failed.push(row.idx);
+        tags = normalizeVlmTags(defaultTags(row.idx));
       }
     } else {
-      tags = defaultTags(row.idx);
+      tags = normalizeVlmTags(defaultTags(row.idx));
     }
     items.push(toNailStyle(row, tags));
   }
 
+  items.sort((a, b) => {
+    const ai = parseInt(String(a.id).replace('real-', ''), 10);
+    const bi = parseInt(String(b.id).replace('real-', ''), 10);
+    return ai - bi;
+  });
+
   const content = '// AUTO-GENERATED by scripts/import-styles.js — DO NOT EDIT BY HAND\nmodule.exports = ' + JSON.stringify(items, null, 2) + ';\n';
   fs.writeFileSync(OUT, content, 'utf8');
   console.log('已写入', OUT, '(', items.length, '条)');
+  if (failed.length) console.warn('需人工复核 idx:', failed.join(', '));
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

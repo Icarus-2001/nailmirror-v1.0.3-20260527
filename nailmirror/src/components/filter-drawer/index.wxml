@@ -1,28 +1,104 @@
+<wxs src="./index.wxs" module="f" />
+
 <view class="fdrawer" wx:if="{{visible}}">
   <view class="fdrawer__mask" bindtap="onClose"></view>
   <view class="fdrawer__panel">
     <view class="fdrawer__title">筛选</view>
 
-    <view class="fdrawer__section">
-      <view class="fdrawer__label">风格</view>
-      <view class="fdrawer__tags">
-        <view wx:for="{{styles}}" wx:key="id" class="fdrawer__tag {{selStyles.indexOf(item.id) > -1 ? 'fdrawer__tag--on' : ''}}" data-v="{{item.id}}" bindtap="onStyleTap">{{item.label}}</view>
+    <block wx:if="{{useReal}}">
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">颜色（色系）</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{colors}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selColors, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onColorTap"
+          >{{item.label}}</view>
+        </view>
       </view>
-    </view>
 
-    <view class="fdrawer__section">
-      <view class="fdrawer__label">材质</view>
-      <view class="fdrawer__tags">
-        <view wx:for="{{materials}}" wx:key="id" class="fdrawer__tag {{selMaterials.indexOf(item.id) > -1 ? 'fdrawer__tag--on' : ''}}" data-v="{{item.id}}" bindtap="onMaterialTap">{{item.label}}</view>
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">工艺</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{designs}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selDesigns, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onDesignTap"
+          >{{item.label}}</view>
+        </view>
       </view>
-    </view>
 
-    <view class="fdrawer__section">
-      <view class="fdrawer__label">甲型</view>
-      <view class="fdrawer__tags">
-        <view wx:for="{{shapes}}" wx:key="id" class="fdrawer__tag {{selShapes.indexOf(item.id) > -1 ? 'fdrawer__tag--on' : ''}}" data-v="{{item.id}}" bindtap="onShapeTap">{{item.label}}</view>
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">甲型</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{shapeLabels}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selShapeLabels, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onShapeLabelTap"
+          >{{item.label}}</view>
+        </view>
       </view>
-    </view>
+
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">风格</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{styleLabels}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selStyleLabels, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onStyleLabelTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">风格</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{styles}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selStyles, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onStyleTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">材质</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{materials}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selMaterials, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onMaterialTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">甲型</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{shapes}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selShapes, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onShapeTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+    </block>
 
     <view class="fdrawer__actions">
       <view class="np-btn np-btn--ghost" bindtap="onReset">重置</view>

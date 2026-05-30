@@ -11,12 +11,25 @@ function getAllStyles() {
   return mockStyles;
 }
 
+function matchListFilter(values, fieldValue) {
+  if (!values || !values.length) return true;
+  return values.indexOf(fieldValue) > -1;
+}
+
 function matchFilters(item, filters) {
   if (!filters) return true;
-  const { styleTags, materialTags, shapeTags, color, design, styleLabel, shapeLabel } = filters;
+  const {
+    styleTags, materialTags, shapeTags,
+    color, design, styleLabel, shapeLabel,
+    colors, designs, styleLabels, shapeLabels
+  } = filters;
   if (styleTags && styleTags.length && !styleTags.some((t) => (item.styleTags || []).indexOf(t) > -1)) return false;
   if (materialTags && materialTags.length && !materialTags.some((t) => (item.materialTags || []).indexOf(t) > -1)) return false;
   if (shapeTags && shapeTags.length && !shapeTags.some((t) => (item.shapeTags || []).indexOf(t) > -1)) return false;
+  if (!matchListFilter(colors, item.color)) return false;
+  if (!matchListFilter(designs, item.design)) return false;
+  if (!matchListFilter(styleLabels, item.styleLabel)) return false;
+  if (!matchListFilter(shapeLabels, item.shapeLabel)) return false;
   if (color && item.color !== color) return false;
   if (design && item.design !== design) return false;
   if (styleLabel && item.styleLabel !== styleLabel) return false;

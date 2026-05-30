@@ -21,6 +21,7 @@ nailmirror-v1.6-20260519-r3/
     ├── config/
     │   ├── cloud-env.js           ← 云环境 ID
     │   ├── feature-flags.js       ← 功能开关
+    │   ├── tag-vocabulary.js      ← 标准标签词表（与 docs/美甲标签与标准词表.md 一致）
     │   └── mock-hand.js           ← 默认 Mock 手照
     ├── cloudfunctions/tryon/      ← 试戴云函数
     ├── components/privacy-popup/  ← 隐私授权弹窗
@@ -36,7 +37,8 @@ nailmirror-v1.6-20260519-r3/
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
-| 款式库 / 详情 / 收藏 | ✅ 真实数据 | `USE_REAL_STYLES: true` |
+| 款式库 / 详情 / 收藏 | ✅ 真实数据 | `USE_REAL_STYLES: true`；VLM 标准四标签 + 筛选抽屉 |
+| 热门搜索词 | ✅ 真实聚合 | `hot-data.service` 从 25 款 `heat` 汇总 |
 | 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 2.1/2.7（试戴页可切换对比） |
 | 首页推荐 / 热款榜 | ✅ 真实封面 | `coverUrl` 来自美团 CDN |
 | 评测手照 | ✅ | 13 张，可与拍照/相册并存 |

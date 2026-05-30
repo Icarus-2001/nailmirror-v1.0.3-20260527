@@ -2,172 +2,208 @@
 module.exports = [
   {
     "id": "real-1",
-    "title": "裸透粉·纯色",
+    "title": "裸色温柔",
     "coverUrl": "https://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/87797733466cfd525625a5947767e2ff1794125.png",
       "https://p0.meituan.net/pilotimages/8491d190aeb8f44e32f6b278535bf2b41075477.png"
     ],
-    "color": "裸透粉",
+    "color": "莫兰蒂色系",
     "design": "纯色",
-    "styleLabel": "温柔",
-    "shapeLabel": "杏仁",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "中长圆",
+    "displayTags": [
+      "莫兰蒂色系",
+      "纯色",
+      "中长圆",
+      "日常百搭"
+    ],
     "styleTags": [
-      "gentle"
+      "daily"
     ],
     "materialTags": [
       "jelly"
     ],
     "shapeTags": [
-      "almond"
+      "round"
     ],
     "heat": 1960,
     "rankWeight": 1.96,
     "isActive": true,
     "merchantId": null,
-    "brief": "裸透粉·纯色·温柔",
-    "stylePrompt": "solid 裸透粉 color, 温柔 style, gel nail polish, natural finish",
+    "brief": "莫兰蒂色系·纯色·中长圆·日常百搭",
+    "stylePrompt": "solid 莫兰蒂色系 color family, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-2",
-    "title": "奶茶色·法式",
+    "title": "橄榄绿拼色",
     "coverUrl": "https://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/162afb52255bd908ba3ec418fd61824a2254875.png",
       "https://p1.meituan.net/pilotimages/493fc5818746fe45d9be82763034edbe1246574.png"
     ],
-    "color": "奶茶色",
-    "design": "法式",
-    "styleLabel": "法式",
-    "shapeLabel": "方形",
+    "color": "黄绿色系",
+    "design": "纯色",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "中长圆",
+    "displayTags": [
+      "黄绿色系",
+      "纯色",
+      "中长圆",
+      "日常百搭"
+    ],
     "styleTags": [
-      "french"
+      "daily"
     ],
     "materialTags": [
       "jelly"
     ],
     "shapeTags": [
-      "square"
+      "round"
     ],
     "heat": 1920,
     "rankWeight": 1.92,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶茶色·法式·法式",
-    "stylePrompt": "solid 奶茶色 color, 法式 nail art pattern, 法式 style, gel nail polish, natural finish",
+    "brief": "黄绿色系·纯色·中长圆·日常百搭",
+    "stylePrompt": "solid 黄绿色系 color family, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-3",
-    "title": "酒红·渐变",
+    "title": "红黑格纹",
     "coverUrl": "https://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/7bb5bc0c2c741f9f0aa63787a601d7ad2604877.png",
       "https://p0.meituan.net/pilotimages/667658abb96c7547791d48360a8e95b61155924.png"
     ],
-    "color": "酒红",
-    "design": "渐变",
-    "styleLabel": "极简",
-    "shapeLabel": "圆形",
+    "color": "红粉色系",
+    "design": "手绘",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "红粉色系",
+      "手绘",
+      "中长方",
+      "酷飒个性"
+    ],
     "styleTags": [
-      "minimal"
+      "cool"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "square"
     ],
     "heat": 1880,
     "rankWeight": 1.88,
     "isActive": true,
     "merchantId": null,
-    "brief": "酒红·渐变·极简",
-    "stylePrompt": "solid 酒红 color, 渐变 nail art pattern, 极简 style, gel nail polish, natural finish",
+    "brief": "红粉色系·手绘·中长方·酷飒个性",
+    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-4",
-    "title": "樱花粉·猫眼",
+    "title": "银灰点缀",
     "coverUrl": "https://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/fc8fe60e78341d77a5070fc2f8e520072098070.png",
       "https://p1.meituan.net/pilotimages/f8539918c55c5c1e4a45ee3996df65f7167977.jpg"
     ],
-    "color": "樱花粉",
-    "design": "猫眼",
-    "styleLabel": "奶油",
-    "shapeLabel": "梯形",
+    "color": "黑白灰色系",
+    "design": "碎钻",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "黑白灰色系",
+      "碎钻",
+      "中长方",
+      "日常百搭"
+    ],
     "styleTags": [
-      "cream"
+      "daily"
     ],
     "materialTags": [
-      "cat-eye"
+      "glitter"
     ],
     "shapeTags": [
-      "trapezoid"
+      "square"
     ],
     "heat": 1840,
     "rankWeight": 1.8399999999999999,
     "isActive": true,
     "merchantId": null,
-    "brief": "樱花粉·猫眼·奶油",
-    "stylePrompt": "solid 樱花粉 color, 猫眼 nail art pattern, 奶油 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·碎钻·中长方·日常百搭",
+    "stylePrompt": "solid 黑白灰色系 color family, 碎钻 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-5",
-    "title": "雾霾蓝·亮片",
+    "title": "奶牛斑点",
     "coverUrl": "https://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/3c0d090e20f0cb56f70fcb56c54dd6582416974.png",
       "https://p1.meituan.net/pilotimages/1d448b059cddcc2f0705a4a4fe554e06261514.jpg"
     ],
-    "color": "雾霾蓝",
-    "design": "亮片",
-    "styleLabel": "亮闪",
-    "shapeLabel": "短圆",
+    "color": "黑白灰色系",
+    "design": "手绘",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "短方圆",
+    "displayTags": [
+      "黑白灰色系",
+      "手绘",
+      "短方圆",
+      "日常百搭"
+    ],
     "styleTags": [
-      "glitter"
+      "daily"
     ],
     "materialTags": [
-      "glitter"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "short-round"
     ],
     "heat": 1800,
     "rankWeight": 1.8,
     "isActive": true,
     "merchantId": null,
-    "brief": "雾霾蓝·亮片·亮闪",
-    "stylePrompt": "solid 雾霾蓝 color, 亮片 nail art pattern, 亮闪 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·手绘·短方圆·日常百搭",
+    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-6",
-    "title": "纯黑·晕染",
+    "title": "晶莹幻梦",
     "coverUrl": "https://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/6c857edd85a5fa4bcec59698fe9416cb1913981.png",
       "https://p0.meituan.net/pilotimages/a99d2de6bf0ade20211c0ae46af8e44b1057335.png"
     ],
-    "color": "纯黑",
-    "design": "晕染",
-    "styleLabel": "甜酷",
-    "shapeLabel": "杏仁",
+    "color": "莫兰蒂色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "莫兰蒂色系",
+      "镶钻/珍珠",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "cool"
+      "fairy"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
       "almond"
@@ -176,53 +212,137 @@ module.exports = [
     "rankWeight": 1.76,
     "isActive": true,
     "merchantId": null,
-    "brief": "纯黑·晕染·甜酷",
-    "stylePrompt": "solid 纯黑 color, 晕染 nail art pattern, 甜酷 style, gel nail polish, natural finish",
+    "brief": "莫兰蒂色系·镶钻/珍珠·中长杏仁·甜美少女",
+    "stylePrompt": "solid 莫兰蒂色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-7",
-    "title": "奶白·纯色",
+    "title": "豹纹闪钻",
     "coverUrl": "https://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/2ac2d01a9bc78320edbe2b545b485b4a2132292.png",
       "https://p0.meituan.net/pilotimages/6dedbe1cfe7de834cd8faa4e19179fee1123627.png"
     ],
-    "color": "奶白",
-    "design": "纯色",
-    "styleLabel": "复古",
-    "shapeLabel": "方形",
+    "color": "黑白灰色系",
+    "design": "碎钻",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "碎钻",
+      "中长杏仁",
+      "酷飒个性"
+    ],
     "styleTags": [
-      "vintage"
+      "cool"
     ],
     "materialTags": [
-      "jelly"
+      "glitter"
     ],
     "shapeTags": [
-      "square"
+      "almond"
     ],
     "heat": 1720,
     "rankWeight": 1.72,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶白·纯色·复古",
-    "stylePrompt": "solid 奶白 color, 复古 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·碎钻·中长杏仁·酷飒个性",
+    "stylePrompt": "solid 黑白灰色系 color family, 碎钻 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-8",
-    "title": "焦糖棕·法式",
+    "title": "黑灰镶钻",
     "coverUrl": "https://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/d15c06e8c2137d4f39f3b60476a90cf92026957.png",
       "https://p0.meituan.net/pilotimages/7b22fa4e6e1ee4e59a1115a27b125fe0996286.png"
     ],
-    "color": "焦糖棕",
+    "color": "黑白灰色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "长尖形",
+    "displayTags": [
+      "黑白灰色系",
+      "镶钻/珍珠",
+      "长尖形",
+      "酷飒个性"
+    ],
+    "styleTags": [
+      "cool"
+    ],
+    "materialTags": [
+      "pearl"
+    ],
+    "shapeTags": [
+      "tip"
+    ],
+    "heat": 1680,
+    "rankWeight": 1.6800000000000002,
+    "isActive": true,
+    "merchantId": null,
+    "brief": "黑白灰色系·镶钻/珍珠·长尖形·酷飒个性",
+    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "createdAt": "2026-05-24"
+  },
+  {
+    "id": "real-9",
+    "title": "星夜黑",
+    "coverUrl": "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png",
+    "previewUrls": [
+      "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
+      "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png"
+    ],
+    "color": "黑白灰色系",
+    "design": "手绘",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "手绘",
+      "中长杏仁",
+      "酷飒个性"
+    ],
+    "styleTags": [
+      "cool"
+    ],
+    "materialTags": [
+      "pearl"
+    ],
+    "shapeTags": [
+      "almond"
+    ],
+    "heat": 1640,
+    "rankWeight": 1.6400000000000001,
+    "isActive": true,
+    "merchantId": null,
+    "brief": "黑白灰色系·手绘·中长杏仁·酷飒个性",
+    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "createdAt": "2026-05-24"
+  },
+  {
+    "id": "real-10",
+    "title": "星芒法式",
+    "coverUrl": "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png",
+    "previewUrls": [
+      "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
+      "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png"
+    ],
+    "color": "红粉色系",
     "design": "法式",
-    "styleLabel": "甜美",
-    "shapeLabel": "圆形",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "红粉色系",
+      "法式",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
       "fairy"
     ],
@@ -230,94 +350,40 @@ module.exports = [
       "jelly"
     ],
     "shapeTags": [
-      "round"
-    ],
-    "heat": 1680,
-    "rankWeight": 1.6800000000000002,
-    "isActive": true,
-    "merchantId": null,
-    "brief": "焦糖棕·法式·甜美",
-    "stylePrompt": "solid 焦糖棕 color, 法式 nail art pattern, 甜美 style, gel nail polish, natural finish",
-    "createdAt": "2026-05-24"
-  },
-  {
-    "id": "real-9",
-    "title": "裸透粉·渐变",
-    "coverUrl": "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
-    "sourceUrl": "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png",
-    "previewUrls": [
-      "https://p1.meituan.net/pilotimages/69614397f0ecb559b98cb46a5a46f3b32642714.png",
-      "https://p0.meituan.net/pilotimages/6b20ca923ac4461aeaab7bf136bfda3c1063942.png"
-    ],
-    "color": "裸透粉",
-    "design": "渐变",
-    "styleLabel": "温柔",
-    "shapeLabel": "梯形",
-    "styleTags": [
-      "gentle"
-    ],
-    "materialTags": [
-      "jelly"
-    ],
-    "shapeTags": [
-      "trapezoid"
-    ],
-    "heat": 1640,
-    "rankWeight": 1.6400000000000001,
-    "isActive": true,
-    "merchantId": null,
-    "brief": "裸透粉·渐变·温柔",
-    "stylePrompt": "solid 裸透粉 color, 渐变 nail art pattern, 温柔 style, gel nail polish, natural finish",
-    "createdAt": "2026-05-24"
-  },
-  {
-    "id": "real-10",
-    "title": "奶茶色·猫眼",
-    "coverUrl": "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
-    "sourceUrl": "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png",
-    "previewUrls": [
-      "https://p1.meituan.net/pilotimages/2277d6f9d82264fa6a3c986373e5e44c2292083.png",
-      "https://p0.meituan.net/pilotimages/a5894d122ca3bd7e1f12401a8c72351e1460094.png"
-    ],
-    "color": "奶茶色",
-    "design": "猫眼",
-    "styleLabel": "法式",
-    "shapeLabel": "短圆",
-    "styleTags": [
-      "french"
-    ],
-    "materialTags": [
-      "cat-eye"
-    ],
-    "shapeTags": [
-      "round"
+      "almond"
     ],
     "heat": 1600,
     "rankWeight": 1.6,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶茶色·猫眼·法式",
-    "stylePrompt": "solid 奶茶色 color, 猫眼 nail art pattern, 法式 style, gel nail polish, natural finish",
+    "brief": "红粉色系·法式·中长杏仁·甜美少女",
+    "stylePrompt": "solid 红粉色系 color family, 法式 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-11",
-    "title": "酒红·亮片",
+    "title": "花语轻纱",
     "coverUrl": "https://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/bc153edf655dd6961dc9f8e95ad8cd1e2561531.png",
       "https://p0.meituan.net/pilotimages/b6491d47c001ca175fa04e5243f84aa5896438.png"
     ],
-    "color": "酒红",
-    "design": "亮片",
-    "styleLabel": "极简",
-    "shapeLabel": "杏仁",
+    "color": "莫兰蒂色系",
+    "design": "手绘",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "莫兰蒂色系",
+      "手绘",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "minimal"
+      "fairy"
     ],
     "materialTags": [
-      "glitter"
+      "pearl"
     ],
     "shapeTags": [
       "almond"
@@ -326,118 +392,142 @@ module.exports = [
     "rankWeight": 1.56,
     "isActive": true,
     "merchantId": null,
-    "brief": "酒红·亮片·极简",
-    "stylePrompt": "solid 酒红 color, 亮片 nail art pattern, 极简 style, gel nail polish, natural finish",
+    "brief": "莫兰蒂色系·手绘·中长杏仁·甜美少女",
+    "stylePrompt": "solid 莫兰蒂色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-12",
-    "title": "樱花粉·晕染",
+    "title": "黑花雅韵",
     "coverUrl": "https://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/43cc4ced977a3dd271f60ee2f05607772681747.png",
       "https://p1.meituan.net/pilotimages/d571f8a5702261542c115c247d210bfd1180529.png"
     ],
-    "color": "樱花粉",
-    "design": "晕染",
-    "styleLabel": "奶油",
-    "shapeLabel": "方形",
+    "color": "黑白灰色系",
+    "design": "手绘",
+    "styleLabel": "创意小众",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "手绘",
+      "中长杏仁",
+      "创意小众"
+    ],
     "styleTags": [
-      "cream"
+      "creative"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "square"
+      "almond"
     ],
     "heat": 1520,
     "rankWeight": 1.52,
     "isActive": true,
     "merchantId": null,
-    "brief": "樱花粉·晕染·奶油",
-    "stylePrompt": "solid 樱花粉 color, 晕染 nail art pattern, 奶油 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·手绘·中长杏仁·创意小众",
+    "stylePrompt": "solid 黑白灰色系 color family, 手绘 nail art pattern, 创意小众 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-13",
-    "title": "雾霾蓝·纯色",
+    "title": "晶莹剔透",
     "coverUrl": "https://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/682c173ae3a95d0b838655e8337b30d72213857.png",
       "https://p0.meituan.net/pilotimages/5fa531643ac8f829d8ab574b4c11e0081087649.png"
     ],
-    "color": "雾霾蓝",
-    "design": "纯色",
-    "styleLabel": "亮闪",
-    "shapeLabel": "圆形",
+    "color": "黑白灰色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "镶钻/珍珠",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "glitter"
+      "fairy"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "almond"
     ],
     "heat": 1480,
     "rankWeight": 1.48,
     "isActive": true,
     "merchantId": null,
-    "brief": "雾霾蓝·纯色·亮闪",
-    "stylePrompt": "solid 雾霾蓝 color, 亮闪 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·镶钻/珍珠·中长杏仁·甜美少女",
+    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-14",
-    "title": "纯黑·法式",
+    "title": "雾光裸色",
     "coverUrl": "https://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/eecfba4ab276e895b579a79491b2d0211982788.png",
       "https://p0.meituan.net/pilotimages/b99490b3f4a5e088ffe36c6ae60211941005960.png"
     ],
-    "color": "纯黑",
-    "design": "法式",
-    "styleLabel": "甜酷",
-    "shapeLabel": "梯形",
+    "color": "黑白灰色系",
+    "design": "纯色",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "加长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "纯色",
+      "加长杏仁",
+      "日常百搭"
+    ],
     "styleTags": [
-      "cool"
+      "daily"
     ],
     "materialTags": [
       "jelly"
     ],
     "shapeTags": [
-      "trapezoid"
+      "almond"
     ],
     "heat": 1440,
     "rankWeight": 1.44,
     "isActive": true,
     "merchantId": null,
-    "brief": "纯黑·法式·甜酷",
-    "stylePrompt": "solid 纯黑 color, 法式 nail art pattern, 甜酷 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·纯色·加长杏仁·日常百搭",
+    "stylePrompt": "solid 黑白灰色系 color family, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-15",
-    "title": "奶白·渐变",
+    "title": "春日花语",
     "coverUrl": "https://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/1248ad42d355b98257e5fbcdf90efc552138079.png",
       "https://p0.meituan.net/pilotimages/5c66d21b6fc2b78c59f3f2e36fc788451052442.png"
     ],
-    "color": "奶白",
-    "design": "渐变",
-    "styleLabel": "复古",
-    "shapeLabel": "短圆",
+    "color": "红粉色系",
+    "design": "手绘",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长圆",
+    "displayTags": [
+      "红粉色系",
+      "手绘",
+      "中长圆",
+      "甜美少女"
+    ],
     "styleTags": [
-      "vintage"
+      "fairy"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
       "round"
@@ -446,208 +536,250 @@ module.exports = [
     "rankWeight": 1.4,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶白·渐变·复古",
-    "stylePrompt": "solid 奶白 color, 渐变 nail art pattern, 复古 style, gel nail polish, natural finish",
+    "brief": "红粉色系·手绘·中长圆·甜美少女",
+    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-16",
-    "title": "焦糖棕·猫眼",
+    "title": "彩点花语",
     "coverUrl": "https://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/137aad1f6a36655ae395cf7dc57604642782680.png",
       "https://p0.meituan.net/pilotimages/81a8b3a96d3dd6ba1c849cc666bf85f51089012.png"
     ],
-    "color": "焦糖棕",
-    "design": "猫眼",
-    "styleLabel": "甜美",
-    "shapeLabel": "杏仁",
+    "color": "红粉色系",
+    "design": "手绘",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长圆",
+    "displayTags": [
+      "红粉色系",
+      "手绘",
+      "中长圆",
+      "甜美少女"
+    ],
     "styleTags": [
       "fairy"
     ],
     "materialTags": [
-      "cat-eye"
+      "pearl"
     ],
     "shapeTags": [
-      "almond"
+      "round"
     ],
     "heat": 1360,
     "rankWeight": 1.3599999999999999,
     "isActive": true,
     "merchantId": null,
-    "brief": "焦糖棕·猫眼·甜美",
-    "stylePrompt": "solid 焦糖棕 color, 猫眼 nail art pattern, 甜美 style, gel nail polish, natural finish",
+    "brief": "红粉色系·手绘·中长圆·甜美少女",
+    "stylePrompt": "solid 红粉色系 color family, 手绘 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-17",
-    "title": "裸透粉·亮片",
+    "title": "珍珠镶钻美甲",
     "coverUrl": "https://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/ec437f6291295904c2f894edb8c01cb82131722.png",
       "https://p0.meituan.net/pilotimages/ff68ba22d655fd1e0a812f197e406d951137747.png"
     ],
-    "color": "裸透粉",
-    "design": "亮片",
-    "styleLabel": "温柔",
-    "shapeLabel": "方形",
+    "color": "黑白灰色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "黑白灰色系",
+      "镶钻/珍珠",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "gentle"
+      "fairy"
     ],
     "materialTags": [
-      "glitter"
+      "pearl"
     ],
     "shapeTags": [
-      "square"
+      "almond"
     ],
     "heat": 1320,
     "rankWeight": 1.32,
     "isActive": true,
     "merchantId": null,
-    "brief": "裸透粉·亮片·温柔",
-    "stylePrompt": "solid 裸透粉 color, 亮片 nail art pattern, 温柔 style, gel nail polish, natural finish",
+    "brief": "黑白灰色系·镶钻/珍珠·中长杏仁·甜美少女",
+    "stylePrompt": "solid 黑白灰色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-18",
-    "title": "奶茶色·晕染",
+    "title": "彩钻点缀",
     "coverUrl": "https://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/5591229138c4e7e1d183b59be442d9dc2267735.png",
       "https://p1.meituan.net/pilotimages/29c85d420f45062d29890f4ae014b82f960529.png"
     ],
-    "color": "奶茶色",
-    "design": "晕染",
-    "styleLabel": "法式",
-    "shapeLabel": "圆形",
+    "color": "多巴胺色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "创意小众",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "多巴胺色系",
+      "镶钻/珍珠",
+      "中长方",
+      "创意小众"
+    ],
     "styleTags": [
-      "french"
+      "creative"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "square"
     ],
     "heat": 1280,
     "rankWeight": 1.28,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶茶色·晕染·法式",
-    "stylePrompt": "solid 奶茶色 color, 晕染 nail art pattern, 法式 style, gel nail polish, natural finish",
+    "brief": "多巴胺色系·镶钻/珍珠·中长方·创意小众",
+    "stylePrompt": "solid 多巴胺色系 color family, 镶钻/珍珠 nail art pattern, 创意小众 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-19",
-    "title": "酒红·纯色",
+    "title": "金钻幻梦",
     "coverUrl": "https://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/5fad21e6d38656170bf726ff3973a4501918338.png",
       "https://p0.meituan.net/pilotimages/b6a8da8cb0d46f30ec2c65b79c3710e91040053.png"
     ],
-    "color": "酒红",
-    "design": "纯色",
-    "styleLabel": "极简",
-    "shapeLabel": "梯形",
+    "color": "金属色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "金属色系",
+      "镶钻/珍珠",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "minimal"
+      "fairy"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "trapezoid"
+      "almond"
     ],
     "heat": 1240,
     "rankWeight": 1.24,
     "isActive": true,
     "merchantId": null,
-    "brief": "酒红·纯色·极简",
-    "stylePrompt": "solid 酒红 color, 极简 style, gel nail polish, natural finish",
+    "brief": "金属色系·镶钻/珍珠·中长杏仁·甜美少女",
+    "stylePrompt": "solid 金属色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-20",
-    "title": "樱花粉·法式",
+    "title": "晶钻豹纹",
     "coverUrl": "https://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/d5eedc75b0021f79381962fc145b0bc62301165.png",
       "https://p0.meituan.net/pilotimages/7f3d1832f40e03685a0e413e6196efcd1139460.png"
     ],
-    "color": "樱花粉",
-    "design": "法式",
-    "styleLabel": "奶油",
-    "shapeLabel": "短圆",
+    "color": "红粉色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "加长杏仁",
+    "displayTags": [
+      "红粉色系",
+      "镶钻/珍珠",
+      "加长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "cream"
+      "fairy"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "almond"
     ],
     "heat": 1200,
     "rankWeight": 1.2,
     "isActive": true,
     "merchantId": null,
-    "brief": "樱花粉·法式·奶油",
-    "stylePrompt": "solid 樱花粉 color, 法式 nail art pattern, 奶油 style, gel nail polish, natural finish",
+    "brief": "红粉色系·镶钻/珍珠·加长杏仁·甜美少女",
+    "stylePrompt": "solid 红粉色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-21",
-    "title": "雾霾蓝·渐变",
+    "title": "金钻法式",
     "coverUrl": "https://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/f4b69d45af5d3b496adbd9d21e768a8e2195181.png",
       "https://p0.meituan.net/pilotimages/fe1824a01b10a0fee24a8aaa5b1ef1991009918.png"
     ],
-    "color": "雾霾蓝",
-    "design": "渐变",
-    "styleLabel": "亮闪",
-    "shapeLabel": "杏仁",
+    "color": "美拉德色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "日常百搭",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "美拉德色系",
+      "镶钻/珍珠",
+      "中长方",
+      "日常百搭"
+    ],
     "styleTags": [
-      "glitter"
+      "daily"
     ],
     "materialTags": [
-      "jelly"
+      "pearl"
     ],
     "shapeTags": [
-      "almond"
+      "square"
     ],
     "heat": 1160,
     "rankWeight": 1.16,
     "isActive": true,
     "merchantId": null,
-    "brief": "雾霾蓝·渐变·亮闪",
-    "stylePrompt": "solid 雾霾蓝 color, 渐变 nail art pattern, 亮闪 style, gel nail polish, natural finish",
+    "brief": "美拉德色系·镶钻/珍珠·中长方·日常百搭",
+    "stylePrompt": "solid 美拉德色系 color family, 镶钻/珍珠 nail art pattern, 日常百搭 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-22",
-    "title": "纯黑·猫眼",
+    "title": "玫瑰金魔镜",
     "coverUrl": "https://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/5b985a1c661ae2e964286178e6c0b0f92258113.png",
       "https://p0.meituan.net/pilotimages/1e86c987caf89d5b15a226ad097e270b963164.png"
     ],
-    "color": "纯黑",
-    "design": "猫眼",
-    "styleLabel": "甜酷",
-    "shapeLabel": "方形",
+    "color": "金属色系",
+    "design": "魔镜粉",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "金属色系",
+      "魔镜粉",
+      "中长方",
+      "酷飒个性"
+    ],
     "styleTags": [
       "cool"
     ],
     "materialTags": [
-      "cat-eye"
+      "mirror"
     ],
     "shapeTags": [
       "square"
@@ -656,53 +788,101 @@ module.exports = [
     "rankWeight": 1.12,
     "isActive": true,
     "merchantId": null,
-    "brief": "纯黑·猫眼·甜酷",
-    "stylePrompt": "solid 纯黑 color, 猫眼 nail art pattern, 甜酷 style, gel nail polish, natural finish",
+    "brief": "金属色系·魔镜粉·中长方·酷飒个性",
+    "stylePrompt": "solid 金属色系 color family, 魔镜粉 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-23",
-    "title": "奶白·亮片",
+    "title": "温柔裸粉",
     "coverUrl": "https://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
     "sourceUrl": "https://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png",
     "previewUrls": [
       "https://p1.meituan.net/pilotimages/bf8657d94693fb0fe1da3f7729d5667d2020119.png",
       "https://p0.meituan.net/pilotimages/ec8057452f9520a0ca5cdba3f78f6f80982638.png"
     ],
-    "color": "奶白",
-    "design": "亮片",
-    "styleLabel": "复古",
-    "shapeLabel": "圆形",
+    "color": "莫兰蒂色系",
+    "design": "镶钻/珍珠",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "莫兰蒂色系",
+      "镶钻/珍珠",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
-      "vintage"
+      "fairy"
     ],
     "materialTags": [
-      "glitter"
+      "pearl"
     ],
     "shapeTags": [
-      "round"
+      "almond"
     ],
     "heat": 1080,
     "rankWeight": 1.08,
     "isActive": true,
     "merchantId": null,
-    "brief": "奶白·亮片·复古",
-    "stylePrompt": "solid 奶白 color, 亮片 nail art pattern, 复古 style, gel nail polish, natural finish",
+    "brief": "莫兰蒂色系·镶钻/珍珠·中长杏仁·甜美少女",
+    "stylePrompt": "solid 莫兰蒂色系 color family, 镶钻/珍珠 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   },
   {
     "id": "real-24",
-    "title": "焦糖棕·晕染",
+    "title": "幻彩金属",
     "coverUrl": "https://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
     "sourceUrl": "https://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png",
     "previewUrls": [
       "https://p0.meituan.net/pilotimages/e80e1d25e48d7ef5c505b29ee8e331822641412.png",
       "https://p1.meituan.net/pilotimages/1fb5e1b20aea0b0881a4eb5d41bff80b1076304.png"
     ],
-    "color": "焦糖棕",
-    "design": "晕染",
-    "styleLabel": "甜美",
-    "shapeLabel": "梯形",
+    "color": "金属色系",
+    "design": "碎钻",
+    "styleLabel": "酷飒个性",
+    "shapeLabel": "中长方",
+    "displayTags": [
+      "金属色系",
+      "碎钻",
+      "中长方",
+      "酷飒个性"
+    ],
+    "styleTags": [
+      "cool"
+    ],
+    "materialTags": [
+      "glitter"
+    ],
+    "shapeTags": [
+      "square"
+    ],
+    "heat": 1040,
+    "rankWeight": 1.04,
+    "isActive": true,
+    "merchantId": null,
+    "brief": "金属色系·碎钻·中长方·酷飒个性",
+    "stylePrompt": "solid 金属色系 color family, 碎钻 nail art pattern, 酷飒个性 style, gel nail polish, natural finish",
+    "createdAt": "2026-05-24"
+  },
+  {
+    "id": "real-25",
+    "title": "红粉法式",
+    "coverUrl": "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
+    "sourceUrl": "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png",
+    "previewUrls": [
+      "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
+      "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png"
+    ],
+    "color": "红粉色系",
+    "design": "法式",
+    "styleLabel": "甜美少女",
+    "shapeLabel": "中长杏仁",
+    "displayTags": [
+      "红粉色系",
+      "法式",
+      "中长杏仁",
+      "甜美少女"
+    ],
     "styleTags": [
       "fairy"
     ],
@@ -710,44 +890,14 @@ module.exports = [
       "jelly"
     ],
     "shapeTags": [
-      "trapezoid"
-    ],
-    "heat": 1040,
-    "rankWeight": 1.04,
-    "isActive": true,
-    "merchantId": null,
-    "brief": "焦糖棕·晕染·甜美",
-    "stylePrompt": "solid 焦糖棕 color, 晕染 nail art pattern, 甜美 style, gel nail polish, natural finish",
-    "createdAt": "2026-05-24"
-  },
-  {
-    "id": "real-25",
-    "title": "裸透粉·纯色",
-    "coverUrl": "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
-    "sourceUrl": "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png",
-    "previewUrls": [
-      "https://p1.meituan.net/pilotimages/73ee568aa09547d8bfc0168113ac9ebc2712329.png",
-      "https://p0.meituan.net/pilotimages/0d9545bd4583f87e8cc3882d15ff84101211916.png"
-    ],
-    "color": "裸透粉",
-    "design": "纯色",
-    "styleLabel": "温柔",
-    "shapeLabel": "短圆",
-    "styleTags": [
-      "gentle"
-    ],
-    "materialTags": [
-      "jelly"
-    ],
-    "shapeTags": [
-      "round"
+      "almond"
     ],
     "heat": 1000,
     "rankWeight": 1,
     "isActive": true,
     "merchantId": null,
-    "brief": "裸透粉·纯色·温柔",
-    "stylePrompt": "solid 裸透粉 color, 温柔 style, gel nail polish, natural finish",
+    "brief": "红粉色系·法式·中长杏仁·甜美少女",
+    "stylePrompt": "solid 红粉色系 color family, 法式 nail art pattern, 甜美少女 style, gel nail polish, natural finish",
     "createdAt": "2026-05-24"
   }
 ];
