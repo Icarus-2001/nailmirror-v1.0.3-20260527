@@ -5,8 +5,7 @@
  *
  *   ping            健康检查
  *   getSummary      运营数据快照（热款 / 飙升 / 冷款 / 外部趋势）
- *   computeWeights  三因子调权计算（只算不写）
- *   generateReport  生成每日运营日报（幂等）
+ *   generateReport  生成每日运营日报（幂等，Moonshot 同时产出日报+策略）
  *   approveReport   日报审批通过
  *   rejectReport    日报驳回
  *   executeReport   执行调权策略（写库）
@@ -19,7 +18,6 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const { getSummary }             = require('./handlers/getSummary')
-const { computeWeights }         = require('./handlers/computeWeights')
 const { generateReport }         = require('./handlers/generateReport')
 const { approveReport,
         rejectReport }           = require('./handlers/approveReport')
@@ -37,9 +35,6 @@ exports.main = async (event, context) => {
 
       case 'getSummary':
         return await getSummary(event)
-
-      case 'computeWeights':
-        return await computeWeights(event)
 
       case 'generateReport':
         return await generateReport({ ...event, callerOpenid })

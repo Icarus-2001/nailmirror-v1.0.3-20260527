@@ -33,11 +33,8 @@ async function tagExternal({ platform, postUrl, engagement, imageUrl, postedAt, 
     throw new Error('platform、postUrl、imageUrl 为必填项')
   }
 
-  const apiKey = process.env.DASHSCOPE_API_KEY
-  if (!apiKey) throw new Error('DASHSCOPE_API_KEY 未配置')
-
-  // VLM 打标
-  const tags = await tagNailImage(apiKey, imageUrl)
+  // VLM 打标（qwen-vl-max，apiKey 在 llm.js 内部读取 DASHSCOPE_API_KEY）
+  const tags = await tagNailImage(imageUrl)
 
   const db = cloud.database()
 
