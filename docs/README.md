@@ -15,5 +15,6 @@
 | [DATA_SCHEMA.md](./DATA_SCHEMA.md) | 款式字段、VLM 打标、筛选与热词、云函数 API |
 | [CHANGELOG.md](./CHANGELOG.md) | 迭代记录（含 2026-05-25 万相 2.7 + 模型对比） |
 | [CODEGRAPH.md](./CODEGRAPH.md) | **代码图谱**：模块依赖、试戴链路、Mock/真实分界、改动速查（CodeGraph 索引） |
+| [0530后优化建议codex.md](./0530后优化建议codex.md) | **0530 静态审查**：上线前 P1/P2 修复清单、配置与 ops 接入建议 |
 
 快速启动见 [nailmirror/src/README.md](../nailmirror/src/README.md)。
