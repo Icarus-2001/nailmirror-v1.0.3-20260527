@@ -67,6 +67,8 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
+**入口（v1.1.1）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.1.1**。
+
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）
   → wx.cloud.uploadFile

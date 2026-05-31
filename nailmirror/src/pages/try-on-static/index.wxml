@@ -31,7 +31,7 @@
     </view>
   </block>
 
-  <!-- Step：选款式（仅当首页直接进来时） -->
+  <!-- Step：选款式（仅首页四步流程） -->
   <block wx:if="{{step === 'style'}}">
     <view class="ts__title">选择想试戴的款式</view>
     <view class="ts__sub">选好款式后，再上传你的手部照片合成效果</view>
@@ -80,10 +80,11 @@
     <view class="ts__title">上传你的手部照片</view>
     <view class="ts__sub">拍照或从相册选择；也可在下方选用评测手照快速体验</view>
 
-    <view wx:if="{{style}}" class="ts__chosen">
+    <view wx:if="{{style}}" class="ts__chosen {{needPickStyle ? 'ts__chosen--tap' : ''}}" bindtap="onChosenStyleTap">
       <text class="ts__chosen-tag">已选款式</text>
       <text class="ts__chosen-name">{{style.title}}</text>
       <text class="ts__chosen-shape">· 甲型 {{shapeLabel}}</text>
+      <text wx:if="{{needPickStyle}}" class="ts__chosen-change">更换 ›</text>
     </view>
 
     <view wx:if="{{showWanModelPicker}}" class="ts__wan-model">

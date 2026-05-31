@@ -79,7 +79,13 @@ Page({
       console.warn('[home] services unavailable:', e && e.message);
     }
   },
-  onGoTryOn() { wx.navigateTo({ url: '/pages/try-on-static/index' }); },
+  onGoTryOn() {
+    try {
+      const { tryOnStore } = require('../../stores/try-on.store');
+      tryOnStore.setStyle('');
+    } catch (e) { /* ignore */ }
+    wx.navigateTo({ url: '/pages/try-on-static/index' });
+  },
   onGoHotRank() { wx.navigateTo({ url: '/pages/hot-rank/index' }); },
   onGoLibrary() { wx.navigateTo({ url: '/pages/style-library/index' }); },
   onGoMembership() { wx.navigateTo({ url: '/pages/me-membership/index' }); },
