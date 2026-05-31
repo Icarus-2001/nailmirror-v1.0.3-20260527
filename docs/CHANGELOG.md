@@ -1,5 +1,40 @@
 # 变更记录
 
+## 1.1.2 · 2026-05-31 · 万相 2.7 标准版试戴与覆盖优化
+
+**小程序版本：`1.1.2`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**试戴页可对比万相 2.7 Pro 与 2.7 标准；标准版单独加强指甲检测与 bbox，Pro 仍走 0531 稳定策略。**
+
+### 万相模型
+
+| 项 | 说明 |
+|------|------|
+| 试戴下拉 | `万相 2.7 Pro`（`wan2.7-image-pro`）、`万相 2.7 标准`（`wan2.7-image`）、可选 2.1 Mask |
+| 默认模型 | 仍为 `wan2.7-image-pro`（`feature-flags.DEFAULT_WAN_MODEL`） |
+| Pro | 0531-stable：≥3 甲 union 单框；1–2 甲各一框 |
+| 标准 | 仅 `wan2.7-image`：VL 少甲重试、≥2 甲 union + 框外扩、略放大甲面椭圆、全覆盖 prompt |
+
+### 云函数
+
+- `tryon`：`submitTryonJob` 先解析 `wanModel` 再 VL；`ping` / 提交响应含 `wan27StdTuning` 标识
+- 可选云 env：`WAN27_STD_BBOX_PAD`（默认 `0.08`）调节标准版 union 外扩
+
+### 文档
+
+- [`TRYON_0531稳定出图策略.md`](./TRYON_0531稳定出图策略.md) 增补 §7 标准版调参说明
+
+### 涉及文件
+
+- `config/feature-flags.js`、`cloudfunctions/tryon/wan-backends.js`、`handler.js`、`wan-backends.test.js`
+- `app.js`、`package.json`（版本号）
+
+**部署：** 上传并部署云函数 `tryon`（云端安装依赖）后，用标准版试戴验证。
+
+---
+
 ## 1.1.1 · 2026-05-31 · 试戴流程分流修复
 
 **小程序版本：`1.1.1`**（`app.globalData.version`）

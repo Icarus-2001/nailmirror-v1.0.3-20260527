@@ -7,9 +7,14 @@ const { URL } = require('url');
 
 const DASH_BASE = 'https://dashscope.aliyuncs.com';
 
-const SUPPORTED_MODELS = ['wanx2.1-imageedit', 'wan2.7-image-pro'];
+const SUPPORTED_MODELS = ['wanx2.1-imageedit', 'wan2.7-image-pro', 'wan2.7-image'];
+const WAN27_STD_MODEL = 'wan2.7-image';
 const BACKEND_MASK = 'mask_inpaint';
 const BACKEND_MM = 'multimodal_edit';
+
+function isWan27Standard(model) {
+  return model === WAN27_STD_MODEL;
+}
 
 function getEnv(name, fallback) {
   const v = process.env[name];
@@ -60,11 +65,10 @@ function backendForModel(model) {
 }
 
 function resolveWanModel(override) {
-  const allowed = SUPPORTED_MODELS.concat(['wan2.7-image']);
   let raw = '';
   if (override) {
     raw = normalizeModelName(String(override).trim());
-    if (allowed.indexOf(raw) === -1) {
+    if (SUPPORTED_MODELS.indexOf(raw) === -1) {
       throw new Error('不支持的 wanModel: ' + override + '，可选: ' + SUPPORTED_MODELS.join(', '));
     }
   } else {
@@ -103,21 +107,41 @@ function unionBbox(boxes) {
   return [x1, y1, x2, y2];
 }
 
-/**
- * VL 指甲 → wan2.7 bbox_list（单图最多 2 框）。
- * 3 指及以上：所有指甲并成 1 个紧 bbox，避免左右半掌大框在指缝间生成「浮空甲」。
- * 1–2 指：各用单甲框。
- */
-function mergeNailsToBboxList(nails, width, height) {
-  const list = (nails || []).map((n) => nailToBbox(n, width, height));
-  if (!list.length) return [];
-  if (list.length <= 2) return list;
-  const all = unionBbox(list);
-  return all ? [all] : list.slice(0, 2);
+function expandBbox(box, width, height, padRatio) {
+  const w = Math.max(1, Math.floor(width));
+  const h = Math.max(1, Math.floor(height));
+  const bw = Math.max(1, box[2] - box[0]);
+  const bh = Math.max(1, box[3] - box[1]);
+  const padX = Math.floor(bw * padRatio);
+  const padY = Math.floor(bh * padRatio);
+  return [
+    Math.max(0, box[0] - padX),
+    Math.max(0, box[1] - padY),
+    Math.min(w - 1, box[2] + padX),
+    Math.min(h - 1, box[3] + padY)
+  ];
 }
 
-function bboxListForImages(hasStyle, nails, width, height) {
-  const handBoxes = mergeNailsToBboxList(nails, width, height);
+/**
+ * VL 指甲 → wan2.7 bbox_list（单图最多 2 框）。
+ * Pro（0531-stable）：3 指及以上 union；1–2 指各一框。
+ * 标准版：≥2 指即 union + 外扩，减少只检到 2 甲时漏指。
+ */
+function mergeNailsToBboxList(nails, width, height, model) {
+  const list = (nails || []).map((n) => nailToBbox(n, width, height));
+  if (!list.length) return [];
+  const std = isWan27Standard(model);
+  const unionFrom = std ? 2 : 3;
+  if (list.length < unionFrom) return list;
+  const all = unionBbox(list);
+  if (!all) return list.slice(0, 2);
+  if (!std) return [all];
+  const pad = parseFloat(getEnv('WAN27_STD_BBOX_PAD', '0.08')) || 0;
+  return pad > 0 ? [expandBbox(all, width, height, pad)] : [all];
+}
+
+function bboxListForImages(hasStyle, nails, width, height, model) {
+  const handBoxes = mergeNailsToBboxList(nails, width, height, model);
   if (!handBoxes.length) throw new Error('未生成指甲框选区域');
   if (hasStyle) return [[], handBoxes];
   return [handBoxes];
@@ -137,22 +161,27 @@ function parseTaskOutput(output) {
   return '';
 }
 
-function buildWan27Prompt(prompt, hasStyle) {
+function buildWan27Prompt(prompt, hasStyle, model) {
   const guard = 'Do not add floating nails or patterns in the background or between fingers. Edit only inside the boxes on existing fingernails.';
+  const stdCover = isWan27Standard(model)
+    ? 'Apply to every visible fingernail inside the box including pinky and index; do not skip any finger.'
+    : '';
   if (hasStyle) {
     return [
       'Apply the nail art style from image 1 to the boxed fingernail areas in image 2 ONLY.',
       'Do not modify skin tone, fingers, knuckles, cuticles, or background.',
       guard,
+      stdCover,
       prompt
-    ].join(' ');
+    ].filter(Boolean).join(' ');
   }
   return [
     'Repaint ONLY the boxed fingernail areas with bold salon gel nail polish.',
     'Do not modify skin, fingers, or background outside the boxes.',
     guard,
+    stdCover,
     prompt
-  ].join(' ');
+  ].filter(Boolean).join(' ');
 }
 
 async function submitWithRetry(submitFn, prompt, retrySuffix) {
@@ -200,9 +229,12 @@ async function submitWan27Dual(ctx) {
   const apiKey = getEnv('DASHSCOPE_API_KEY', '');
   if (!apiKey) throw new Error('缺少 DASHSCOPE_API_KEY 环境变量');
   const hasStyle = !!styleUrl;
-  const mmPrompt = buildWan27Prompt(prompt, hasStyle);
-  const bboxList = bboxListForImages(hasStyle, nails, imageWidth, imageHeight);
+  const mmPrompt = buildWan27Prompt(prompt, hasStyle, model);
+  const bboxList = bboxListForImages(hasStyle, nails, imageWidth, imageHeight, model);
   const size = getEnv('WAN_IMAGE_SIZE', '') || '2K';
+  const retrySuffix = isWan27Standard(model)
+    ? 'Cover every fingernail in the box including pinky and index; strong visible salon color, high contrast.'
+    : 'Strong visible nail polish color, high contrast.';
 
   const content = [];
   if (hasStyle) content.push({ image: styleUrl });
@@ -230,7 +262,7 @@ async function submitWan27Dual(ctx) {
     const taskId = ((res.data || {}).output || {}).task_id;
     if (!taskId) throw new Error('万相未返回 task_id');
     return taskId;
-  }, mmPrompt, 'Strong visible nail polish color, high contrast.');
+  }, mmPrompt, retrySuffix);
 }
 
 async function submitWanJob(ctx) {
@@ -269,15 +301,18 @@ async function queryWanJob(taskId) {
 
 module.exports = {
   TRYON_STRATEGY_ID,
+  WAN27_STD_MODEL,
   DASH_BASE,
   SUPPORTED_MODELS,
   BACKEND_MASK,
   BACKEND_MM,
   getEnv,
+  isWan27Standard,
   resolveWanModel,
   mergeNailsToBboxList,
   bboxListForImages,
   parseTaskOutput,
+  buildWan27Prompt,
   submitWanJob,
   queryWanJob
 };

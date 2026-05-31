@@ -421,13 +421,17 @@ function normalizeNails(nails) {
   }));
 }
 
-/** 万相 2.7 bbox 用更紧的甲面框（mask 路径仍用 MASK_SCALE 放大） */
-function nailsForWan27Bbox(nails) {
+/** 万相 2.7 bbox 用更紧的甲面框（mask 路径仍用 MASK_SCALE 放大）；标准版略放大以提高覆盖率 */
+function nailsForWan27Bbox(nails, model) {
+  const std = wanBackends.isWan27Standard(model);
+  const scale = std ? 1.12 : 1;
+  const rxMax = std ? 0.095 : 0.08;
+  const ryMax = std ? 0.115 : 0.1;
   return (nails || []).map((n) => ({
     cx: Math.min(1, Math.max(0, Number(n.cx) || 0.5)),
     cy: Math.min(1, Math.max(0, Number(n.cy) || 0.5)),
-    rx: Math.min(0.08, Math.max(0.018, (Number(n.rx) || 0.035) / MASK_SCALE)),
-    ry: Math.min(0.10, Math.max(0.022, (Number(n.ry) || 0.05) / MASK_SCALE))
+    rx: Math.min(rxMax, Math.max(0.018, ((Number(n.rx) || 0.035) / MASK_SCALE) * scale)),
+    ry: Math.min(ryMax, Math.max(0.022, ((Number(n.ry) || 0.05) / MASK_SCALE) * scale))
   }));
 }
 
@@ -451,25 +455,46 @@ async function analyzeNailsOnce(imageUrl, ask) {
   };
 }
 
+function resolveWanModelFromEvent(event) {
+  if (!event || !event.wanModel) return '';
+  try {
+    return wanBackends.resolveWanModel(event.wanModel).model;
+  } catch (e) {
+    return '';
+  }
+}
+
 async function analyzeNails(event) {
   const input = await resolveInputImage(event);
   const imageUrl = await imageInputToUrl(input);
+  const wanModel = resolveWanModelFromEvent(event);
+  const stdTuning = wanBackends.isWan27Standard(wanModel);
   const askZh = [
     '分析手部照片中的每个可见指甲位置。坐标归一化：左上角(0,0)，右下角(1,1)。',
     '只输出 JSON，禁止解释。',
     'schema: {"handDetected":true,"orientation":"vertical|horizontal","nailCount":4,',
     '"nails":[{"cx":0.5,"cy":0.2,"rx":0.035,"ry":0.05}],"confidence":0-1}',
-    'cx,cy=指甲中心；rx,ry=椭圆半轴(相对整图宽高)。列出每只可见指甲。'
+    'cx,cy=指甲中心；rx,ry=椭圆半轴(相对整图宽高)。列出每只可见指甲，含小指与食指。'
   ].join('\n');
   let data = await analyzeNailsOnce(imageUrl, askZh);
 
-  if (data.confidence < 0.62 || data.nails.length < 3) {
-    const askEn = [
-      'Detect every visible fingernail in this hand photo. Normalized coords: top-left (0,0), bottom-right (1,1).',
-      'JSON only: {"handDetected":true,"orientation":"vertical|horizontal","nailCount":N,',
-      '"nails":[{"cx":0.5,"cy":0.2,"rx":0.035,"ry":0.05}],"confidence":0-1}',
-      'cx,cy=nail center; rx,ry=ellipse semi-axes relative to image size.'
-    ].join('\n');
+  const needVlRetry = stdTuning
+    ? (data.confidence < 0.62 || data.nails.length < 4)
+    : (data.confidence < 0.62 || data.nails.length < 3);
+  if (needVlRetry) {
+    const askEn = stdTuning
+      ? [
+        'Detect every visible fingernail including pinky and index finger. Normalized coords: top-left (0,0), bottom-right (1,1).',
+        'JSON only: {"handDetected":true,"orientation":"vertical|horizontal","nailCount":N,',
+        '"nails":[{"cx":0.5,"cy":0.2,"rx":0.035,"ry":0.05}],"confidence":0-1}',
+        'cx,cy=nail center; rx,ry=ellipse semi-axes relative to image size. List all visible nails.'
+      ].join('\n')
+      : [
+        'Detect every visible fingernail in this hand photo. Normalized coords: top-left (0,0), bottom-right (1,1).',
+        'JSON only: {"handDetected":true,"orientation":"vertical|horizontal","nailCount":N,',
+        '"nails":[{"cx":0.5,"cy":0.2,"rx":0.035,"ry":0.05}],"confidence":0-1}',
+        'cx,cy=nail center; rx,ry=ellipse semi-axes relative to image size.'
+      ].join('\n');
     try {
       const retry = await analyzeNailsOnce(imageUrl, askEn);
       if (retry.confidence > data.confidence || retry.nails.length > data.nails.length) {
@@ -543,10 +568,18 @@ async function submitTryonJob(event) {
 
   const promptEvent = await resolveStylePrompt(event, baseUrl, styleUrl);
 
+  let wanResolved;
+  try {
+    wanResolved = wanBackends.resolveWanModel(event.wanModel);
+  } catch (e) {
+    return fail(e.message);
+  }
+
   const nailAnalysis = await analyzeNails(Object.assign({}, event, {
     fileID: '',
     imageUrl: baseUrl,
-    _internalUrl: true
+    _internalUrl: true,
+    wanModel: wanResolved.model
   }));
   if (nailAnalysis.code !== 0 || !nailAnalysis.data.handDetected) {
     return fail('未检测到手部或指甲，请换一张清晰的手部照片');
@@ -557,12 +590,6 @@ async function submitTryonJob(event) {
 
   const prompt = buildTryonPrompt(promptEvent);
   const nails = nailAnalysis.data.nails;
-  let wanResolved;
-  try {
-    wanResolved = wanBackends.resolveWanModel(event.wanModel);
-  } catch (e) {
-    return fail(e.message);
-  }
 
   let wanJob;
   if (wanResolved.backend === BACKEND_MASK) {
@@ -583,7 +610,7 @@ async function submitTryonJob(event) {
       baseUrl,
       styleUrl,
       prompt,
-      nails: nailsForWan27Bbox(nails),
+      nails: nailsForWan27Bbox(nails, wanResolved.model),
       imageWidth: handImg.bitmap.width,
       imageHeight: handImg.bitmap.height,
       wanModelOverride: event.wanModel,
@@ -600,6 +627,7 @@ async function submitTryonJob(event) {
     wanModel: wanJob.wanModel,
     wanBackend: wanJob.wanBackend,
     nailCount: nails.length,
+    wan27StdTuning: wanBackends.isWan27Standard(wanResolved.model),
     usedStyleImage: !!styleUrl
   });
 }
@@ -651,8 +679,9 @@ async function ping() {
     wanModel: wanResolved.model,
     wanBackend: wanResolved.backend,
     supportedModels: wanBackends.SUPPORTED_MODELS,
+    wan27StdTuning: 'wan2.7-image-only',
     tryonStrategy: wanBackends.TRYON_STRATEGY_ID,
-    runtime: 'handler-v7-wan27-dual-0531',
+    runtime: 'handler-v8-wan27-std-tuning',
     deps
   });
 }
