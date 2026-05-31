@@ -4,6 +4,8 @@ const {
   bboxListForImages,
   parseTaskOutput,
   resolveWanModel,
+  buildWan27Prompt,
+  WAN27_STD_MODEL,
   SUPPORTED_MODELS
 } = require('./wan-backends');
 
@@ -19,13 +21,22 @@ function testMergeFiveNails() {
   assert.strictEqual(boxes.length, 1);
 }
 
-function testMergeTwoNails() {
+function testMergeTwoNailsPro() {
   const nails = [
     { cx: 0.3, cy: 0.3, rx: 0.04, ry: 0.05 },
     { cx: 0.7, cy: 0.3, rx: 0.04, ry: 0.05 }
   ];
-  const boxes = mergeNailsToBboxList(nails, 1000, 800);
+  const boxes = mergeNailsToBboxList(nails, 1000, 800, 'wan2.7-image-pro');
   assert.strictEqual(boxes.length, 2);
+}
+
+function testMergeTwoNailsStandard() {
+  const nails = [
+    { cx: 0.3, cy: 0.3, rx: 0.04, ry: 0.05 },
+    { cx: 0.7, cy: 0.3, rx: 0.04, ry: 0.05 }
+  ];
+  const boxes = mergeNailsToBboxList(nails, 1000, 800, WAN27_STD_MODEL);
+  assert.strictEqual(boxes.length, 1);
 }
 
 function testBboxListDualImage() {
@@ -47,21 +58,33 @@ function testParseChoices() {
   assert.strictEqual(url, 'https://example.com/b.png');
 }
 
+function testStdPromptExtra() {
+  const p = buildWan27Prompt('red nails', true, WAN27_STD_MODEL);
+  assert.ok(p.includes('pinky and index'));
+  const pro = buildWan27Prompt('red nails', true, 'wan2.7-image-pro');
+  assert.ok(!pro.includes('pinky and index'));
+}
+
 function testResolveOverride() {
   const prev = process.env.WAN_IMAGE_MODEL;
   delete process.env.WAN_IMAGE_MODEL;
-  const r = resolveWanModel('wan2.7-image-pro');
-  assert.strictEqual(r.backend, 'multimodal_edit');
-  assert.strictEqual(SUPPORTED_MODELS.length, 2);
+  const pro = resolveWanModel('wan2.7-image-pro');
+  assert.strictEqual(pro.backend, 'multimodal_edit');
+  const std = resolveWanModel('wan2.7-image');
+  assert.strictEqual(std.backend, 'multimodal_edit');
+  assert.strictEqual(std.model, 'wan2.7-image');
+  assert.strictEqual(SUPPORTED_MODELS.length, 3);
   if (prev !== undefined) process.env.WAN_IMAGE_MODEL = prev;
 }
 
 function run() {
   testMergeFiveNails();
-  testMergeTwoNails();
+  testMergeTwoNailsPro();
+  testMergeTwoNailsStandard();
   testBboxListDualImage();
   testParseResults();
   testParseChoices();
+  testStdPromptExtra();
   testResolveOverride();
   console.log('wan-backends.test.js: all passed');
 }
