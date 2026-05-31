@@ -40,16 +40,28 @@ function wanModelIndexOf(modelId) {
   return idx >= 0 ? idx : 0;
 }
 
-// 流程步骤：shape → (style 仅当未传 styleId) → photo → preview
-const STEP_ORDER_FULL  = ['shape', 'style', 'photo', 'preview'];
+// 首页入口：shape → style → photo → preview（四步）
+// 商详带 styleId：shape → photo → preview（三步，款式已定）
+const STEP_ORDER_FULL = ['shape', 'style', 'photo', 'preview'];
 const STEP_ORDER_SHORT = ['shape', 'photo', 'preview'];
+const STEP_LABELS_FULL = [
+  { key: 'shape', label: '选甲型' },
+  { key: 'style', label: '选款式' },
+  { key: 'photo', label: '上传照片' },
+  { key: 'preview', label: '生成预览' }
+];
+const STEP_LABELS_SHORT = [
+  { key: 'shape', label: '选甲型' },
+  { key: 'photo', label: '上传照片' },
+  { key: 'preview', label: '生成预览' }
+];
 
 Page({
   data: {
     step: 'shape',
     stepIndex: 0,
     stepLabels: [],
-    needPickStyle: false,
+    needPickStyle: true,
 
     shapes: NAIL_SHAPES,
     selectedShape: '',
@@ -88,27 +100,16 @@ Page({
   },
 
   async onLoad(query) {
-    const incomingStyleId = (query && query.styleId) || tryOnStore.currentStyleId || '';
+    // 仅 URL styleId 决定三步/四步；勿读 tryOnStore（避免首页误走商详短流程）
+    const incomingStyleId = (query && query.styleId) || '';
     const needPickStyle = !incomingStyleId;
-    const stepLabels = needPickStyle
-      ? [
-          { key: 'shape',   label: '选甲型' },
-          { key: 'style',   label: '选款式' },
-          { key: 'photo',   label: '上传照片' },
-          { key: 'preview', label: '生成预览' }
-        ]
-      : [
-          { key: 'shape',   label: '选甲型' },
-          { key: 'photo',   label: '上传照片' },
-          { key: 'preview', label: '生成预览' }
-        ];
     const initShape = tryOnStore.currentShape || '';
     const initWanModel = resolveInitialWanModel();
     const wanOpts = featureFlags.WAN_MODEL_OPTIONS || [];
 
     this.setData({
       needPickStyle,
-      stepLabels,
+      stepLabels: needPickStyle ? STEP_LABELS_FULL : STEP_LABELS_SHORT,
       stepIndex: 0,
       step: 'shape',
       styleId: incomingStyleId,
@@ -124,6 +125,7 @@ Page({
     });
 
     if (incomingStyleId) {
+      tryOnStore.setStyle(incomingStyleId);
       try {
         const style = await styleService.get(incomingStyleId);
         this.setData({ style });
@@ -371,6 +373,12 @@ Page({
 
   onUnload() {
     composeWaiting.stop(this);
+  },
+
+  onChosenStyleTap() {
+    if (!this.data.needPickStyle) return;
+    this._gotoStep('style');
+    this.loadStyleList();
   },
 
   // ---- 通用：返回上一步 ----

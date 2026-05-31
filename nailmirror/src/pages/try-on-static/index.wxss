@@ -243,6 +243,7 @@
 
 /* 已选款式提示（photo step 上方） */
 .ts__chosen {
+  display: flex; align-items: center; flex-wrap: wrap;
   background: #fff5f8; border-radius: 12rpx;
   padding: 18rpx 24rpx; margin-bottom: 24rpx;
   font-size: 26rpx; color: #333;
@@ -254,6 +255,10 @@
 }
 .ts__chosen-name { font-weight: 600; }
 .ts__chosen-shape { color: #888; margin-left: 10rpx; }
+.ts__chosen--tap { cursor: pointer; }
+.ts__chosen-change {
+  margin-left: auto; font-size: 24rpx; color: #ff5e8a;
+}
 
 .ts__wan-model {
   margin-bottom: 24rpx;
