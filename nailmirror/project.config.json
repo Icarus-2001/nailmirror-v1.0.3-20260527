@@ -1,4 +1,6 @@
 {
+  "miniprogramRoot": "src/",
+  "cloudfunctionRoot": "src/cloudfunctions/",
   "setting": {
     "minifyWXML": true
   }

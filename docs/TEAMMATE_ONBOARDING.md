@@ -189,9 +189,9 @@ module.exports = {
 | 作用 | 从小程序调用上下文返回真实 `OPENID`（`user.service` + `USE_CLOUD_LOGIN`） |
 | 何时部署 | 首次接入、或 `cloudfunctions/login/` 有代码变更 |
 | 步骤 | 与 tryon 相同：先为 **`cloudfunctions` 根目录** 选择云环境 → 右键 **`cloudfunctions/login`** → **上传并部署：云端安装依赖** |
-| 验证 | 真机预览 → 登录页「微信一键登录」→ 我的页或 Storage `np_user` 中 `openid` 应为真实值（非 `mock-openid-*`） |
+| 验证 | 真机预览 → 登录页「微信一键登录」→ 弹层选头像、填昵称 → 「我的」显示资料；Storage `np_user` 中 `openid` 应为真实值（非 `mock-openid-*`） |
 
-云未就绪时会自动降级 Mock 登录，不影响「先随便逛逛」。
+云未就绪时会自动降级 Mock 登录（仍保留弹层头像昵称），不影响「先随便逛逛」。小程序版本见 `app.globalData.version`（当前 **1.1.4**）。登录页已内置 `privacy-popup`，首屏须先同意隐私再选头像昵称。
 
 ### 7.1 云函数 `tryon` — 何时需要部署
 

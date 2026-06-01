@@ -40,7 +40,7 @@ Page({
   },
   onGoLogin() {
     if (!this.data.needLogin) return;
-    wx.navigateTo({ url: '/pages/login/index' });
+    wx.navigateTo({ url: '/pages/login/index?from=me' });
   },
   onGoHistory() { wx.navigateTo({ url: '/pages/me-history/index' }); },
   onGoFavorite() { wx.navigateTo({ url: '/pages/me-favorite/index' }); },

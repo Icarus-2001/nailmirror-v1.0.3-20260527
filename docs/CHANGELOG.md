@@ -1,5 +1,60 @@
 # 变更记录
 
+## 1.1.4 · 2026-06-01 · 登录隐私授权与资料流程修复
+
+**小程序版本：`1.1.4`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**登录页首屏隐私同意；修复头像昵称选择与首页问候语同步；从「我的」登录后返回我的页。**
+
+### 登录与用户
+
+- **隐私**：登录页挂载 `privacy-popup`，`onReady` / 点「微信一键登录」前 `ensurePrivacyAuthorized`，避免 `chooseAvatar` / `nickname` 因未授权降级（errno:104）
+- **资料弹层**：修复头像按钮全宽导致点不到；`image` 设 `pointer-events: none`；须选头像 + 微信昵称（`bindnicknamereview` / `bindblur` 同步，去掉 `value` 双向绑定冲突）
+- **流程**：「我的」进入 `?from=me`，登录成功 `navigateBack`；首页 `onShow` + `EVT_USER_LOGIN` 同步 `userName`
+- **隐私文案**：补充登录头像、昵称说明
+
+### 涉及文件
+
+- `pages/login/*`、`pages/home/index.js`、`pages/me/index.js`
+- `components/privacy-popup/index.wxml`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- 公众平台《用户隐私保护指引》须声明**用户信息（头像、昵称）**及相册/相机
+- 云函数 `login` 无需为本版重传（逻辑未变）；重新编译上传小程序即可
+
+---
+
+## 1.1.3 · 2026-06-01 · 登录页资料确认
+
+**小程序版本：`1.1.3`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**登录前确认微信头像与昵称并在「我的」展示；云/Mock 登录均写入本地资料。**
+
+### 登录与用户
+
+- **登录页**：点击「微信一键登录」→ 底部弹层 `chooseAvatar` + `type="nickname"`，必填昵称后「确认并登录」
+- **`user.service`**：云登录与 Mock 降级均合并 `profile.nickname` / `profile.avatarUrl` 到 `userStore`
+- **我的**：头像圆角裁剪（`overflow: hidden`）
+- **工程**：`nailmirror/project.config.json` 补全 `miniprogramRoot` / `cloudfunctionRoot`
+
+### 部署注意
+
+- 登录资料写入**本地缓存**；云函数 `login` 仍回传 openid，未落云数据库
+- 真机：清除小程序数据 → 登录页选头像填昵称 → 「我的」应显示对应资料
+
+### 涉及文件
+
+- `pages/login/index.{js,wxml,wxss}`、`services/user.service.js`、`pages/me/index.wxss`
+- `app.js`、`package.json`（版本号）
+
+---
+
 ## 1.1.2 · 2026-05-31 · 万相 2.7 标准版试戴与覆盖优化
 
 **小程序版本：`1.1.2`**（`app.globalData.version`）

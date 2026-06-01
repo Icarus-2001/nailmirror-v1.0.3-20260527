@@ -3,7 +3,7 @@
   <view class="pp__box">
     <view class="pp__title">用户隐私保护提示</view>
     <view class="pp__body">
-      为完成手部照片上传与 AI 试戴，我们需要使用你的相册或相机。请阅读并同意
+      为完成登录（头像、昵称）与手部照片上传、AI 试戴，我们需要使用你的相关信息及相册/相机。请阅读并同意
       <text class="pp__link" bindtap="onOpenContract">《用户隐私保护指引》</text>
       后继续。
     </view>

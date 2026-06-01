@@ -30,9 +30,29 @@ describe('UserService', () => {
     }));
     userService = require('../../services/user.service');
 
-    const u = await userService.login();
+    const profile = { nickname: '微信用户', avatarUrl: 'wxfile://avatar.png' };
+    const u = await userService.login(profile);
 
-    expect(callFunction).toHaveBeenCalledWith('login', { action: 'login' });
+    expect(callFunction).toHaveBeenCalledWith('login', {
+      action: 'login',
+      nickname: profile.nickname,
+      avatarUrl: profile.avatarUrl
+    });
     expect(u.openid).toBe('openid-real-001');
+  });
+
+  test('login Mock 降级时保留弹层传入的头像昵称', async () => {
+    jest.resetModules();
+    jest.doMock('../../utils/cloud', () => ({
+      callFunction: jest.fn(),
+      isCloudReady: () => false
+    }));
+    userService = require('../../services/user.service');
+
+    const profile = { nickname: '小镜子', avatarUrl: 'wxfile://avatar-mock.png' };
+    const u = await userService.login(profile);
+
+    expect(u.nickname).toBe(profile.nickname);
+    expect(u.avatarUrl).toBe(profile.avatarUrl);
   });
 });

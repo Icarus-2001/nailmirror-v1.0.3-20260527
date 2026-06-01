@@ -16,7 +16,7 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.1.2',
+    version: '1.1.4',
     pendingHdUrl: '',
     /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
     skipLoginAutoRedirect: false
