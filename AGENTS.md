@@ -15,12 +15,12 @@
 ## 已学习的工作区事实
 
 - **NailMirror**：美甲 AI 试戴 + 商家运营微信小程序；应用根目录为 `nailmirror/src/`（微信开发者工具打开此目录）。
-- 团队 GitHub 远程：`Icarus-2001/nailmirror-v1.0.3-20260527`（承接早期 `nailmirror-v1.6-*` 远程）。
+- **GitHub 仓库（唯一）**：`Icarus-2001/nailmirror-v1.0.3-20260527`；`git remote` 的 `origin` 须指向该 URL；历史 `nailmirror-v1.6-*` 为旧仓名/本地目录代号，勿再向旧仓 push。`main` 已含 `ops`/`seed`；B 端 `pages-b/` 接入进度以 main 为准。
+- **同步 main**：协作者 PR 合入 `main` 后先 `git fetch origin` → `git checkout main` → `git pull origin main`；若在功能分支继续开发再 `merge`/`rebase origin/main`；在功能分支上 `git pull` 只更新该分支，**不会**自动带入 `main` 新提交。
 - 共享云环境 ID：`cloud1-d2g3df4y16873034b`（见 `nailmirror/src/config/cloud-env.js`）；队友部署到同一环境即可共享云函数、数据库与环境变量，无需本地同步文件。
-- 协作者后端在 v1.0.3 仓库分支 `backend/nail-ops`（`cloudfunctions/ops`）；未 PR/cherry-pick 进本工作区 `main` 前，B 端 `pages-b/` 仍以 Mock 为主。
 - 生产后端方向（见 `docs/后端及运营优化方案0527.md`）：仅微信云——`tryon` 已部署；计划 `ops` + 云数据库集合；6.6 前不做 FastAPI/PostgreSQL。
-- 真实款式库：25 款在 `nailmirror/src/mock/styles.real.js`，由 `scripts/import-styles.js` 生成；未用 `--vlm` / `--retag` 且配置 `DASHSCOPE_API_KEY` 时，默认标签可能轮换。
-- 标准封闭词表：`docs/美甲标签与标准词表.md`（8 色系、设计、甲型、风格）；VLM 打标经 `config/tag-vocabulary.js` + `scripts/import-styles.js --vlm --retag`。
+- 款式与标签：25 款在 `nailmirror/src/mock/styles.real.js`（`scripts/import-styles.js`）；封闭词表 `docs/美甲标签与标准词表.md`（8 色系、设计、甲型、风格），VLM 打标经 `config/tag-vocabulary.js` + `--vlm --retag`；未 retag 时默认标签可能轮换。
+- **版本号**：小程序产品版 SemVer `1.1.x`（`app.globalData.version`）；仓库目录名 `nailmirror-v1.6-*` 为里程碑代号，**不等于**小程序版本号。
 - 试戴稳定策略 **`0531-stable`**：见 `docs/TRYON_0531稳定出图策略.md` 与 `config/tryon-strategy.js`；万相 2.7 默认 `wan2.7-image-pro`，可选 `wan2.7-image` 标准版（`SHOW_WAN_MODEL_PICKER` 对比；**勿改 Pro 策略**，标准版单独调参）；≥3 甲时 `mergeNailsToBboxList` 为全部指甲 **union 单紧框**；`nailsForWan27Bbox` 与 VLM/标签 prompt（`tryon-prompt.js`）分离；`ping` 返回 `tryonStrategy`。
 - `tryon` 鉴权：客户端 `imageUrl`/`imageBase64` 默认拒绝，除非 `TRYON_ALLOW_URL=1`；内部调用（如 `submitTryonJob` → `analyzeNails`）须传 `_internalUrl: true`。
 - **试戴流程步数**：首页试戴四步（甲型→选款→手照→预览）；商详带 `styleId` 为三步（跳过选款）；是否短流程以 URL `styleId` 为准，勿用 `tryOnStore` 误判。
