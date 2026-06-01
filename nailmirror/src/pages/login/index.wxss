@@ -37,6 +37,7 @@
 .profile-dialog__mask {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: rgba(22, 18, 24, 0.38);
 }
 .profile-dialog__panel {
@@ -44,6 +45,7 @@
   left: 40rpx;
   right: 40rpx;
   bottom: 56rpx;
+  z-index: 1;
   padding: 44rpx 36rpx 32rpx;
   border-radius: 36rpx;
   background: #fff;
@@ -59,29 +61,66 @@
   color: var(--np-text-weak);
   font-size: 24rpx;
 }
-.profile-dialog__avatar-btn {
-  width: 144rpx;
-  height: 144rpx;
-  margin: 36rpx auto 28rpx;
-  padding: 0;
+.profile-dialog__avatar-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  margin: 36rpx auto 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  overflow: hidden;
+}
+.profile-dialog__avatar-wrap--hint {
+  border: 4rpx solid rgba(255, 94, 138, 0.45);
   background: #fff5f7;
 }
-.profile-dialog__avatar-btn::after { border: none; }
+.profile-dialog__avatar-btn {
+  display: block;
+  width: 144rpx !important;
+  min-width: 144rpx;
+  max-width: 144rpx;
+  height: 144rpx !important;
+  min-height: 144rpx;
+  max-height: 144rpx;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+}
+.profile-dialog__avatar-btn::after {
+  display: none;
+  border: none;
+}
+.profile-dialog__avatar-tip {
+  margin-bottom: 20rpx;
+  color: var(--np-primary);
+  font-size: 24rpx;
+  text-align: center;
+}
 .profile-dialog__avatar {
+  display: block;
   width: 144rpx;
   height: 144rpx;
   border-radius: 50%;
+  pointer-events: none;
 }
 .profile-dialog__nickname {
   height: 88rpx;
-  margin-bottom: 28rpx;
+  margin-bottom: 12rpx;
   padding: 0 28rpx;
   border-radius: 999rpx;
   background: #f7f7fb;
   color: var(--np-text);
   font-size: 30rpx;
+  text-align: center;
+}
+.profile-dialog__nickname-ok {
+  margin-bottom: 20rpx;
+  color: var(--np-success);
+  font-size: 24rpx;
   text-align: center;
 }
 .profile-dialog__confirm {

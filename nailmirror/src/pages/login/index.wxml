@@ -20,24 +20,36 @@
     <view class="profile-dialog__mask" bindtap="onCloseProfileDialog"></view>
     <view class="profile-dialog__panel">
       <view class="profile-dialog__title">确认微信资料</view>
-      <view class="profile-dialog__desc">用于在“我的”页面展示头像和昵称</view>
+      <view class="profile-dialog__desc">选头像后，在下方昵称框点一下并选用微信昵称</view>
 
-      <button
-        class="profile-dialog__avatar-btn"
-        open-type="chooseAvatar"
-        bindchooseavatar="onChooseAvatar"
-        hover-class="none"
-      >
-        <image class="profile-dialog__avatar" src="{{avatarUrl || brandLogo}}" mode="aspectFill" />
-      </button>
+      <view class="profile-dialog__avatar-wrap {{avatarChosen ? '' : 'profile-dialog__avatar-wrap--hint'}}">
+        <button
+          class="profile-dialog__avatar-btn"
+          open-type="chooseAvatar"
+          bindchooseavatar="onChooseAvatar"
+          hover-class="none"
+          plain
+        >
+          <image
+            class="profile-dialog__avatar"
+            src="{{avatarUrl || brandLogo}}"
+            mode="aspectFill"
+          />
+        </button>
+      </view>
+      <view class="profile-dialog__avatar-tip" wx:if="{{!avatarChosen}}">点击上方圆形头像</view>
 
       <input
+        id="profileNicknameInput"
         class="profile-dialog__nickname"
         type="nickname"
-        placeholder="点击获取微信昵称"
-        value="{{nickname}}"
+        placeholder="点击此处选用微信昵称"
+        bindfocus="onNicknameFocus"
         bindinput="onNicknameInput"
+        bindblur="onNicknameBlur"
+        bindnicknamereview="onNicknameReview"
       />
+      <view class="profile-dialog__nickname-ok" wx:if="{{nickname}}">已选用：{{nickname}}</view>
 
       <button
         class="np-btn np-btn--block profile-dialog__confirm"
@@ -48,4 +60,6 @@
       <view class="profile-dialog__cancel" bindtap="onCloseProfileDialog">暂不登录</view>
     </view>
   </view>
+
+  <privacy-popup />
 </view>

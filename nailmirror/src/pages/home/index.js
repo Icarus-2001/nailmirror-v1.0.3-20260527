@@ -1,5 +1,6 @@
 // V1.6 主页 — 自包含兜底数据 + 异步服务可选
 const featureFlags = require('../../config/feature-flags');
+const { EVT_USER_LOGIN } = require('../../config/constants');
 
 function getInitialHotKeywords() {
   if (featureFlags.USE_REAL_STYLES) {
@@ -46,19 +47,38 @@ Page({
     loaded: true
   },
   onLoad() {
-    // 优先用兜底数据立刻渲染，再尝试异步替换为真实数据
+    this._syncUserName();
+    try {
+      const app = getApp();
+      const bus = app && app.globalData && app.globalData.eventBus;
+      if (bus && bus.on) {
+        this._onUserLogin = () => this._syncUserName();
+        bus.on(EVT_USER_LOGIN, this._onUserLogin);
+      }
+    } catch (e) { /* ignore */ }
+
+    this.loadAsyncData();
+  },
+  onShow() {
+    this._syncUserName();
+  },
+  onUnload() {
+    try {
+      const app = getApp();
+      const bus = app && app.globalData && app.globalData.eventBus;
+      if (bus && bus.off && this._onUserLogin) bus.off(EVT_USER_LOGIN, this._onUserLogin);
+    } catch (e) { /* ignore */ }
+  },
+  _syncUserName() {
     try {
       const { userStore } = require('../../stores/user.store');
-      if (userStore && typeof userStore.init === 'function') {
-        userStore.init();
-        if (userStore.nickname) this.setData({ userName: userStore.nickname });
-      }
+      if (!userStore || typeof userStore.init !== 'function') return;
+      userStore.init();
+      const name = userStore.nickname || '美甲控';
+      if (name !== this.data.userName) this.setData({ userName: name });
     } catch (e) {
       console.warn('[home] userStore init skipped:', e && e.message);
     }
-
-    // 异步加载真实 mock 数据，失败时保持兜底
-    this.loadAsyncData();
   },
   loadAsyncData() {
     try {
