@@ -17,12 +17,12 @@ function _wxLoginCode() {
   });
 }
 
-function _mockUserFromCode(code) {
+function _mockUserFromCode(code, profile) {
   const openid = 'mock-openid-' + (code.length > 5 ? code.slice(-6) : code);
   return {
     openid,
-    nickname: '美甲控',
-      avatarUrl: '',
+    nickname: (profile && profile.nickname) || '美甲控',
+    avatarUrl: (profile && profile.avatarUrl) || '',
     role: 'c',
     membershipLevel: 0,
     lastRemoveDate: '2026-04-20'
@@ -60,7 +60,7 @@ async function login(profile) {
   }
   const code = await _wxLoginCode();
   return mockDelay(() => {
-    const user = _mockUserFromCode(code);
+    const user = _mockUserFromCode(code, profile);
     userStore.setUser(user);
     eventBus.emit(EVT_USER_LOGIN, user);
     return user;

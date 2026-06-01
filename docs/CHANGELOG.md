@@ -1,5 +1,32 @@
 # 变更记录
 
+## 1.1.3 · 2026-06-01 · 登录页资料确认
+
+**小程序版本：`1.1.3`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**登录前确认微信头像与昵称并在「我的」展示；云/Mock 登录均写入本地资料。**
+
+### 登录与用户
+
+- **登录页**：点击「微信一键登录」→ 底部弹层 `chooseAvatar` + `type="nickname"`，必填昵称后「确认并登录」
+- **`user.service`**：云登录与 Mock 降级均合并 `profile.nickname` / `profile.avatarUrl` 到 `userStore`
+- **我的**：头像圆角裁剪（`overflow: hidden`）
+- **工程**：`nailmirror/project.config.json` 补全 `miniprogramRoot` / `cloudfunctionRoot`
+
+### 部署注意
+
+- 登录资料写入**本地缓存**；云函数 `login` 仍回传 openid，未落云数据库
+- 真机：清除小程序数据 → 登录页选头像填昵称 → 「我的」应显示对应资料
+
+### 涉及文件
+
+- `pages/login/index.{js,wxml,wxss}`、`services/user.service.js`、`pages/me/index.wxss`
+- `app.js`、`package.json`（版本号）
+
+---
+
 ## 1.1.2 · 2026-05-31 · 万相 2.7 标准版试戴与覆盖优化
 
 **小程序版本：`1.1.2`**（`app.globalData.version`）

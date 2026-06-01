@@ -25,8 +25,70 @@
   min-height: 88rpx;
   margin-bottom: 24rpx;
 }
-.login__btn[disabled] {
-  opacity: 0.85;
-}
+.login__btn[disabled] { opacity: 0.85; }
 .login__skip { color: var(--np-text-weak); font-size: 26rpx; }
 .login__policy { color: var(--np-text-weak); font-size: 22rpx; margin-top: 80rpx; }
+
+.profile-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+.profile-dialog__mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 18, 24, 0.38);
+}
+.profile-dialog__panel {
+  position: absolute;
+  left: 40rpx;
+  right: 40rpx;
+  bottom: 56rpx;
+  padding: 44rpx 36rpx 32rpx;
+  border-radius: 36rpx;
+  background: #fff;
+  box-shadow: 0 24rpx 80rpx rgba(20, 12, 24, 0.18);
+}
+.profile-dialog__title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--np-text);
+}
+.profile-dialog__desc {
+  margin-top: 10rpx;
+  color: var(--np-text-weak);
+  font-size: 24rpx;
+}
+.profile-dialog__avatar-btn {
+  width: 144rpx;
+  height: 144rpx;
+  margin: 36rpx auto 28rpx;
+  padding: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff5f7;
+}
+.profile-dialog__avatar-btn::after { border: none; }
+.profile-dialog__avatar {
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 50%;
+}
+.profile-dialog__nickname {
+  height: 88rpx;
+  margin-bottom: 28rpx;
+  padding: 0 28rpx;
+  border-radius: 999rpx;
+  background: #f7f7fb;
+  color: var(--np-text);
+  font-size: 30rpx;
+  text-align: center;
+}
+.profile-dialog__confirm {
+  min-height: 88rpx;
+}
+.profile-dialog__cancel {
+  padding-top: 26rpx;
+  color: var(--np-text-weak);
+  font-size: 26rpx;
+}

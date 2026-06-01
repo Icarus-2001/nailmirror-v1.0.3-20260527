@@ -32,9 +32,10 @@ module.exports = { ENV_ID: '你的环境ID' };
 
 1. **右键 `cloudfunctions` 文件夹** → **选择云环境** → `cloud1-d2g3df4y16873034b`（须与 `config/cloud-env.js` 的 `ENV_ID` 一致；未选环境会上传失败）
 2. 右键 `cloudfunctions/login` → **上传并部署：云端安装依赖**（微信一键登录，返回真实 OPENID）
-3. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**（试戴 / 自定义参考图）
-4. **不要**在云函数目录下本地 `npm install`（会导致上传包过大失败）
-5. 云函数目录内 **不要提交** `node_modules`
+3. **登录页（1.1.3+）**：点击「微信一键登录」后在弹层选择头像、确认昵称，再完成登录；资料保存在本地并在「我的」展示（云函数不落库昵称头像）
+4. 右键 `cloudfunctions/tryon` → **上传并部署：云端安装依赖**（试戴 / 自定义参考图）
+5. **不要**在云函数目录下本地 `npm install`（会导致上传包过大失败）
+6. 云函数目录内 **不要提交** `node_modules`
 
 ### 自定义参考款式图
 
