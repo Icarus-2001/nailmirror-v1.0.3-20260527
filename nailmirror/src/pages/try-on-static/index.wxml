@@ -1,4 +1,4 @@
-<view class="ts">
+<view class="ts {{step === 'style' ? 'ts--style-step' : ''}}">
   <!-- 步骤指示器（动态根据 stepLabels 渲染） -->
   <view class="ts__steps">
     <block wx:for="{{stepLabels}}" wx:key="key">
@@ -69,7 +69,7 @@
       </view>
     </view>
 
-    <view class="ts__back-row">
+    <view class="ts__back-row ts__back-row--sticky">
       <view class="ts__back" bindtap="onPrevStep">‹ 重新选甲型</view>
       <button class="np-btn np-btn--block" bindtap="onStyleNext" disabled="{{!styleId}}">下一步</button>
     </view>
@@ -171,6 +171,22 @@
       </view>
       <view class="ts__current-shape">甲型：{{shapeLabel}}</view>
       <view wx:if="{{usedWanModelLabel}}" class="ts__current-model">模型：{{usedWanModelLabel}}</view>
+    </view>
+
+    <view class="ts__rating" wx:if="{{composedUrl && canRateStyle}}">
+      <view class="ts__rating-head">
+        <text class="ts__rating-title">试戴效果评分</text>
+        <text class="ts__rating-value">{{styleRating ? styleRating + '.0 / 5' : '未评分'}}</text>
+      </view>
+      <view class="ts__rating-stars">
+        <text
+          wx:for="{{ratingStars}}"
+          wx:key="*this"
+          class="ts__rating-star {{item <= styleRating ? 'on' : ''}}"
+          data-rating="{{item}}"
+          bindtap="onRateStyle"
+        >★</text>
+      </view>
     </view>
 
     <view class="ts__switch">

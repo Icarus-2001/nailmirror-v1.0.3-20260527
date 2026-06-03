@@ -12,6 +12,7 @@ const mockHand = require('../../config/mock-hand');
 const composeWaiting = require('../../utils/compose-waiting');
 const { BRAND_LOGO } = require('../../config/constants');
 const { ESTIMATE_COMPOSE_SEC } = require('../../config/tryon-strategy');
+const ratingService = require('../../services/rating.service');
 
 const WAN_MODEL_STORAGE_KEY = 'tryon_wan_model';
 
@@ -96,7 +97,10 @@ Page({
     selectedWanModel: '',
     selectedWanModelLabel: '',
     usedWanModel: '',
-    usedWanModelLabel: ''
+    usedWanModelLabel: '',
+    ratingStars: [1, 2, 3, 4, 5],
+    styleRating: 0,
+    canRateStyle: false
   },
 
   async onLoad(query) {
@@ -129,6 +133,7 @@ Page({
       try {
         const style = await styleService.get(incomingStyleId);
         this.setData({ style });
+        this._applyStyleRatingState(style);
       } catch (e) {}
     }
 
@@ -196,6 +201,25 @@ Page({
     return this.data.photoUploadPath || this.data.photoPath;
   },
 
+  _canRateStyle(style) {
+    if (!style || !style.id) return false;
+    if (style.styleSource === 'custom-upload') return false;
+    return String(style.id).indexOf('custom-') !== 0;
+  },
+
+  _ratingForStyle(style) {
+    if (!this._canRateStyle(style)) return 0;
+    const record = ratingService.getUserRating(style.id);
+    return record ? record.rating : 0;
+  },
+
+  _applyStyleRatingState(style) {
+    this.setData({
+      canRateStyle: this._canRateStyle(style),
+      styleRating: this._ratingForStyle(style)
+    });
+  },
+
   // ---- Step: 选甲型 ----
   onPickShape(e) {
     const v = e.currentTarget.dataset.v;
@@ -220,7 +244,7 @@ Page({
     if (this.data.styleList.length || this.data.styleLoading) return;
     this.setData({ styleLoading: true });
     try {
-      const r = await styleService.list({ page: 1, pageSize: 12 });
+      const r = await styleService.list({ page: 1, pageSize: styleService.getAllStyles().length });
       this.setData({ styleList: r.items });
     } catch (e) {
       wx.showToast({ title: '款式加载失败', icon: 'none' });
@@ -235,8 +259,10 @@ Page({
     try {
       const style = await styleService.get(id);
       this.setData({ style });
+      this._applyStyleRatingState(style);
     } catch (e2) {
       this.setData({ style: null });
+      this._applyStyleRatingState(null);
     }
   },
   onStyleNext() {
@@ -326,7 +352,7 @@ Page({
         styleImageFileID: fileID,
         coverUrl: tempPath
       };
-      this.setData({ styleId: id, style: customStyle });
+      this.setData({ styleId: id, style: customStyle, styleRating: 0, canRateStyle: false });
       tryOnStore.setStyle(id);
       wx.showToast({ title: '已选择参考图', icon: 'success' });
     } catch (e) {
@@ -364,6 +390,7 @@ Page({
         usedWanModel: r.wanModel || this.data.selectedWanModel,
         usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
       });
+      this._applyStyleRatingState(this.data.style);
     } catch (e) {
       wx.showToast({ title: e.message || '合成失败', icon: 'none' });
     } finally {
@@ -425,6 +452,7 @@ Page({
         try {
           const style = await styleService.get(id);
           this.setData({ style });
+          this._applyStyleRatingState(style);
         } catch (e) { /* ignore */ }
       } catch (e) {
         wx.showToast({ title: (e && e.message) || '换款失败', icon: 'none' });
@@ -438,7 +466,16 @@ Page({
     try {
       const style = await styleService.get(id);
       this.setData({ style });
+      this._applyStyleRatingState(style);
     } catch (e) { /* ignore */ }
+  },
+  onRateStyle(e) {
+    if (!this.data.canRateStyle || !this.data.styleId) return;
+    const rating = Number(e.currentTarget.dataset.rating);
+    const record = ratingService.rateStyle(this.data.styleId, rating, 'try-on-static');
+    if (!record) return;
+    this.setData({ styleRating: record.rating });
+    wx.showToast({ title: '评分已保存', icon: 'success' });
   },
   async onSaveAndOutput() {
     if (!this.data.composedUrl) {
@@ -468,6 +505,9 @@ Page({
         thumbUrl: this.data.composedUrl,
         hdUrl: hd.hdUrl
       };
+      if (this.data.canRateStyle && this.data.styleRating) {
+        hist.rating = this.data.styleRating;
+      }
       if (this.data.style && this.data.style.styleSource === 'custom-upload') {
         hist.styleSource = 'custom-upload';
         hist.styleTitle = this.data.style.title || '自定义参考图';

@@ -92,7 +92,8 @@ function styleMatchesKeyword(style, keyword) {
 }
 
 function buildRealTrend(keyword) {
-  const matched = getAllStyles().filter((s) => styleMatchesKeyword(s, keyword));
+  const word = keyword || '';
+  const matched = getAllStyles().filter((s) => styleMatchesKeyword(s, word));
   const base = matched.reduce((sum, s) => sum + (s.heat || 0), 0) || 50000;
   const points = [];
   for (let i = 6; i >= 0; i--) {
@@ -100,10 +101,10 @@ function buildRealTrend(keyword) {
     d.setDate(d.getDate() - i);
     points.push({
       date: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
-      heat: base + Math.floor(Math.sin(i + keyword.length) * 8000 + (6 - i) * 1200)
+      heat: base + Math.floor(Math.sin(i + word.length) * 8000 + (6 - i) * 1200)
     });
   }
-  return { keyword, points };
+  return { keyword: word, points };
 }
 
 async function fetchTop20() {

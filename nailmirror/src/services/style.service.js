@@ -5,6 +5,7 @@ const ERR = require('../config/error-codes');
 const featureFlags = require('../config/feature-flags');
 const mockStyles = require('../mock/styles');
 const realStyles = require('../mock/styles.real');
+const ratingService = require('./rating.service');
 
 function getAllStyles() {
   if (featureFlags.USE_REAL_STYLES) return realStyles.filter((s) => s.isActive !== false);
@@ -45,7 +46,7 @@ async function list(filters) {
     const sorted = filtered.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0));
     const start = (page - 1) * pageSize;
     return {
-      items: sorted.slice(start, start + pageSize),
+      items: ratingService.withRatings(sorted.slice(start, start + pageSize)),
       total: sorted.length,
       page
     };
@@ -56,7 +57,7 @@ async function get(id) {
   return mockDelay(() => {
     const item = getAllStyles().find((s) => s.id === id);
     if (!item) throw makeError(ERR.NOT_FOUND, '款式不存在');
-    return item;
+    return ratingService.withRating(item);
   }, 80, 150);
 }
 
@@ -78,9 +79,9 @@ async function search(opts) {
     }
     if (items.length === 0) {
       items = getAllStyles().slice().sort((a, b) => b.heat - a.heat).slice(0, 10);
-      return { items, fallback: true };
+      return { items: ratingService.withRatings(items), fallback: true };
     }
-    return { items, fallback: false };
+    return { items: ratingService.withRatings(items), fallback: false };
   }, 150, 250);
 }
 

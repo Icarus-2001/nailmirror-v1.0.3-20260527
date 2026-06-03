@@ -1,5 +1,9 @@
 /* ===== 步骤指示器 ===== */
 .ts { padding: 32rpx 32rpx 80rpx; }
+.ts--style-step {
+  padding-bottom: calc(220rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(220rpx + env(safe-area-inset-bottom));
+}
 .ts__steps {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16rpx 0 40rpx;
@@ -153,6 +157,20 @@
   margin-top: 36rpx;
   display: flex; flex-direction: column; gap: 20rpx;
 }
+.ts__back-row--sticky {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: 0;
+  z-index: 10;
+  margin-top: 0;
+  padding: 20rpx 0 calc(24rpx + constant(safe-area-inset-bottom));
+  padding: 20rpx 0 calc(24rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(247,247,251,0), rgba(247,247,251,0.96) 22%, #f7f7fb 100%);
+}
+.ts__back-row--sticky .np-btn {
+  box-shadow: 0 12rpx 30rpx rgba(255,94,138,0.24);
+}
 .ts__back { font-size: 26rpx; color: #888; text-align: center; padding: 12rpx; }
 .ts__compose-btn { width: 100%; }
 
@@ -180,6 +198,39 @@
 }
 .ts__current-name { font-size: 30rpx; font-weight: 600; color: #1a1a1a; }
 .ts__current-shape { font-size: 24rpx; color: #888; margin-top: 10rpx; }
+.ts__rating {
+  margin: 16rpx 0 12rpx;
+  padding: 22rpx 24rpx;
+  background: #fff;
+  border-radius: 18rpx;
+  box-shadow: 0 4rpx 18rpx rgba(255,94,138,0.08);
+}
+.ts__rating-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ts__rating-title { font-size: 28rpx; font-weight: 600; color: #333; }
+.ts__rating-value { font-size: 24rpx; color: #ff5e8a; }
+.ts__rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+.ts__rating-star {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  color: #d8d8e2;
+  font-size: 46rpx;
+  transition: transform .15s, color .15s;
+}
+.ts__rating-star.on {
+  color: #ffb000;
+  transform: scale(1.06);
+}
 
 .ts__switch { margin-top: 28rpx; }
 .ts__switch-title { font-size: 28rpx; font-weight: 600; margin-bottom: 16rpx; color: #333; }

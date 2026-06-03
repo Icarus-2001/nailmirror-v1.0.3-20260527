@@ -1,5 +1,29 @@
 # 变更记录
 
+## 1.1.5 · 2026-06-03 · 选款式置底与试戴评分
+
+**小程序版本：`1.1.5`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**选款式页一次展示全部真实款式并固定下一步操作，款式库新增热度旁 5 分评分，试戴完成后可为目录款打分。**
+
+### 试戴与款式库
+
+- **选款式置底**：试戴四步流程的选款式页固定「重新选甲型 + 下一步」，选完款式无需再滚到底部。
+- **全量款式**：选款式页从 12 款改为展示全部真实目录款（当前 25 款 `isActive !== false`），上传参考款入口仍保留在首位。
+- **款式评分**：`style-card` 在热度右侧展示 5 分制评分；无用户评分时按款式 ID/热度生成稳定虚拟分。
+- **试戴后评分**：预览生成后可点 1-5 星评分，目录款评分本地持久化并优先展示；自定义上传参考图不参与目录款评分。
+- **测试同步**：单测改为匹配当前真实款式库；修复 `fetchTrend(undefined)` 空值兜底和 AR smoke 历史 URL 误清理。
+
+### 涉及文件
+
+- `pages/try-on-static/index.{js,wxml,wxss}`、`components/style-card/index.{wxml,wxss}`
+- `services/rating.service.js`、`services/style.service.js`、`services/hot-data.service.js`
+- `config/constants.js`、`app.js`、`package.json`
+
+---
+
 ## 1.1.4 · 2026-06-01 · 登录隐私授权与资料流程修复
 
 **小程序版本：`1.1.4`**（`app.globalData.version`）

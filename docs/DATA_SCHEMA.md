@@ -20,6 +20,15 @@
 | 热度 | `heat` | 热榜排序 |
 | 标签 | `tags` | 字符串数组 |
 
+运行时展示字段（不来自 Excel）：
+
+| 字段 | 来源 | 说明 |
+|------|------|------|
+| `rating` | `rating.service.js` | 5 分制数字；用户本地评分优先，无评分时生成稳定虚拟分 |
+| `ratingText` | `rating.service.js` | 一位小数字符串，供 `style-card` 展示 |
+| `userRating` | `rating.service.js` | 用户试戴后保存的本地评分；无则为空 |
+| `ratingSource` | `rating.service.js` | `user` 或 `virtual` |
+
 重新导入 / 重打标：
 
 ```bash
@@ -47,14 +56,46 @@ VLM 提示词要求从上述词表逐字匹配；`normalizeTag()` 做归一化�
 
 | 页面 | 展示 |
 |------|------|
-| 列表卡片 `style-card` | `color` + `design` 两枚标签 |
+| 列表卡片 `style-card` | `color` + `design` 两枚标签；热度右侧展示 `ratingText` |
 | 商详 `style-detail` | `displayTags` 四枚（色系 / 工艺 / 甲型 / 风格） |
 | 款式库顶部 Tab | 风格、色系（来自 `styleService.getCategories()`） |
 | 款式库筛选抽屉 `filter-drawer`（`useReal`） | 颜色（色系）、工艺、甲型、风格；多选 OR |
 
 内部仍保留 `styleTags` / `shapeTags`（slug）供列表筛选，**不用于试戴**。
 
-### 1.4 试戴英文 prompt（与展示标签同源）
+### 1.3 款式评分（本地）
+
+本期评分先保存在本地 storage，不接云数据库；后续可迁移到 `ops` 云函数或用户评价集合。
+
+| 项 | 说明 |
+|----|------|
+| Storage Key | `np_style_ratings`（`STORAGE_KEYS.STORAGE_STYLE_RATINGS`） |
+| 保存时机 | `try-on-static` 预览生成后，用户点击 1-5 星 |
+| 适用范围 | 仅目录款 `styleId`，自定义上传参考图不参与款式库评分 |
+| 展示优先级 | 用户本地评分 > 稳定虚拟评分 |
+
+单条结构：
+
+```json
+{
+  "styleId": "real-1",
+  "rating": 5,
+  "ratedAt": "2026-06-03T12:00:00.000Z",
+  "source": "try-on-static"
+}
+```
+
+### 1.4 热门搜索词（真实款式）
+
+`USE_REAL_STYLES === true` 时，`hot-data.service.fetchTop20()` 从 `styles.real.js` 聚合：
+
+- 词条：色系、工艺、风格、以及 `色系·工艺` 组合
+- 热度：对应款式 `heat` 求和
+- 返回 20 条，字段仍为 `word` / `platform` / `heat` / `fetchedAt` / `relatedStyleIds`
+
+适用：B 端看板 `pages-b/dashboard`、C 端 `pages/hot-rank`、首页异步热词。点击热词跳转款式库并带 `?keyword=` 搜索。
+
+### 1.5 试戴英文 prompt（与展示标签同源）
 
 | 来源 | 用途 |
 |------|------|
@@ -64,16 +105,6 @@ VLM 提示词要求从上述词表逐字匹配；`normalizeTag()` 做归一化�
 | 用户手选甲型 | 覆盖 `shapePrompt`；否则用 `mapShapeCn(shapeLabel)` |
 
 展示名含「奶牛」「法式」等时，`titlePatternHint` 会追加具象英文图案描述。
-
-### 1.3 热门搜索词（真实款式）
-
-`USE_REAL_STYLES === true` 时，`hot-data.service.fetchTop20()` 从 `styles.real.js` 聚合：
-
-- 词条：色系、工艺、风格、以及 `色系·工艺` 组合
-- 热度：对应款式 `heat` 求和
-- 返回 20 条，字段仍为 `word` / `platform` / `heat` / `fetchedAt` / `relatedStyleIds`
-
-适用：B 端看板 `pages-b/dashboard`、C 端 `pages/hot-rank`、首页异步热词。点击热词跳转款式库并带 `?keyword=` 搜索。
 
 ---
 
@@ -198,3 +229,4 @@ cd nailmirror/src && node scripts/import-eval-hands.js
 | `createdAt` | 试戴时间 |
 | `composedUrl` | 结果图 URL |
 | `userOpenid` | 用户 openid（云试戴成功后写入） |
+| `rating` | 可选；目录款试戴完成后的用户评分 |
