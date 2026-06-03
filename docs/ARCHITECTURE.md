@@ -5,6 +5,7 @@
 ```
 Pages → Services → Adapters → 云函数 / Mock
                 ↘ style.service → mock/styles.real.js
+                              ↘ rating.service → 本地 storage
 ```
 
 - **Pages**：UI 与页面状态
@@ -76,6 +77,8 @@ Handler 标识：`handler-v7-wan27-dual`
 - 源：`data/美甲款式数据（初稿版）.xlsx`
 - 生成：`mock/styles.real.js`（25 条）
 - 消费：`style.service.js` → 款式库、详情、首页、热榜
+- 评分：`rating.service.js` 读取本地 `np_style_ratings`，优先展示用户试戴后评分；无本地评分时按款式 ID/热度生成稳定虚拟评分（4.1-4.9，一位小数）
+- 展示：`style-card` 在热度右侧显示 `ratingText`；目录款试戴生成后可在预览页保存 1-5 星评分
 
 字段映射见 [DATA_SCHEMA.md](./DATA_SCHEMA.md)。
 

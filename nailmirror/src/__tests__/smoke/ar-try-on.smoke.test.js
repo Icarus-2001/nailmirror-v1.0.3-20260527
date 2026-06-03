@@ -87,7 +87,7 @@ describe('[Smoke A2] AR 试戴主流程：首页 → 款式 → AR → 出片 �
 
     const appendRes = await historyService.append({
       styleId: homeStyle.id,
-      hdUrl: 'https://picsum.photos/seed/' + homeStyle.id + '-hd/2000/2666',
+      hdUrl: 'https://example.com/' + homeStyle.id + '-hd.jpg',
       mode: 'ar'
     });
     expect(appendRes.ok).toBe(true);

@@ -39,7 +39,7 @@ nailmirror-v1.6-20260519-r3/
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
-| 款式库 / 详情 / 收藏 | ✅ 真实数据 | `USE_REAL_STYLES: true`；VLM 标准四标签 + 筛选抽屉 |
+| 款式库 / 详情 / 收藏 / 评分 | ✅ 真实数据 | `USE_REAL_STYLES: true`；VLM 标准四标签 + 筛选抽屉；热度旁展示 5 分评分 |
 | 热门搜索词 | ✅ 真实聚合 | `hot-data.service` 从 25 款 `heat` 汇总 |
 | 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 2.1/2.7；prompt 由 `tryon-prompt.js` 从 VLM 标签生成英文 |
 | 首页推荐 / 热款榜 | ✅ 真实封面 | `coverUrl` 来自美团 CDN |
@@ -67,7 +67,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
-**入口（v1.1.1）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.1.1**。
+**入口（v1.1.5）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.1.5**。
 
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）
@@ -76,7 +76,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
       → Qwen-VL：款式图+手照 → inpaint prompt
       → Qwen-VL：指甲位置
       → 万相 2.1 Mask 或 2.7 双图+bbox → 轮询结果
-  → 结果页展示 composedUrl 与所用模型
+  → 结果页展示 composedUrl 与所用模型，可为目录款评分
   → 导出 2K → pages/hd-output → 保存到相册（真机须配 downloadFile 域名，见 SETUP_USER.md §7）
 ```
 
@@ -95,6 +95,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 | `cloudfunctions/tryon/handler.js` | 试戴编排（handler v7） |
 | `cloudfunctions/tryon/wan-backends.js` | 万相 2.1 Mask / 2.7 双图+bbox 双后端 |
 | `services/style.service.js` | 款式列表 / 详情 / 筛选 |
+| `services/rating.service.js` | 款式评分读取、虚拟评分注入、试戴后本地评分保存 |
 | `services/hot-data.service.js` | 热款榜（真实数据时按 heat 排序） |
 
 ## 数据更新
