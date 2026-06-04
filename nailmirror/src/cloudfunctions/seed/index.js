@@ -10,7 +10,7 @@
  *
  * 字段命名完全对齐云数据库真实 schema（下划线）：
  *   styles:          _id, name, color, design, shape, style, image_url, rank_weight, is_active, created_at
- *   users:           _id, nickname, avatar_url, is_member, created_at
+ *   users:           _id(openid), nickname, avatar_url, role, is_member, created_at, updated_at, last_login_at
  *   try_on_logs:     style_id, tried_at, user_id
  *   external_trends: platform, post_url, engagement, color, design, shape, style, scraped_at, posted_at
  */
@@ -103,24 +103,34 @@ async function seedStyles(db, useVlm) {
   return results.length
 }
 
+// seed 测试用户 _id，格式对齐真实微信 openid（try_on_logs.user_id 引用同一套）
+const MOCK_OPENIDS = ['mock-openid-001', 'mock-openid-002', 'mock-openid-003', 'mock-openid-004', 'mock-openid-005']
+
+function _mockUserId() {
+  return MOCK_OPENIDS[_randInt(0, MOCK_OPENIDS.length - 1)]
+}
+
 // ─── 灌入 users（5条）───────────────────────────────────────────────────────
 
 async function seedUsers(db) {
-  const rows = [1, 2, 3, 4, 5].map((i) => ({
-    _id:        'mock-user-' + i,
-    nickname:   '体验用户' + i,
+  const rows = MOCK_OPENIDS.map((openid, i) => ({
+    _id:        openid,
+    nickname:   '体验用户' + (i + 1),
     avatar_url: '',
-    is_member:  i === 1,
+    role:       'c',
+    is_member:  i === 0,
   }))
 
   const results = await batchRun(rows, WRITE_BATCH, (row) =>
-    db.collection('users').add({
+    db.collection('users').doc(row._id).set({
       data: {
-        _id:        row._id,
-        nickname:   row.nickname,
-        avatar_url: row.avatar_url,
-        is_member:  row.is_member,
-        created_at: db.serverDate(),
+        nickname:      row.nickname,
+        avatar_url:    row.avatar_url,
+        role:          row.role,
+        is_member:     row.is_member,
+        created_at:    db.serverDate(),
+        updated_at:    db.serverDate(),
+        last_login_at: db.serverDate(),
       },
     })
   )
@@ -155,10 +165,10 @@ async function seedTryOnLogs(db, lite) {
     const recent = Math.ceil(total * 0.65)
     const older  = total - recent
     for (let i = 0; i < recent; i++) {
-      logs.push({ style_id: id, tried_at: _randomDate(0, 3), user_id: 'mock-user-' + _randInt(1, 5) })
+      logs.push({ style_id: id, tried_at: _randomDate(0, 3), user_id: _mockUserId() })
     }
     for (let i = 0; i < older; i++) {
-      logs.push({ style_id: id, tried_at: _randomDate(4, 14), user_id: 'mock-user-' + _randInt(1, 5) })
+      logs.push({ style_id: id, tried_at: _randomDate(4, 14), user_id: _mockUserId() })
     }
   }
 
@@ -168,10 +178,10 @@ async function seedTryOnLogs(db, lite) {
     const recent = Math.ceil(total * 0.55)
     const older  = total - recent
     for (let i = 0; i < recent; i++) {
-      logs.push({ style_id: id, tried_at: _randomDate(0, 3), user_id: 'mock-user-' + _randInt(1, 5) })
+      logs.push({ style_id: id, tried_at: _randomDate(0, 3), user_id: _mockUserId() })
     }
     for (let i = 0; i < older; i++) {
-      logs.push({ style_id: id, tried_at: _randomDate(4, 14), user_id: 'mock-user-' + _randInt(1, 5) })
+      logs.push({ style_id: id, tried_at: _randomDate(4, 14), user_id: _mockUserId() })
     }
   }
 

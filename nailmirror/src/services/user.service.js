@@ -42,7 +42,7 @@ async function _cloudLogin(profile) {
     nickname: r.data.nickname || (profile && profile.nickname) || '',
     avatarUrl: r.data.avatarUrl || (profile && profile.avatarUrl) || '',
     role: r.data.role || 'c',
-    membershipLevel: 0,
+    membershipLevel: r.data.isMember ? 1 : 0,
     lastRemoveDate: ''
   };
 }
