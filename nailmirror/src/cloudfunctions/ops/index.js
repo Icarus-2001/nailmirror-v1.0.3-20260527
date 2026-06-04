@@ -4,12 +4,15 @@
  * 所有 B 端运营操作通过 action 字段路由：
  *
  *   ping            健康检查
- *   getSummary      运营数据快照（热款 / 飙升 / 冷款 / 外部趋势）
+ *   getSummary      运营数据快照（热款 / 飙升 / 冷款 / 外部趋势 / 品质分）
  *   generateReport  生成每日运营日报（幂等，Moonshot 同时产出日报+策略）
  *   approveReport   日报审批通过
  *   rejectReport    日报驳回
  *   executeReport   执行调权策略（写库）
  *   tagExternal     外部趋势录入 + VLM 自动打标
+ *   logTryOn        C端：试戴成功写入 try_on_logs（fire-and-forget）
+ *   rateStyle       C端：用户评分追加写入 style_ratings（fire-and-forget）
+ *   logEvent        C端：行为漏斗埋点写入 user_events（fire-and-forget）
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -23,6 +26,9 @@ const { approveReport,
         rejectReport }           = require('./handlers/approveReport')
 const { executeReport }          = require('./handlers/executeReport')
 const { tagExternal }            = require('./handlers/tagExternal')
+const { logTryOn }               = require('./handlers/logTryOn')
+const { rateStyle }              = require('./handlers/rateStyle')
+const { logEvent }               = require('./handlers/logEvent')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -50,6 +56,16 @@ exports.main = async (event, context) => {
 
       case 'tagExternal':
         return await tagExternal({ ...event, callerOpenid })
+
+      // ── C端数据收集（无需鉴权，fire-and-forget）──────────────────
+      case 'logTryOn':
+        return await logTryOn(event)
+
+      case 'rateStyle':
+        return await rateStyle(event)
+
+      case 'logEvent':
+        return await logEvent(event)
 
       default:
         return { error: `未知 action: ${action}` }

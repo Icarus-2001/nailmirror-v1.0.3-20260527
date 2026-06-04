@@ -48,7 +48,30 @@ function rateStyle(styleId, rating, source) {
   };
   all[styleId] = record;
   saveRatings(all);
+  // fire-and-forget：追加一条评分记录到云端 style_ratings
+  _pushRatingToCloud(styleId, normalized);
   return record;
+}
+
+/**
+ * 将用户评分异步上报到云端 style_ratings，追加记录，不覆盖历史。
+ * 失败静默，不影响本地保存流程。
+ */
+function _pushRatingToCloud(styleId, normalized) {
+  try {
+    const cloudUtil = require('../utils/cloud');
+    const { userStore } = require('../stores/user.store');
+    if (!cloudUtil.isCloudReady()) return;
+    const openid = (userStore && userStore.openid) || 'guest';
+    cloudUtil.callFunction('ops', {
+      action:  'rateStyle',
+      styleId,
+      openid,
+      rating:  normalized,
+    }).catch(() => {});
+  } catch (e) {
+    // 云环境不可用时静默忽略
+  }
 }
 
 function withRating(style) {
