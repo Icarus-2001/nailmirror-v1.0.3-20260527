@@ -1,5 +1,37 @@
 # 变更记录
 
+## [未发布] · 2026-06-05 · 试戴数据云端化 & 漏斗埋点 & 品质分
+
+### 新增云数据集合
+- `style_ratings`：每次用户打星追加一条记录（不覆盖历史），字段：`style_id, user_id, rating, rated_at`
+- `user_events`：试戴链路行为埋点，字段：`event_type, style_id, user_id, session_id, timestamp, extra`
+
+### ops 云函数新增 action
+- `logTryOn`：合成成功后 C 端 fire-and-forget 写入 `try_on_logs`，自动跳过 `custom-*` 自定义款
+- `rateStyle`：追加写入 `style_ratings`，rating 值范围 1-5
+- `logEvent`：写入 `user_events`，支持 9 个标准事件节点（见 handler 注释）
+
+### 品质分算法（MVP）
+`style_ratings` 所有历史记录参与计算，按时间衰减加权平均：
+- `weight = 0.5 ^ (days_ago / 30)`（半衰期 30 天）
+- `quality_score = Σ(rating × weight) / Σ(weight)`，保留 1 位小数
+- `getSummary` 返回的 `hotStyles / trendingUp / coldStyles` 均附带 `qualityScore` 字段
+
+### ops 排期逻辑优化
+- `getSummary`：热款综合「近7天试戴量 + 品质分」双维度，`qualityScore` 返回给运营界面
+- `generateReport` LLM prompt：热款行含品质分；boosts 策略注释说明热度+品质分双因子
+
+### C 端改动
+- `pages/try-on-static`：进入页生成 `_sessionId`，试戴各节点自动调 `ops.logEvent`（tryon_enter / shape_confirmed / style_confirmed / compose_start / compose_success / compose_fail + error / save_success / rated）；合成成功额外调 `ops.logTryOn`
+- `services/rating.service.js`：打星本地保存后 fire-and-forget 上报 `ops.rateStyle`
+
+### 涉及文件
+- `cloudfunctions/ops/index.js`、`handlers/logTryOn.js`（新）、`handlers/rateStyle.js`（新）、`handlers/logEvent.js`（新）
+- `cloudfunctions/ops/handlers/getSummary.js`、`cloudfunctions/ops/utils/llm.js`
+- `pages/try-on-static/index.js`、`services/rating.service.js`
+
+---
+
 ## 1.1.5 · 2026-06-03 · 选款式置底与试戴评分
 
 **小程序版本：`1.1.5`**（`app.globalData.version`）

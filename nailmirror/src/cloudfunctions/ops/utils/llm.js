@@ -81,8 +81,8 @@ ${p.externalLines}
 ===策略结束===
 
 策略规则：
-- boosts：从热门款式中选择表现最好的款式，newWeight设在2.0~5.0之间，
-  热度越高设得越高，最多选3款
+- boosts：综合考量"近7天试戴量"与"品质分"，两者均高的款优先，newWeight设在2.0~5.0之间，最多选3款
+  （品质分高但试戴低的潜力款可适度提权；试戴高但品质分低的款谨慎提权）
 - demotes：从冷款中选tryCount7d=0且lastTriedAt超过14天（或从未试戴）的款式，
   newWeight统一设为0.5，最多选3款
 - alerts：冷款列表中所有款式都列入
@@ -91,20 +91,20 @@ ${p.externalLines}
 function _formatHotLines(hotStyles) {
   if (!hotStyles || !hotStyles.length) return '（无）'
   return hotStyles
-    .map(
-      (s) =>
-        `款式[${s.styleId}]「${s.name}」${s.design || ''}/${s.color || ''} 近7天试戴:${s.tryCount7d}次`
-    )
+    .map((s) => {
+      const score = s.qualityScore ? ` 品质分:${s.qualityScore}` : ''
+      return `款式[${s.styleId}]「${s.name}」${s.design || ''}/${s.color || ''} 近7天试戴:${s.tryCount7d}次${score}`
+    })
     .join('\n')
 }
 
 function _formatColdLines(coldStyles) {
   if (!coldStyles || !coldStyles.length) return '（无）'
   return coldStyles
-    .map(
-      (s) =>
-        `款式[${s.styleId}]「${s.name}」${s.design || ''}/${s.color || ''} 近7天0次 上次试戴:${s.lastTriedAt || '从未试戴'}`
-    )
+    .map((s) => {
+      const score = s.qualityScore ? ` 品质分:${s.qualityScore}` : ''
+      return `款式[${s.styleId}]「${s.name}」${s.design || ''}/${s.color || ''} 近7天0次 上次试戴:${s.lastTriedAt || '从未试戴'}${score}`
+    })
     .join('\n')
 }
 

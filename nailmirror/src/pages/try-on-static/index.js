@@ -111,6 +111,10 @@ Page({
     const initWanModel = resolveInitialWanModel();
     const wanOpts = featureFlags.WAN_MODEL_OPTIONS || [];
 
+    // 每次进入生成一个会话 ID，用于漏斗分析
+    this._sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    this._logEvent('tryon_enter', { shortFlow: !needPickStyle });
+
     this.setData({
       needPickStyle,
       stepLabels: needPickStyle ? STEP_LABELS_FULL : STEP_LABELS_SHORT,
@@ -231,6 +235,7 @@ Page({
       wx.showToast({ title: '请先选择甲型', icon: 'none' });
       return;
     }
+    this._logEvent('shape_confirmed', { shape: this.data.selectedShape });
     if (this.data.needPickStyle) {
       this._gotoStep('style');
       this.loadStyleList();
@@ -270,6 +275,7 @@ Page({
       wx.showToast({ title: '请先选择款式', icon: 'none' });
       return;
     }
+    this._logEvent('style_confirmed', { styleId: this.data.styleId });
     this._gotoStep('photo');
   },
 
@@ -377,6 +383,7 @@ Page({
       return;
     }
     this._gotoStep('preview');
+    this._logEvent('compose_start');
     composeWaiting.start(this);
     try {
       const r = await tryOnService.startStatic(
@@ -391,7 +398,10 @@ Page({
         usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
       });
       this._applyStyleRatingState(this.data.style);
+      this._logEvent('compose_success');
+      this._logTryOn(this.data.styleId);
     } catch (e) {
+      this._logEvent('compose_fail', { error: (e && e.message) || String(e) });
       wx.showToast({ title: e.message || '合成失败', icon: 'none' });
     } finally {
       composeWaiting.stop(this);
@@ -449,12 +459,15 @@ Page({
           usedWanModelLabel: wanModelLabel(r.wanModel || this.data.selectedWanModel)
         });
         tryOnStore.setStyle(id);
+        this._logEvent('compose_success', { switched: true });
+        this._logTryOn(id);
         try {
           const style = await styleService.get(id);
           this.setData({ style });
           this._applyStyleRatingState(style);
         } catch (e) { /* ignore */ }
       } catch (e) {
+        this._logEvent('compose_fail', { error: (e && e.message) || String(e), switched: true });
         wx.showToast({ title: (e && e.message) || '换款失败', icon: 'none' });
       } finally {
         composeWaiting.stop(this);
@@ -475,6 +488,7 @@ Page({
     const record = ratingService.rateStyle(this.data.styleId, rating, 'try-on-static');
     if (!record) return;
     this.setData({ styleRating: record.rating });
+    this._logEvent('rated', { rating: record.rating });
     wx.showToast({ title: '评分已保存', icon: 'success' });
   },
   async onSaveAndOutput() {
@@ -516,10 +530,38 @@ Page({
       }
       await historyService.append(hist);
       wx.hideLoading();
+      this._logEvent('save_success');
       require('../../utils/hd-output-nav').navigateTo(this.data.styleId, hd.hdUrl);
     } catch (e) {
       wx.hideLoading();
       wx.showToast({ title: (e && e.message) || '导出失败', icon: 'none' });
     }
-  }
+  },
+
+  // ── 行为埋点 / 试戴记录（fire-and-forget，不影响主流程）────────────────────
+
+  _logEvent(eventType, extra) {
+    if (!cloudUtil.isCloudReady()) return;
+    const openid = (userStore && userStore.openid) || 'guest';
+    cloudUtil.callFunction('ops', {
+      action:     'logEvent',
+      eventType,
+      styleId:    this.data.styleId || '',
+      userId:     openid,
+      sessionId:  this._sessionId || '',
+      extra:      extra || {},
+    }).catch(() => {});
+  },
+
+  _logTryOn(styleId) {
+    if (!cloudUtil.isCloudReady()) return;
+    const sid = styleId || this.data.styleId;
+    if (!sid || String(sid).indexOf('custom-') === 0) return;
+    const openid = (userStore && userStore.openid) || 'guest';
+    cloudUtil.callFunction('ops', {
+      action:  'logTryOn',
+      styleId: sid,
+      openid,
+    }).catch(() => {});
+  },
 });
