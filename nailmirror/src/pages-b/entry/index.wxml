@@ -1,11 +1,12 @@
 <view class="be np-container">
   <view class="be__head">
-    <view class="be__title">商家中心 · {{role === 'b' ? '已切换商家身份' : 'C 端用户'}}</view>
-    <view class="be__hint" wx:if="{{role !== 'b'}}">点击下方切换为商家身份后查看完整数据</view>
+    <view class="be__title">商家中心 · {{role === 'b' ? '已验证商家身份' : '普通用户'}}</view>
+    <view class="be__hint" wx:if="{{role !== 'b'}}">完成身份认证后可使用商家经营功能</view>
+    <view class="be__verified" wx:else>身份已通过平台验证，可使用全部商家功能</view>
   </view>
 
-  <view wx:if="{{role !== 'b'}}" class="np-btn np-btn--block be__switch" bindtap="onSwitchToB">切换为商家身份</view>
-  <view wx:else class="np-btn np-btn--ghost np-btn--block be__switch" bindtap="onSwitchToC">退出商家身份</view>
+  <view wx:if="{{role !== 'b'}}" class="np-btn np-btn--block be__switch" bindtap="onSwitchToB">商家身份认证</view>
+  <view wx:else class="np-btn np-btn--ghost np-btn--block be__switch" bindtap="onSwitchToC">退出商家模式</view>
 
   <view class="be__menu" wx:if="{{role === 'b'}}">
     <view class="be__item" bindtap="onGoDashboard">

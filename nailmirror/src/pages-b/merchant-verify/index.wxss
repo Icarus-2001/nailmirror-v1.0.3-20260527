@@ -1,0 +1,100 @@
+.mv { padding-bottom: 80rpx; }
+
+.mv__card {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.mv__section {
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid var(--np-border, #f0f0f0);
+}
+
+.mv__section--last {
+  border-bottom: none;
+}
+
+.mv__label {
+  font-size: 26rpx;
+  color: var(--np-text-weak, #666);
+  margin-bottom: 14rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.mv__required {
+  color: #ff4d67;
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.mv__optional {
+  color: #aaa;
+  font-size: 22rpx;
+  font-weight: 400;
+}
+
+.mv__input {
+  width: 100%;
+  font-size: 28rpx;
+  color: #333;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.mv__picker {
+  font-size: 28rpx;
+  color: #333;
+  height: 64rpx;
+  line-height: 64rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mv__picker--placeholder {
+  color: #bbb;
+}
+
+.mv__picker-arrow {
+  font-size: 32rpx;
+  color: var(--np-text-weak, #aaa);
+}
+
+.mv__btn {
+  margin: 40rpx 0 24rpx;
+  font-size: 30rpx;
+  letter-spacing: 2rpx;
+}
+
+.mv__btn--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.mv__apply {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--np-text-weak, #888);
+  padding: 8rpx 0 32rpx;
+}
+
+.mv__apply-link {
+  color: var(--np-primary, #ff4d67);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.mv__notice {
+  text-align: center;
+  font-size: 22rpx;
+  color: #bbb;
+  padding: 0 40rpx;
+  line-height: 1.6;
+}

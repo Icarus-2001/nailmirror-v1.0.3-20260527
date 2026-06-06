@@ -1,0 +1,53 @@
+<view class="mv np-container">
+
+  <view class="mv__card">
+    <view class="mv__section">
+      <view class="mv__label">内测口令 <text class="mv__required">*</text></view>
+      <input class="mv__input" placeholder="请输入平台提供的内测口令"
+        password type="text" data-field="token" bindinput="onInputChange"/>
+    </view>
+  </view>
+
+  <view class="mv__card">
+    <view class="mv__section">
+      <view class="mv__label">商家手机号 <text class="mv__required">*</text></view>
+      <input class="mv__input" placeholder="请输入手机号" type="number"
+        data-field="phone" bindinput="onInputChange"/>
+    </view>
+
+    <view class="mv__section mv__section--last">
+      <view class="mv__label">门店名称 <text class="mv__required">*</text></view>
+      <input class="mv__input" placeholder="请输入门店全称"
+        data-field="storeName" bindinput="onInputChange"/>
+    </view>
+  </view>
+
+  <view class="mv__card">
+    <view class="mv__section">
+      <view class="mv__label">所在城市 <text class="mv__required">*</text></view>
+      <picker mode="region" bindchange="onRegionChange">
+        <view class="mv__picker {{form.province ? '' : 'mv__picker--placeholder'}}">
+          {{regionText}} <text class="mv__picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="mv__section mv__section--last">
+      <view class="mv__label">美团 / 大众点评门店链接 <text class="mv__optional">（选填）</text></view>
+      <input class="mv__input" placeholder="粘贴门店主页 URL 即可"
+        data-field="reviewUrl" bindinput="onInputChange"/>
+    </view>
+  </view>
+
+  <view class="mv__btn np-btn np-btn--block {{submitting ? 'mv__btn--disabled' : ''}}"
+    bindtap="onSubmit">{{submitting ? '验证中...' : '提交验证'}}</view>
+
+  <view class="mv__apply" bindtap="onGoApply">
+    尚未入驻？<text class="mv__apply-link">成为入驻商家</text>
+  </view>
+
+  <view class="mv__notice">
+    内测阶段，OCR 审核能力有待后续接入。当前仅作信息留档，平台将人工复核。
+  </view>
+
+</view>
