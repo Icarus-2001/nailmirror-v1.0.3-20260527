@@ -492,6 +492,19 @@ Page({
   async onSwitchStyle(e) {
     const id = e.currentTarget.dataset.id;
     if (id === this.data.styleId) return;
+    const alt = (this.data.altStyles || []).find((s) => s.id === id);
+    const name = (alt && alt.title) || '该款式';
+    const res = await wx.showModal({
+      title: '换个款式试试',
+      content: '确定换用「' + name + '」重新合成试戴效果？',
+      cancelText: '取消',
+      confirmText: '确定换款'
+    });
+    if (!res.confirm) return;
+    await this._doSwitchStyle(id);
+  },
+
+  async _doSwitchStyle(id) {
     if (this.data.photoPath) {
       composeWaiting.start(this, '换款合成中，请稍候…');
       try {
@@ -531,6 +544,7 @@ Page({
       this._applyStyleRatingState(style);
     } catch (e) { /* ignore */ }
   },
+
   onRateTryonEffect(e) {
     if (this.data.ratingsLocked || !this.data.canRateStyle) return;
     this._syncRatingSubmitState({ tryonEffectDraft: Number(e.detail.value) || 0 });
