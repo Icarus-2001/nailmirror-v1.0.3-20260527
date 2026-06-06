@@ -19,6 +19,7 @@
       "name": "merchant",
       "pages": [
         "entry/index",
+        "merchant-verify/index",
         "dashboard/index",
         "style-upload/index",
         "stock-advice/index",

@@ -47,7 +47,7 @@
     </view>
     <view class="me__menu-item" bindtap="onGoMerchant">
       <text class="me__menu-icon">🏪</text>
-      <text class="me__menu-label">商家入口（B 端）</text>
+      <text class="me__menu-label">商家经营入口</text>
       <text class="me__menu-arrow">›</text>
     </view>
   </view>

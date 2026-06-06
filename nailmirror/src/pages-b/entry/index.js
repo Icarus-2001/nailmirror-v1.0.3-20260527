@@ -9,9 +9,7 @@ Page({
     this.setData({ role: userStore.role || 'c' });
   },
   onSwitchToB() {
-    userStore.setRole('b');
-    this.setData({ role: 'b' });
-    wx.showToast({ title: '已切换到商家身份' });
+    wx.navigateTo({ url: '/pages-b/merchant-verify/index' });
   },
   onSwitchToC() {
     userStore.setRole('c');

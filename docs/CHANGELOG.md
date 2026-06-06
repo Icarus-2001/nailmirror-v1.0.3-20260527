@@ -1,5 +1,55 @@
 # 变更记录
 
+## 1.1.11 · 2026-06-06 · 商家经营入口与身份验证
+
+**小程序版本：`1.1.11`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**「我的」页入口改为商家经营入口；未验证用户须填写内测口令与门店信息完成认证，云端写入 `merchants` 并回写 `users.role`，通过后方可进入 B 端经营功能。**
+
+### 商家经营入口（C 端 / B 端入口页）
+
+- **文案**：`pages/me`「商家入口（B 端）」→「商家经营入口」。
+- **入口逻辑**：`pages-b/entry` 不再本地一键 `setRole('b')`；未验证用户点击「商家身份认证」跳转验证页；已验证（`role === 'b'`）直接展示 B 端菜单，头部提示「已验证商家身份」，可「退出商家模式」。
+
+### 商家身份认证页（新）
+
+- **页面**：`pages-b/merchant-verify`（分包注册于 `app.json`）。
+- **必填**：内测口令、商家手机号、门店名称、所在省市（`picker mode="region"` 二级选择）。
+- **选填**：美团 / 大众点评门店链接（内测仅留档，不做 OCR 强制校验）。
+- **交互**：提交前前端校验；口令错误 Toast「口令错误，无法切换为商家经营模式」；成功 Toast 后 `userStore.setRole('b')` 并返回商家中心。
+- **底部说明**：「内测阶段，OCR 审核能力有待后续接入」；「成为入驻商家」预留申请入口。
+
+### ops 云函数：verifyMerchant
+
+- **新增 action：`verifyMerchant`**：校验 `MERCHANT_TOKEN` 环境变量（兜底 `nailmirror2026`）→ `ensureCollection('merchants')` 建表 → 幂等写入/更新 `merchants`（`openid`、`store_name`、`province`、`city`、`phone`、`review_url`、`status: approved`）→ 若 `users` 存在则回写 `role: 'b'`。
+- **返回**：`{ ok, merchantId, merchantAction, userRoleUpdated }`，便于云端测试核对写库结果。
+
+### 涉及文件
+
+- `pages/me/index.wxml`
+- `pages-b/entry/index.{js,wxml,wxss}`
+- `pages-b/merchant-verify/index.{js,wxml,wxss,json}`（新）
+- `cloudfunctions/ops/handlers/verifyMerchant.js`（新）、`cloudfunctions/ops/index.js`
+- `app.json`、`app.js`、`package.json`
+- `AGENTS.md`（云开发操作说明偏好）
+
+### 部署注意
+
+- 微信开发者工具重新上传部署 **`ops`** 云函数；推 Git 不会自动更新云端。
+- 可选：云函数环境变量 **`MERCHANT_TOKEN`** 覆盖默认内测口令；修改后须重新部署 `ops`。
+- **云端测试**：`ops` 云端测试参数须含 `"action": "verifyMerchant"`（勿用 `ping` 误判成功）；返回含 `merchantId` 后，在云开发控制台数据库（环境 `cloud1-d2g3df4y16873034b`）刷新即可见 `merchants` 集合。
+- 小程序端须**重新编译**后，走「我的 → 商家经营入口 → 商家身份认证 → 提交验证」验收。
+
+### 验证
+
+- 云端测试 `verifyMerchant`：口令正确返回 `{ ok: true, merchantAction: 'created' }`，数据库出现 `merchants` 记录。
+- 口令错误返回 `{ ok: false, error: '口令错误，无法切换为商家经营模式' }`。
+- 小程序：验证成功后商家中心展示 B 端菜单；未验证仅见认证按钮。
+
+---
+
 ## 1.1.10 · 2026-06-06 · 评分清零展示、商家款全局可见与来源标签
 
 **小程序版本：`1.1.10`**（`app.globalData.version`）
