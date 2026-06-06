@@ -1,5 +1,70 @@
 # 变更记录
 
+## 1.2.3 · 2026-06-06 · 商家身份拦截、联系商家直拨与首页响应式
+
+**小程序版本：`1.2.3`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**普通用户点击「商家经营入口」须先经云端 merchants 验证；商详「联系商家」对入驻商家款直接调起拨号盘；首页「为你推荐」改用 CSS Grid 适配多机型；修复 xhs-hot 服务模块依赖图缺失。**
+
+### 商家身份拦截加固（C 端 + ops）
+
+- **问题**：此前仅依赖本地 `userStore.role` 缓存，普通用户可绕过验证直接进入 B 端菜单。
+- **新增 action：`checkMerchantStatus`**：按 `openid` 查询 `merchants` 集合，以云端 `status` 为准判定是否已入驻（不依赖本地 role）。
+- **`services/merchant-auth.service.js`**：封装 `isMerchantVerified(openid)`，供入口页复用。
+- **`pages/me/index.js`**：`onGoMerchant` 先调云端验证；已入驻 → 设 `role=b` 进 `pages-b/entry`；未入驻 → 设 `role=c` 跳 `pages-b/merchant-verify`。
+- **`pages-b/entry/index.js`**：`onShow` 同样做云端验证；未通过则 `wx.redirectTo` 验证页，防止深链直达绕过。
+- **`pages-b/merchant-verify/index.js`**：认证成功后 `wx.redirectTo` 至 entry（不再 `navigateBack`）。
+
+### 联系商家直拨（C 端）
+
+- **`pages/style-detail/index.js`**：新增 `normalizePhone`、`dialPhone`；`onContact` 与 `onDialPhone` 对商家款直接调用 `wx.makePhoneCall`，失败时降级展示门店与电话信息。
+- **`pages/style-detail/index.wxml`**：商家联系电话行绑定 `bindtap="onDialPhone"`，可点击拨号。
+- **`pages/style-detail/index.wxss`**：`.sd__phone` 可点击样式（主色 + 下划线）。
+
+### 首页响应式布局（C 端）
+
+- **问题**：原 `flex + calc(50% - 10rpx)` 在部分机型上「为你推荐」仅显示左半栏。
+- **`pages/home/index.wxml`**：「为你推荐」改用 `np-grid` + `home__grid-item` 双列网格。
+- **`pages/home/index.wxss`**：副入口与推荐区统一 `display: grid; grid-template-columns: repeat(2, 1fr)`；卡片封面 `aspect-ratio: 3/4` 替代固定高度；`min-width: 0` 防止 flex/grid 子项溢出；`.home` 加 `overflow-x: hidden`。
+
+### 依赖图修复
+
+- **`app.js`**：显式 `require('./services/xhs-hot.service')`，避免款式库等页面间接引用时报 `module is not defined`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/checkMerchantStatus.js`（新）、`index.js`
+- `services/merchant-auth.service.js`（新）
+- `pages/me/index.js`、`pages-b/entry/index.{js,wxml}`、`pages-b/merchant-verify/index.js`
+- `pages/style-detail/index.{js,wxml,wxss}`
+- `pages/home/index.{wxml,wxss}`
+- `app.js`、`package.json`
+- `tests/cloudfunctions/checkMerchantStatus.test.js`（新）
+
+### 部署注意
+
+- **须重新部署 `ops` 云函数**（新增 `checkMerchantStatus` action；推 Git 不会自动更新云端）：
+  1. 微信开发者工具 → 打开 `nailmirror/src/` 项目
+  2. 左侧文件树找到 `cloudfunctions/ops` 文件夹
+  3. 右键 → **上传并部署：云端安装依赖**
+  4. 等待控制台提示部署成功
+- **云端测试**（云开发控制台 → 云函数 → ops → 云端测试）：
+  - 参数：`{"action":"checkMerchantStatus","openid":"你的openid"}`
+  - 预期：`{"ok":true,"verified":true}`（已入驻）或 `{"ok":true,"verified":false}`（未入驻）
+- **小程序侧**：工具 → 清除缓存 → 全部清除 → 重新编译；真机验收拨号须在手机上测试（模拟器仅显示「仅为模拟」）。
+
+### 验证
+
+- `npm test -- --runInBand`：`checkMerchantStatus` 单测通过。
+- 普通用户（未入驻）点击「商家经营入口」→ 跳转商家身份认证页，不可直接进入 B 端菜单。
+- 已入驻商家认证通过 → 正常进入 B 端 entry 菜单。
+- 商详「来自商家」款点击「联系商家」或联系电话 → 真机调起拨号盘；平台特供款提示「该款式不来源于任何入驻商家」。
+- 首页「为你推荐」在多种机型上双列完整显示，无左半栏裁切。
+
+---
+
 ## 1.2.2 · 2026-06-06 · 试戴预览换款二次确认
 
 **小程序版本：`1.2.2`**（`app.globalData.version`）
