@@ -1,5 +1,6 @@
 const cloud = require('wx-server-sdk');
 const { tagNailImage } = require('../utils/llm');
+const { findMerchantByOpenid } = require('../utils/merchant');
 
 function assertMerchantRole(role) {
   if (role !== 'b') throw new Error('debug auth requires merchant role');
@@ -61,7 +62,7 @@ async function createStyle(db, item, index, merchantId) {
     original_name: item.originalName || '',
     rank_weight: rankWeightFor(item.fileID, index),
     is_active: true,
-    merchant_id: merchantId || 'merchant-debug',
+    merchant_id: merchantId,
     source: 'merchant-upload',
     created_at: now
   };
@@ -73,13 +74,19 @@ async function uploadMerchantStyles(event) {
   const role = event && event.role;
   assertMerchantRole(role);
   const items = Array.isArray(event && event.items) ? event.items : [];
+  const merchantOpenid = String((event && event.callerOpenid) || (event && event.merchantId) || '').trim();
+  if (!merchantOpenid) throw new Error('missing merchant identity');
+
   const db = cloud.database();
+  const merchant = await findMerchantByOpenid(db, merchantOpenid);
+  if (!merchant) throw new Error('请先完成商家身份认证');
+
   const styles = [];
   const failed = [];
 
   for (let i = 0; i < items.length; i += 1) {
     try {
-      styles.push(await createStyle(db, items[i], i, event.merchantId));
+      styles.push(await createStyle(db, items[i], i, merchantOpenid));
     } catch (err) {
       failed.push({
         fileID: items[i] && items[i].fileID,

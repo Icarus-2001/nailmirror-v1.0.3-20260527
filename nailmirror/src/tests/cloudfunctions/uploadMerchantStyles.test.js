@@ -16,18 +16,26 @@ jest.mock('../../cloudfunctions/ops/utils/llm', () => ({
   tagNailImage: jest.fn()
 }));
 
+jest.mock('../../cloudfunctions/ops/utils/merchant', () => ({
+  findMerchantByOpenid: jest.fn()
+}));
+
 describe('uploadMerchantStyles cloud handler', () => {
   let uploadMerchantStyles;
   let cloud;
   let tagNailImage;
+  let findMerchantByOpenid;
 
   beforeEach(() => {
     jest.resetModules();
     cloud = require('wx-server-sdk');
     tagNailImage = require('../../cloudfunctions/ops/utils/llm').tagNailImage;
+    findMerchantByOpenid = require('../../cloudfunctions/ops/utils/merchant').findMerchantByOpenid;
     cloud.__mock.add.mockReset();
     cloud.__mock.getTempFileURL.mockReset();
     tagNailImage.mockReset();
+    findMerchantByOpenid.mockReset();
+    findMerchantByOpenid.mockResolvedValue({ openid: 'merchant-1', store_name: 'Test Shop' });
     uploadMerchantStyles = require('../../cloudfunctions/ops/handlers/uploadMerchantStyles').uploadMerchantStyles;
   });
 
@@ -72,6 +80,15 @@ describe('uploadMerchantStyles cloud handler', () => {
     expect(typeof result.styles[0].rank_weight).toBe('number');
   });
 
+  test('rejects upload when merchant is not verified', async () => {
+    findMerchantByOpenid.mockResolvedValueOnce(null);
+    await expect(uploadMerchantStyles({
+      role: 'b',
+      callerOpenid: 'unknown-openid',
+      items: [{ fileID: 'cloud://style/1.jpg' }],
+    })).rejects.toThrow('商家身份认证');
+  });
+
   test('single item failure does not block other uploads', async () => {
     cloud.__mock.getTempFileURL
       .mockRejectedValueOnce(new Error('temp url failed'))
@@ -89,6 +106,7 @@ describe('uploadMerchantStyles cloud handler', () => {
 
     const result = await uploadMerchantStyles({
       role: 'b',
+      callerOpenid: 'merchant-1',
       items: [
         { fileID: 'cloud://style/1.jpg' },
         { fileID: 'cloud://style/2.jpg', originalName: 'two.jpg' }

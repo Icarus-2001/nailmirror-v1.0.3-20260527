@@ -18,9 +18,10 @@
       <text wx:if="{{style.qualityText}}" class="sd__quality">美甲品质 {{style.qualityText}}</text>
     </view>
 
-    <view class="sd__merchant" wx:if="{{merchant}}">
-      <view class="np-title">{{merchant.name}}</view>
-      <view class="np-subtitle">{{merchant.city}} · {{merchant.businessHours}}</view>
+    <view class="sd__merchant" wx:if="{{style.styleSource === 'merchant-upload' && merchantContact}}">
+      <view class="np-title">{{merchantContact.storeName}}</view>
+      <view class="np-subtitle" wx:if="{{merchantContact.province || merchantContact.city}}">{{merchantContact.province}} {{merchantContact.city}}</view>
+      <view class="np-subtitle" wx:if="{{merchantContact.phone}}">联系电话 {{merchantContact.phone}}</view>
     </view>
   </view>
 
