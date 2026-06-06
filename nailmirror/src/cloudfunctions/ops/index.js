@@ -26,6 +26,7 @@ const { approveReport,
         rejectReport }           = require('./handlers/approveReport')
 const { executeReport }          = require('./handlers/executeReport')
 const { tagExternal }            = require('./handlers/tagExternal')
+const { uploadMerchantStyles }   = require('./handlers/uploadMerchantStyles')
 const { logTryOn }               = require('./handlers/logTryOn')
 const { rateStyle }              = require('./handlers/rateStyle')
 const { logEvent }               = require('./handlers/logEvent')
@@ -56,6 +57,9 @@ exports.main = async (event, context) => {
 
       case 'tagExternal':
         return await tagExternal({ ...event, callerOpenid })
+
+      case 'uploadMerchantStyles':
+        return await uploadMerchantStyles({ ...event, callerOpenid })
 
       // ── C端数据收集（无需鉴权，fire-and-forget）──────────────────
       case 'logTryOn':

@@ -1,0 +1,95 @@
+const cloud = require('wx-server-sdk');
+const { tagNailImage } = require('../utils/llm');
+
+function assertMerchantRole(role) {
+  if (role !== 'b') throw new Error('debug auth requires merchant role');
+}
+
+function sanitizeName(name) {
+  const value = String(name || '').replace(/\.[^.]+$/, '').trim();
+  return value || '商家上传款式';
+}
+
+function safeError(err) {
+  const msg = err && (err.message || err.errMsg) ? (err.message || err.errMsg) : String(err || 'unknown error');
+  return msg.length > 120 ? msg.slice(0, 120) : msg;
+}
+
+function rankWeightFor(fileID, index) {
+  const key = String(fileID || '') + ':' + index;
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  }
+  const step = Math.abs(hash) % 50;
+  return Math.round((1.35 + step / 100) * 100) / 100;
+}
+
+function styleIdFor(fileID, index) {
+  const key = String(fileID || '') + ':' + Date.now() + ':' + index;
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  }
+  return 'merchant-style-' + Date.now() + '-' + Math.abs(hash).toString(36);
+}
+
+async function getTempUrl(fileID) {
+  const res = await cloud.getTempFileURL({ fileList: [fileID] });
+  const item = res && res.fileList && res.fileList[0];
+  if (!item || item.status !== 0 || !item.tempFileURL) {
+    throw new Error('failed to resolve temp file url');
+  }
+  return item.tempFileURL;
+}
+
+async function createStyle(db, item, index, merchantId) {
+  if (!item || !item.fileID) throw new Error('missing fileID');
+  const imageUrl = await getTempUrl(item.fileID);
+  const tags = await tagNailImage(imageUrl);
+  const styleId = styleIdFor(item.fileID, index);
+  const now = new Date().toISOString();
+  const doc = {
+    _id: styleId,
+    name: tags.name || sanitizeName(item.originalName),
+    color: tags.color || '',
+    design: tags.design || '',
+    shape: tags.shape || '',
+    style: tags.style || '',
+    image_url: imageUrl,
+    image_file_id: item.fileID,
+    original_name: item.originalName || '',
+    rank_weight: rankWeightFor(item.fileID, index),
+    is_active: true,
+    merchant_id: merchantId || 'merchant-debug',
+    source: 'merchant-upload',
+    created_at: now
+  };
+  await db.collection('styles').add({ data: doc });
+  return doc;
+}
+
+async function uploadMerchantStyles(event) {
+  const role = event && event.role;
+  assertMerchantRole(role);
+  const items = Array.isArray(event && event.items) ? event.items : [];
+  const db = cloud.database();
+  const styles = [];
+  const failed = [];
+
+  for (let i = 0; i < items.length; i += 1) {
+    try {
+      styles.push(await createStyle(db, items[i], i, event.merchantId));
+    } catch (err) {
+      failed.push({
+        fileID: items[i] && items[i].fileID,
+        originalName: items[i] && items[i].originalName,
+        error: safeError(err)
+      });
+    }
+  }
+
+  return { ok: true, styles, failed };
+}
+
+module.exports = { uploadMerchantStyles };

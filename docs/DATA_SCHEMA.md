@@ -230,3 +230,87 @@ cd nailmirror/src && node scripts/import-eval-hands.js
 | `composedUrl` | 结果图 URL |
 | `userOpenid` | 用户 openid（云试戴成功后写入） |
 | `rating` | 可选；目录款试戴完成后的用户评分 |
+
+---
+
+## 6. 商家上传款式（1.1.8）
+
+### 6.1 前端入口与缓存
+
+商家身份下通过 `pages-b/entry` 进入 `pages-b/style-upload`。调试期身份判断信任前端 `userStore.role === 'b'`。
+
+上传成功后，`services/merchant-style.service.js` 会把云端返回的 `styles` 记录映射为 C 端款式对象，并缓存到本地 storage：
+
+| Storage Key | 说明 |
+|----|----|
+| `np_merchant_styles` | 当前调试端已上传成功的商家款式；`style.service.getAllStyles()` 会与 `styles.real.js` 合并后供款式库、商详、试戴使用 |
+
+前端款式对象关键字段：
+
+```json
+{
+  "id": "merchant-style-...",
+  "title": "渐变幻彩美甲",
+  "coverUrl": "https://...",
+  "sourceUrl": "https://...",
+  "previewUrls": ["https://..."],
+  "styleImageFileID": "cloud://...",
+  "color": "红粉色系",
+  "design": "纯色",
+  "shapeLabel": "中长圆",
+  "styleLabel": "日常百搭",
+  "displayTags": ["红粉色系", "纯色", "中长圆", "日常百搭"],
+  "heat": 1550,
+  "styleSource": "merchant-upload"
+}
+```
+
+`previewUrls` 是商详轮播必需字段；1.1.8 起旧缓存读取时也会自动用 `coverUrl/sourceUrl/imageUrl` 补齐。
+
+### 6.2 `ops.uploadMerchantStyles`
+
+新增 `ops` 云函数 action，用于商家上传款式的 VLM 打标与入库。
+
+入参：
+
+```json
+{
+  "action": "uploadMerchantStyles",
+  "role": "b",
+  "merchantId": "merchant-debug",
+  "items": [
+    { "fileID": "cloud://...", "originalName": "style-1.jpg" }
+  ]
+}
+```
+
+出参：
+
+```json
+{
+  "ok": true,
+  "styles": [
+    {
+      "_id": "merchant-style-...",
+      "name": "渐变幻彩美甲",
+      "color": "红粉色系",
+      "design": "纯色",
+      "shape": "中长圆",
+      "style": "日常百搭",
+      "image_url": "https://...",
+      "image_file_id": "cloud://...",
+      "original_name": "style-1.jpg",
+      "rank_weight": 1.55,
+      "is_active": true,
+      "merchant_id": "merchant-debug",
+      "source": "merchant-upload",
+      "created_at": "2026-06-06T00:00:00.000Z"
+    }
+  ],
+  "failed": []
+}
+```
+
+云端流程：`fileID` → `cloud.getTempFileURL` → `tagNailImage()`（DashScope Qwen-VL + 标准词表）→ 写入云数据库 `styles`。单张失败进入 `failed`，不阻塞其它图片。
+
+部署要求：`ops` 云函数环境变量必须配置 `DASHSCOPE_API_KEY`，修改后需在微信开发者工具中重新上传部署 `ops`。

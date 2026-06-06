@@ -20,6 +20,7 @@
       "pages": [
         "entry/index",
         "dashboard/index",
+        "style-upload/index",
         "stock-advice/index",
         "contact-config/index",
         "hot-rank/index",

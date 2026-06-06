@@ -1,0 +1,54 @@
+<view class="su np-container">
+  <view class="su__head">
+    <view>
+      <view class="np-title">上传款式</view>
+      <view class="np-subtitle">从相册批量选择图片，1 张图生成 1 个款式</view>
+    </view>
+    <view class="su__badge">{{role === 'b' ? '商家身份' : '未切换'}}</view>
+  </view>
+
+  <view class="su__panel">
+    <view class="su__stat">
+      <view class="su__stat-item">
+        <text class="su__stat-num">{{files.length}}</text>
+        <text class="su__stat-label">已选择</text>
+      </view>
+      <view class="su__stat-item">
+        <text class="su__stat-num">{{successCount}}</text>
+        <text class="su__stat-label">已入库</text>
+      </view>
+      <view class="su__stat-item">
+        <text class="su__stat-num">{{cachedCount}}</text>
+        <text class="su__stat-label">本地款式</text>
+      </view>
+    </view>
+
+    <view class="su__actions">
+      <view class="np-btn su__action" bindtap="onChooseImages">选择图片</view>
+      <view class="np-btn np-btn--ghost su__action" bindtap="onUpload">{{uploading ? '上传中' : '开始上传'}}</view>
+    </view>
+  </view>
+
+  <view class="su__list" wx:if="{{files.length}}">
+    <view class="su__row su__row--{{item.status}}" wx:for="{{files}}" wx:key="id">
+      <image class="su__thumb" src="{{item.localPath}}" mode="aspectFill"></image>
+      <view class="su__meta">
+        <view class="su__name">{{item.style.title || item.name}}</view>
+        <view class="su__tags" wx:if="{{item.style && item.style.displayTags && item.style.displayTags.length}}">
+          <text class="np-tag" wx:for="{{item.style.displayTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+        </view>
+        <view class="su__error" wx:if="{{item.error}}">{{item.error}}</view>
+      </view>
+      <view class="su__status">{{item.statusText}}</view>
+    </view>
+  </view>
+
+  <empty-state wx:if="{{!files.length}}" text="还没有选择图片" hint="一次最多选择 9 张，每张小于 10MB"></empty-state>
+
+  <view class="su__footer" wx:if="{{successCount}}">
+    <view class="np-btn np-btn--block" bindtap="onGoLibrary">查看款式库</view>
+  </view>
+  <view class="su__footer" wx:if="{{files.length && !uploading}}">
+    <view class="np-btn np-btn--ghost np-btn--block" bindtap="onClear">清空本次选择</view>
+  </view>
+</view>
