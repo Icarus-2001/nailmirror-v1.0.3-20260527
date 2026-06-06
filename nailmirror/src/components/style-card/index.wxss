@@ -6,6 +6,9 @@
 .style-card__metrics { position: absolute; right: 12rpx; bottom: 12rpx; display: flex; align-items: center; max-width: calc(100% - 24rpx); overflow: hidden; border-radius: 999rpx; background: rgba(255,255,255,0.88); box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.08); }
 .style-card__metric { padding: 6rpx 10rpx; font-size: 20rpx; color: #4a3a42; white-space: nowrap; }
 .style-card__metric + .style-card__metric { border-left: 1rpx solid rgba(255,94,138,0.18); color: #b45309; }
+.style-card__source-badge { position: absolute; top: 12rpx; right: 12rpx; padding: 4rpx 12rpx; border-radius: 999rpx; font-size: 18rpx; font-weight: 500; line-height: 1.4; }
+.style-card__source-badge--merchant { background: rgba(155,108,255,0.9); color: #fff; }
+.style-card__source-badge--platform { background: rgba(255,94,138,0.9); color: #fff; }
 .style-card__body { padding: 16rpx 20rpx 20rpx; }
 .style-card__title { font-size: 28rpx; color: var(--np-text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .style-card__tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; }

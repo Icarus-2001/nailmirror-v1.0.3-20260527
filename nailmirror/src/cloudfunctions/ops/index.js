@@ -15,6 +15,7 @@
  *   rateStyle       C端：用户评分追加写入 style_ratings（fire-and-forget）
  *   logEvent        C端：行为漏斗埋点写入 user_events（fire-and-forget）
  *   getQualityScores C端：读取各款式云端品质分
+ *   listMerchantStyles C端：读取所有商家上传款式（全局可见）
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -33,6 +34,7 @@ const { logTryOn }               = require('./handlers/logTryOn')
 const { rateStyle }              = require('./handlers/rateStyle')
 const { logEvent }               = require('./handlers/logEvent')
 const { getQualityScores }       = require('./handlers/getQualityScores')
+const { listMerchantStyles }     = require('./handlers/listMerchantStyles')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -76,6 +78,9 @@ exports.main = async (event, context) => {
 
       case 'getQualityScores':
         return await getQualityScores(event)
+
+      case 'listMerchantStyles':
+        return await listMerchantStyles()
 
       default:
         return { error: `未知 action: ${action}` }

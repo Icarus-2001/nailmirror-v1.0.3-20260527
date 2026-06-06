@@ -411,6 +411,11 @@ exports.main = async (event) => {
     return { action: 'clearAll', cleared }
   }
 
+  if (action === 'clearStyleRatings') {
+    const count = await clearCollection(db, 'style_ratings')
+    return { action: 'clearStyleRatings', deleted: count }
+  }
+
   if (action === 'seedStylesUsers') {
     const r = await runSeedStylesUsers(db, useVlm)
     return { action: 'seedStylesUsers', useVlm, ...r }
