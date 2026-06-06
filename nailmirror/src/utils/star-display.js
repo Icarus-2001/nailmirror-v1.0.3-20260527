@@ -4,8 +4,9 @@
  * @returns {{ scoreText: string, stars: Array<{ state: 'full'|'half'|'empty' }> }|null}
  */
 function buildStarDisplay(score) {
+  if (score == null) return null;
   const n = Number(score);
-  if (!Number.isFinite(n) || n <= 0) return null;
+  if (!Number.isFinite(n) || n < 0) return null;
   const clamped = Math.max(0, Math.min(5, n));
   const stars = [1, 2, 3, 4, 5].map((index) => {
     let state = 'empty';

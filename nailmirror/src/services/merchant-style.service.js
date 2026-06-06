@@ -5,6 +5,9 @@ const { STORAGE_MERCHANT_STYLES } = require('../config/constants');
 const { buildDisplayTags } = require('../config/tag-vocabulary');
 const { userStore } = require('../stores/user.store');
 
+const MERCHANT_CACHE_TTL_MS = 10 * 60 * 1000; // 10 分钟
+let _merchantCache = { styles: [], fetchedAt: 0 };
+
 function getCachedMerchantStyles() {
   const cached = safeGet(STORAGE_MERCHANT_STYLES, []);
   return Array.isArray(cached) ? cached.filter((s) => s && s.id).map(normalizeClientStyle) : [];
@@ -157,9 +160,36 @@ async function uploadMerchantStyles(localPaths) {
   };
 }
 
+/**
+ * 从云端拉取全部商家上传款，更新内存缓存与 localStorage。
+ * 10 分钟内重复调用直接返回内存缓存（减少云端请求）。
+ * 云端不可用时降级为本地 localStorage 缓存。
+ */
+async function ensureMerchantStyles(force) {
+  const now = Date.now();
+  if (!force && _merchantCache.fetchedAt && (now - _merchantCache.fetchedAt) < MERCHANT_CACHE_TTL_MS) {
+    return _merchantCache.styles;
+  }
+  try {
+    const cloudUtil = require('../utils/cloud');
+    if (!cloudUtil.isCloudReady()) return getCachedMerchantStyles();
+    const res = await cloudUtil.callFunction('ops', { action: 'listMerchantStyles' });
+    if (res && res.ok && Array.isArray(res.styles)) {
+      const mapped = res.styles.map(mapCloudStyleToClientStyle).filter((s) => s && s.id);
+      mergeCachedMerchantStyles(mapped); // 同步更新 localStorage 供离线使用
+      _merchantCache = { styles: mapped, fetchedAt: now };
+      return mapped;
+    }
+  } catch (e) {
+    // 网络不可用时沿用本地缓存
+  }
+  return getCachedMerchantStyles();
+}
+
 module.exports = {
   getCachedMerchantStyles,
   mergeCachedMerchantStyles,
   mapCloudStyleToClientStyle,
-  uploadMerchantStyles
+  uploadMerchantStyles,
+  ensureMerchantStyles,
 };

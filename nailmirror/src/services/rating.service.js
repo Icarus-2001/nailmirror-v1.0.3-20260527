@@ -20,8 +20,9 @@ function normalizeRating(value) {
 }
 
 function formatScoreText(score) {
-  if (!score || score <= 0) return '';
-  return Number(score).toFixed(1);
+  const n = Number(score);
+  if (!Number.isFinite(n) || n < 0) return '';
+  return n.toFixed(1);
 }
 
 function _normalizeStoredEntry(raw) {

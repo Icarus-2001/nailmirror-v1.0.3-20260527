@@ -9,9 +9,10 @@ const ratingService = require('./rating.service');
 const merchantStyleService = require('./merchant-style.service');
 
 function getAllStyles() {
-  const base = featureFlags.USE_REAL_STYLES
+  const base = (featureFlags.USE_REAL_STYLES
     ? realStyles.filter((s) => s.isActive !== false)
-    : mockStyles;
+    : mockStyles
+  ).map((s) => (s.styleSource ? s : Object.assign({}, s, { styleSource: 'platform' })));
   const merchantStyles = merchantStyleService.getCachedMerchantStyles()
     .filter((s) => s && s.isActive !== false);
   if (!merchantStyles.length) return base;
@@ -51,7 +52,10 @@ function matchFilters(item, filters) {
 async function list(filters) {
   const { page = 1, pageSize = PAGE_SIZE } = filters || {};
   return mockDelay(async () => {
-    const scoresCache = await ratingService.ensureStyleScores();
+    const [scoresCache] = await Promise.all([
+      ratingService.ensureStyleScores(),
+      merchantStyleService.ensureMerchantStyles(),
+    ]);
     const allStyles = getAllStyles();
     const filtered = allStyles.filter((s) => matchFilters(s, filters));
     const sorted = filtered.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0));
@@ -66,7 +70,10 @@ async function list(filters) {
 
 async function get(id) {
   return mockDelay(async () => {
-    const scoresCache = await ratingService.ensureStyleScores();
+    const [scoresCache] = await Promise.all([
+      ratingService.ensureStyleScores(),
+      merchantStyleService.ensureMerchantStyles(),
+    ]);
     const item = getAllStyles().find((s) => s.id === id);
     if (!item) throw makeError(ERR.NOT_FOUND, '款式不存在');
     return ratingService.withRating(item, scoresCache);
@@ -76,7 +83,10 @@ async function get(id) {
 async function search(opts) {
   const { keyword = '', filters } = opts || {};
   return mockDelay(async () => {
-    const scoresCache = await ratingService.ensureStyleScores();
+    const [scoresCache] = await Promise.all([
+      ratingService.ensureStyleScores(),
+      merchantStyleService.ensureMerchantStyles(),
+    ]);
     const kw = keyword.trim().toLowerCase();
     let items = getAllStyles().filter((s) => matchFilters(s, filters));
     if (kw) {

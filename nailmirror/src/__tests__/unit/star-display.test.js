@@ -2,8 +2,17 @@ const { buildStarDisplay } = require('../../utils/star-display');
 
 describe('utils/star-display', () => {
   test('buildStarDisplay returns null for invalid score', () => {
-    expect(buildStarDisplay(0)).toBeNull();
     expect(buildStarDisplay(-1)).toBeNull();
+    expect(buildStarDisplay(NaN)).toBeNull();
+    expect(buildStarDisplay(null)).toBeNull();
+  });
+
+  test('buildStarDisplay returns 5 empty stars for score 0', () => {
+    const r = buildStarDisplay(0);
+    expect(r).not.toBeNull();
+    expect(r.scoreText).toBe('0.0');
+    expect(r.stars).toHaveLength(5);
+    expect(r.stars.every((s) => s.state === 'empty')).toBe(true);
   });
 
   test('buildStarDisplay renders full stars and score text', () => {

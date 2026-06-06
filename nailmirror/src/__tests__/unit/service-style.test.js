@@ -12,9 +12,9 @@ describe('services/style', () => {
     expect(r.items).toHaveLength(Math.min(20, all.length));
     expect(r.total).toBe(all.length);
     expect(r.page).toBe(1);
-    expect(r.items[0].ratingSource).toBe('none');
-    expect(r.items[0].qualityText).toBe('');
-    expect(r.items[0].tryonEffectText).toBe('');
+    expect(r.items[0].ratingSource).toBe('quality');
+    expect(r.items[0].qualityText).toBe('0.0');
+    expect(r.items[0].tryonEffectText).toBe('0.0');
   });
 
   test('styleTags filter matches current style data', async () => {
@@ -61,9 +61,9 @@ describe('services/style', () => {
     const r = await styleService.get(first.id);
     expect(r).toBeDefined();
     expect(r.id).toBe(first.id);
-    expect(r.ratingSource).toBe('none');
-    expect(r.qualityText).toBe('');
-    expect(r.tryonEffectText).toBe('');
+    expect(r.ratingSource).toBe('quality');
+    expect(r.qualityText).toBe('0.0');
+    expect(r.tryonEffectText).toBe('0.0');
   });
 
   test('get unknown id rejects NOT_FOUND', async () => {

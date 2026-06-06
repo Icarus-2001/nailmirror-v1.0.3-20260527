@@ -43,12 +43,14 @@ describe('RatingService', () => {
     expect(rated.ratingSource).toBe('quality');
   });
 
-  test('withRating hides scores when cloud has no data', () => {
+  test('withRating shows 0.0 when cloud has no data', () => {
     const unrated = ratingService.withRating({ id: 'real-2', heat: 1200 }, { quality: {}, tryonEffect: {} });
-    expect(unrated.qualityText).toBe('');
-    expect(unrated.tryonEffectText).toBe('');
-    expect(unrated.qualityStarDisplay).toBeNull();
-    expect(unrated.ratingSource).toBe('none');
+    expect(unrated.qualityText).toBe('0.0');
+    expect(unrated.tryonEffectText).toBe('0.0');
+    expect(unrated.qualityStarDisplay).not.toBeNull();
+    expect(unrated.qualityStarDisplay.scoreText).toBe('0.0');
+    expect(unrated.qualityStarDisplay.stars.every((s) => s.state === 'empty')).toBe(true);
+    expect(unrated.ratingSource).toBe('quality');
   });
 
   test('styleService.list injects dual score fields when cache is provided', async () => {
