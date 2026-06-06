@@ -1,5 +1,43 @@
 # 变更记录
 
+## 1.2.1 · 2026-06-06 · 热款榜真机封面与页面精简
+
+**小程序版本：`1.2.1`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**xhs-hot 封面改用云存储 `cloud://` fileID，修复体验版热款榜无图；热款榜移除目录聚合的「热门搜索词」mock 区块，仅保留全网热款 TOP10。**
+
+### 真机封面修复
+
+- **`xhs-hot.service`**：`coverUrl` / `previewUrls` 优先使用 `image_file_id`（`cloud://`），不再依赖 HTTPS 临时链（体验版须配 downloadFile 合法域名，易白屏）。
+- **本地缓存**：读取 `np_xhs_hot_styles` 时若已有 `styleImageFileID`，自动 remap 封面为 `cloud://`。
+
+### 热款榜精简
+
+- **`pages/hot-rank`**：移除「热门搜索词」列表（原 `fetchTop20` / `buildRealHotKeywords` 聚合 mock）；页面仅展示「全网热款 TOP10」。
+- 首页与 B 端看板仍保留 `fetchTop20` 热词能力（未改动）。
+
+### 涉及文件
+
+- `services/xhs-hot.service.js`
+- `pages/hot-rank/index.{js,wxml,json}`
+- `tests/cloudfunctions/importXhsHotTop10.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- **仅 C 端小程序变更**，无需重新部署 `ops` 云函数或重新导入热款数据。
+- 上传体验版后，建议手机删除小程序重新扫码；若仍见旧封面可清缓存或等待 10 分钟缓存过期。
+
+### 验证
+
+- `npm test -- --runInBand`：含 `cloud fileID` 封面映射单测通过。
+- 体验版热款榜 / 款式库 / 商详：xhs-hot 封面正常显示。
+- 热款榜底部不再出现「甜美少女」等目录聚合热词。
+
+---
+
 ## 1.2.0 · 2026-06-06 · 小红书全网热款导入与 C 端展示
 
 **小程序版本：`1.2.0`**（`app.globalData.version`）
