@@ -21,6 +21,7 @@
  *   verifyMerchant  商家身份验证（内测口令 + 表单信息）
  *   getMerchantContact C端：商详联系商家（按款式查 merchants 真实档案）
  *   backfillMerchantStyleOwners 一次性：历史商家款归属回填
+ *   checkMerchantStatus 查询 openid 是否已入驻 merchants
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -45,6 +46,7 @@ const { listXhsHotStyles }       = require('./handlers/listXhsHotStyles')
 const { verifyMerchant }         = require('./handlers/verifyMerchant')
 const { getMerchantContact }     = require('./handlers/getMerchantContact')
 const { backfillMerchantStyleOwners } = require('./handlers/backfillMerchantStyleOwners')
+const { checkMerchantStatus }      = require('./handlers/checkMerchantStatus')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -106,6 +108,9 @@ exports.main = async (event, context) => {
 
       case 'backfillMerchantStyleOwners':
         return await backfillMerchantStyleOwners()
+
+      case 'checkMerchantStatus':
+        return await checkMerchantStatus(event)
 
       default:
         return { error: `未知 action: ${action}` }

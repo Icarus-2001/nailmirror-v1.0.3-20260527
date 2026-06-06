@@ -36,8 +36,8 @@
       <view class="home__section-title">为你推荐</view>
       <view class="home__section-more" bindtap="onGoLibrary">去款式库 ›</view>
     </view>
-    <view class="home__grid">
-      <view class="home__grid-col" wx:for="{{quickStyles}}" wx:key="id" data-id="{{item.id}}" bindtap="onStyleTap">
+    <view class="home__grid np-grid">
+      <view class="home__grid-item" wx:for="{{quickStyles}}" wx:key="id" data-id="{{item.id}}" bindtap="onStyleTap">
         <view class="home__card">
           <view class="home__card-cover">
             <image wx:if="{{item.coverUrl}}" class="home__card-img" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}"/>

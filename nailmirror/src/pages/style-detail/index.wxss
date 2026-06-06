@@ -14,6 +14,7 @@
 .sd__tryon { color: #7c3aed; font-size: 28rpx; font-weight: 500; }
 .sd__quality { color: #b45309; font-size: 28rpx; font-weight: 500; }
 .sd__merchant { margin-top: 32rpx; padding: 24rpx; background: var(--np-card); border-radius: 16rpx; }
+.sd__phone { color: var(--np-primary, #ff5e8a); font-size: 26rpx; margin-top: 8rpx; text-decoration: underline; }
 .sd__bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1rpx solid var(--np-border); padding: 20rpx 24rpx; display: flex; align-items: center; gap: 20rpx; }
 .sd__fav { font-size: 26rpx; color: var(--np-primary); }
 .sd__contact { font-size: 26rpx; color: var(--np-text); }

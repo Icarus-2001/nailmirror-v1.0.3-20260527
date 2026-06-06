@@ -1,19 +1,39 @@
 const { userStore } = require('../../stores/user.store');
+const merchantAuthService = require('../../services/merchant-auth.service');
 
 Page({
   data: {
-    role: 'c'
+    role: 'c',
+    checking: true
   },
-  onShow() {
+  async onShow() {
     userStore.init();
-    this.setData({ role: userStore.role || 'c' });
-  },
-  onSwitchToB() {
-    wx.navigateTo({ url: '/pages-b/merchant-verify/index' });
+    this.setData({ checking: true });
+
+    if (!userStore.openid) {
+      userStore.setRole('c');
+      wx.redirectTo({ url: '/pages-b/merchant-verify/index' });
+      return;
+    }
+
+    try {
+      const verified = await merchantAuthService.isMerchantVerified(userStore.openid);
+      if (!verified) {
+        userStore.setRole('c');
+        wx.redirectTo({ url: '/pages-b/merchant-verify/index' });
+        return;
+      }
+      userStore.setRole('b');
+      this.setData({ role: 'b', checking: false });
+    } catch (e) {
+      userStore.setRole('c');
+      wx.showToast({ title: '验证状态获取失败', icon: 'none' });
+      wx.redirectTo({ url: '/pages-b/merchant-verify/index' });
+    }
   },
   onSwitchToC() {
     userStore.setRole('c');
-    this.setData({ role: 'c' });
+    wx.navigateBack();
   },
   onGoDashboard() { wx.navigateTo({ url: '/pages-b/dashboard/index' }); },
   onGoStyleUpload() { wx.navigateTo({ url: '/pages-b/style-upload/index' }); },
