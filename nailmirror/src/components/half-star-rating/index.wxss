@@ -1,0 +1,46 @@
+.hsr__stars {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.hsr__star {
+  position: relative;
+  width: 72rpx;
+  height: 72rpx;
+}
+
+.hsr__glyph {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  font-size: 72rpx;
+  color: #d8d8e2;
+  pointer-events: none;
+}
+
+.hsr__glyph--full {
+  color: #ffb000;
+}
+
+.hsr__glyph--half {
+  background: linear-gradient(90deg, #ffb000 50%, #d8d8e2 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hsr__half {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 2;
+}
+
+.hsr__half--left { left: 0; }
+.hsr__half--right { right: 0; }

@@ -12,7 +12,11 @@
       <text class="np-tag" wx:for="{{displayTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
     </view>
 
-    <view class="sd__heat">🔥 热度 {{style.heat}}</view>
+    <view class="sd__metrics">
+      <text class="sd__heat">🔥 热度 {{style.heat}}</text>
+      <text wx:if="{{style.tryonEffectText}}" class="sd__tryon">试戴效果 {{style.tryonEffectText}}</text>
+      <text wx:if="{{style.qualityText}}" class="sd__quality">美甲品质 {{style.qualityText}}</text>
+    </view>
 
     <view class="sd__merchant" wx:if="{{merchant}}">
       <view class="np-title">{{merchant.name}}</view>

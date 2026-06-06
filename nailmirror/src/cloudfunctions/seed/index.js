@@ -6,17 +6,25 @@
  * action: 'seedStylesUsers' → 灌入 styles(25) + users(5)
  * action: 'seedTryOnLogs'   → 灌入试戴日志（lite:true 约120条，默认约300条）
  * action: 'seedExternalTrends' → 灌入外部趋势(30)
- * action: 'seedPhase'       → 分步执行：phase=clear|stylesUsers|logs|trends
+ * action: 'initCollections'   → 显式创建 style_ratings / user_events（新版云开发须先建表）
+ * action: 'seedStyleRatings'  → 灌入 style_ratings（试戴效果 + 美甲品质，含半星）
+ * action: 'seedUserEvents'     → 灌入 user_events 漏斗埋点样本
+ * action: 'seedPhase'       → 分步执行：phase=clear|stylesUsers|logs|trends|ratings|events
  *
  * 字段命名完全对齐云数据库真实 schema（下划线）：
  *   styles:          _id, name, color, design, shape, style, image_url, rank_weight, is_active, created_at
  *   users:           _id(openid), nickname, avatar_url, role, is_member, created_at, updated_at, last_login_at
  *   try_on_logs:     style_id, tried_at, user_id
  *   external_trends: platform, post_url, engagement, color, design, shape, style, scraped_at, posted_at
+ *   style_ratings:   style_id, user_id, rating, rating_type, rated_at
+ *   user_events:     event_type, style_id, user_id, session_id, timestamp, extra
  */
 const cloud = require('wx-server-sdk')
 const STYLES_DATA = require('./styles-data')
 const { tagNailImage } = require('./utils/llm')
+const { ensureCollections } = require('./utils/collections')
+
+const RATING_COLLECTIONS = ['style_ratings', 'user_events']
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
@@ -260,10 +268,119 @@ async function seedExternalTrends(db) {
   return results.length
 }
 
-// ─── 清空四表 ────────────────────────────────────────────────────────────────
+// ─── 灌入 style_ratings（试戴效果 + 美甲品质）────────────────────────────────
+
+const RATING_SAMPLES = [3.5, 4, 4.5, 5, 3, 4.5, 5, 3.5]
+
+async function initRatingCollections(db) {
+  return ensureCollections(db, RATING_COLLECTIONS)
+}
+
+async function seedStyleRatings(db) {
+  await initRatingCollections(db)
+  const styleIds = STYLES_DATA.map((s) => s._id)
+  const rows = []
+
+  styleIds.forEach((styleId, idx) => {
+    const tryonRating = RATING_SAMPLES[idx % RATING_SAMPLES.length]
+    const qualityRating = RATING_SAMPLES[(idx + 3) % RATING_SAMPLES.length]
+    rows.push({
+      style_id: styleId,
+      user_id: MOCK_OPENIDS[idx % MOCK_OPENIDS.length],
+      rating: tryonRating,
+      rating_type: 'tryon_effect',
+      rated_at: _randomDate(0, 20),
+    })
+    rows.push({
+      style_id: styleId,
+      user_id: MOCK_OPENIDS[(idx + 1) % MOCK_OPENIDS.length],
+      rating: qualityRating,
+      rating_type: 'nail_quality',
+      rated_at: _randomDate(0, 25),
+    })
+    if (idx < 8) {
+      rows.push({
+        style_id: styleId,
+        user_id: MOCK_OPENIDS[(idx + 2) % MOCK_OPENIDS.length],
+        rating: RATING_SAMPLES[(idx + 5) % RATING_SAMPLES.length],
+        rating_type: 'nail_quality',
+        rated_at: _randomDate(0, 10),
+      })
+    }
+  })
+
+  const results = await batchRun(rows, WRITE_BATCH, (row) =>
+    db.collection('style_ratings').add({
+      data: {
+        style_id: row.style_id,
+        user_id: row.user_id,
+        rating: row.rating,
+        rating_type: row.rating_type,
+        rated_at: row.rated_at,
+      },
+    })
+  )
+  console.log('[seed] style_ratings 写入:', results.length, '条')
+  return results.length
+}
+
+// ─── 灌入 user_events（漏斗埋点样本）────────────────────────────────────────
+
+const EVENT_FLOW = [
+  'tryon_enter',
+  'shape_confirmed',
+  'style_confirmed',
+  'compose_start',
+  'compose_success',
+  'rated',
+]
+
+async function seedUserEvents(db) {
+  await initRatingCollections(db)
+  const styleIds = STYLES_DATA.map((s) => s._id)
+  const rows = []
+
+  for (let i = 0; i < 40; i += 1) {
+    const styleId = styleIds[i % styleIds.length]
+    const sessionId = 'seed-session-' + (1000 + i)
+    const userId = MOCK_OPENIDS[i % MOCK_OPENIDS.length]
+    EVENT_FLOW.forEach((eventType, step) => {
+      rows.push({
+        event_type: eventType,
+        style_id: styleId,
+        user_id: userId,
+        session_id: sessionId,
+        timestamp: _randomDate(0, 7),
+        extra: eventType === 'rated'
+          ? { rating: 4.5, ratingType: 'nail_quality' }
+          : {},
+      })
+    })
+  }
+
+  const results = await batchRun(rows, WRITE_BATCH, (row) =>
+    db.collection('user_events').add({
+      data: {
+        event_type: row.event_type,
+        style_id: row.style_id,
+        user_id: row.user_id,
+        session_id: row.session_id,
+        timestamp: row.timestamp,
+        extra: row.extra,
+      },
+    })
+  )
+  console.log('[seed] user_events 写入:', results.length, '条')
+  return results.length
+}
+
+// ─── 清空集合 ────────────────────────────────────────────────────────────────
 
 async function clearAll(db) {
-  const COLLECTIONS = ['styles', 'users', 'try_on_logs', 'external_trends']
+  const COLLECTIONS = [
+    'styles', 'users', 'try_on_logs', 'external_trends',
+    'style_ratings', 'user_events',
+  ]
   const counts = {}
   for (const col of COLLECTIONS) {
     counts[col] = await clearCollection(db, col)
@@ -309,6 +426,21 @@ exports.main = async (event) => {
     return { action: 'seedExternalTrends', externalTrends: count }
   }
 
+  if (action === 'initCollections') {
+    const collections = await initRatingCollections(db)
+    return { action: 'initCollections', collections }
+  }
+
+  if (action === 'seedStyleRatings') {
+    const count = await seedStyleRatings(db)
+    return { action: 'seedStyleRatings', styleRatings: count }
+  }
+
+  if (action === 'seedUserEvents') {
+    const count = await seedUserEvents(db)
+    return { action: 'seedUserEvents', userEvents: count }
+  }
+
   if (action === 'seedPhase') {
     const phase = (event && event.phase) || 'clear'
     if (phase === 'clear') {
@@ -325,9 +457,26 @@ exports.main = async (event) => {
     }
     if (phase === 'trends') {
       const count = await seedExternalTrends(db)
-      return { action: 'seedPhase', phase: 'trends', externalTrends: count, done: true }
+      return {
+        action: 'seedPhase', phase: 'trends', externalTrends: count,
+        next: { action: 'seedPhase', phase: 'ratings' },
+      }
     }
-    return { error: '未知 phase: ' + phase, valid: ['clear', 'stylesUsers', 'logs', 'trends'] }
+    if (phase === 'ratings') {
+      const count = await seedStyleRatings(db)
+      return {
+        action: 'seedPhase', phase: 'ratings', styleRatings: count,
+        next: { action: 'seedPhase', phase: 'events' },
+      }
+    }
+    if (phase === 'events') {
+      const count = await seedUserEvents(db)
+      return { action: 'seedPhase', phase: 'events', userEvents: count, done: true }
+    }
+    return {
+      error: '未知 phase: ' + phase,
+      valid: ['clear', 'stylesUsers', 'logs', 'trends', 'ratings', 'events'],
+    }
   }
 
   if (action === 'seedAll') {
@@ -336,8 +485,10 @@ exports.main = async (event) => {
     console.log('[seed] 清空完成', cleared)
 
     const { styles, users } = await runSeedStylesUsers(db, useVlm)
-    const logsCount   = await seedTryOnLogs(db, lite)
-    const trendsCount = await seedExternalTrends(db)
+    const logsCount    = await seedTryOnLogs(db, lite)
+    const trendsCount  = await seedExternalTrends(db)
+    const ratingsCount = await seedStyleRatings(db)
+    const eventsCount  = await seedUserEvents(db)
 
     return {
       action:         'seedAll',
@@ -348,11 +499,16 @@ exports.main = async (event) => {
       users,
       tryOnLogs:      logsCount,
       externalTrends: trendsCount,
+      styleRatings:   ratingsCount,
+      userEvents:     eventsCount,
     }
   }
 
   return {
     error: '未知 action: ' + action,
-    valid: ['clearAll', 'seedStylesUsers', 'seedTryOnLogs', 'seedExternalTrends', 'seedPhase', 'seedAll'],
+    valid: [
+      'clearAll', 'initCollections', 'seedStylesUsers', 'seedTryOnLogs', 'seedExternalTrends',
+      'seedStyleRatings', 'seedUserEvents', 'seedPhase', 'seedAll',
+    ],
   }
 }

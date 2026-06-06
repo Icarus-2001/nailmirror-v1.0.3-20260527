@@ -10,9 +10,11 @@
  *   rejectReport    日报驳回
  *   executeReport   执行调权策略（写库）
  *   tagExternal     外部趋势录入 + VLM 自动打标
+ *   uploadMerchantStyles B端：商家批量上传款式（VLM 打标写入 styles）
  *   logTryOn        C端：试戴成功写入 try_on_logs（fire-and-forget）
  *   rateStyle       C端：用户评分追加写入 style_ratings（fire-and-forget）
  *   logEvent        C端：行为漏斗埋点写入 user_events（fire-and-forget）
+ *   getQualityScores C端：读取各款式云端品质分
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -30,6 +32,7 @@ const { uploadMerchantStyles }   = require('./handlers/uploadMerchantStyles')
 const { logTryOn }               = require('./handlers/logTryOn')
 const { rateStyle }              = require('./handlers/rateStyle')
 const { logEvent }               = require('./handlers/logEvent')
+const { getQualityScores }       = require('./handlers/getQualityScores')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -70,6 +73,9 @@ exports.main = async (event, context) => {
 
       case 'logEvent':
         return await logEvent(event)
+
+      case 'getQualityScores':
+        return await getQualityScores(event)
 
       default:
         return { error: `未知 action: ${action}` }

@@ -2,9 +2,10 @@
   <view class="style-card__cover-wrap">
     <image class="style-card__cover" src="{{style.coverUrl}}" mode="aspectFill" lazy-load="true"></image>
     <view class="style-card__fav {{faved ? 'style-card__fav--on' : ''}}" wx:if="{{showFav}}" catchtap="onFav">{{faved ? '♥' : '♡'}}</view>
-    <view class="style-card__metrics" wx:if="{{style.heat || style.ratingText}}">
+    <view class="style-card__metrics" wx:if="{{style.heat || style.tryonEffectText || style.qualityText}}">
       <text wx:if="{{style.heat}}" class="style-card__metric">🔥 {{style.heat}}</text>
-      <text wx:if="{{style.ratingText}}" class="style-card__metric">⭐ {{style.ratingText}}</text>
+      <text wx:if="{{style.tryonEffectText}}" class="style-card__metric">试戴 {{style.tryonEffectText}}</text>
+      <text wx:if="{{style.qualityText}}" class="style-card__metric">品质 {{style.qualityText}}</text>
     </view>
   </view>
   <view class="style-card__body">

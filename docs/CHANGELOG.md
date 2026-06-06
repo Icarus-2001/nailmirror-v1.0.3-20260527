@@ -1,5 +1,62 @@
 # 变更记录
 
+## 1.1.9 · 2026-06-06 · 双维度半星评分与云端品质分展示
+
+**小程序版本：`1.1.9`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**试戴后可对「试戴效果」与「美甲品质」分别半星评分并提交锁定；C 端从云端聚合双维度分数，首页展示品质星标，商详与款式库展示双分。**
+
+### 评分与提交锁定
+
+- **双维度**：`tryon_effect`（试戴效果，仅 C 端展示）、`nail_quality`（美甲品质，B 端 `getSummary` 品质分同源）；半星步进 1.0–5.0。
+- **草稿与提交**：点星仅更新页面草稿；点「提交评分」后 `commitRating` 才写入本地 `STORAGE_STYLE_RATINGS` 并 fire-and-forget 上报 `ops.rateStyle`。
+- **提交锁定**：双维度均提交后 `ratingsLocked`，不可重复修改，避免无限点星污染云端。
+- **自定义款**：`custom-*` 前缀款式跳过评分写入。
+
+### ops / seed 云函数
+
+- **新增 action：`getQualityScores`**，按 `rating_type` 返回 `qualityScores`（美甲品质）与 `tryonEffectScores`（试戴效果）；兼容旧字段 `scores`。
+- **`rateStyle` 升级**：支持 `ratingType`（`tryon_effect` / `nail_quality`）与半星 `normalizeRating`；写入前 `ensureCollection('style_ratings')` 自动建表。
+- **`getSummary` 品质分**：仅聚合 `nail_quality` 类型记录；时间衰减加权逻辑抽取至 `utils/qualityScore.js`。
+- **`logEvent`**：写入前 `ensureCollection('user_events')` 自动建表。
+- **新增工具**：`utils/collections.js`（`ensureCollection`）、`utils/qualityScore.js`（半星归一化、`computeQualityScore`、`buildScoresByStyle`）。
+- **seed 扩展**：新增 `initCollections`、`seedStyleRatings`（含半星双维度样本）、`seedUserEvents`；`clearAll` 覆盖 `style_ratings` / `user_events`。
+
+### C 端展示
+
+- **半星组件**：新增 `components/half-star-rating`，支持 0.5 步进点选与只读锁定态。
+- **试戴页**：`pages/try-on-static` 预览区双行评分（试戴效果 + 美甲品质）+「提交评分」按钮 + 已提交提示。
+- **首页推荐卡**：仅展示美甲品质星标，美团式 `★★★★☆ 4.5`（`utils/star-display.js` → `qualityStarDisplay`）。
+- **商详 / 款式库**：`style-detail` 与 `style-card` 展示双维度分数文本。
+- **云端拉分**：`rating.service.ensureStyleScores` 调 `ops.getQualityScores`，5 分钟内存缓存；`style.service` 列表/详情/搜索前注入 `withRating` / `withRatings`。
+- **商家上传款兼容**：`style.service` 继续合并 `merchant-style.service` 缓存款，与云端评分展示并存。
+
+### 涉及文件
+
+- `cloudfunctions/ops/index.js`、`handlers/getQualityScores.js`（新）、`handlers/rateStyle.js`、`handlers/getSummary.js`、`handlers/logEvent.js`、`utils/qualityScore.js`（新）、`utils/collections.js`（新）
+- `cloudfunctions/seed/index.js`、`seed/utils/collections.js`（新）
+- `services/rating.service.js`、`services/style.service.js`
+- `components/half-star-rating/index.{js,wxml,wxss,json}`（新）、`components/style-card/index.wxml`
+- `utils/star-display.js`（新）
+- `pages/try-on-static/index.{js,wxml,wxss,json}`、`pages/home/index.{wxml,wxss}`、`pages/style-detail/index.{wxml,wxss}`
+- `__tests__/unit/quality-score.test.js`（新）、`__tests__/unit/star-display.test.js`（新）、`tests/services/rating.service.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- 微信开发者工具重新上传部署 **`ops`**、**`seed`** 云函数；推 Git 不会自动更新云端。
+- 新环境或控制台看不到 `style_ratings` / `user_events` 时，先调 `seed` 的 `initCollections`，或执行 `seedStyleRatings` / `seedUserEvents`。
+- `ops` 须配置 `DASHSCOPE_API_KEY`（商家上传款 VLM 打标，继承 1.1.8）。
+
+### 验证
+
+- `npm test -- --runInBand`：覆盖半星归一化、星标展示、`commitRating` 双维度独立提交、`ensureStyleScores` 云端注入。
+- 真机：试戴完成 → 双行半星点选 → 提交锁定 → 首页/商详/款式库分数展示；重复点星不重复上报云端。
+
+---
+
 ## 1.1.8 · 2026-06-06 · 商家批量上传款式与 C 端款式库展示
 
 **小程序版本：`1.1.8`**（`app.globalData.version`）
@@ -42,36 +99,6 @@
 
 - `npm test -- --runInBand`：28 个测试套件、139 个测试通过。
 - 回归覆盖：上传款字段映射、旧缓存 `previewUrls` 补齐、C 端款式库合并、云函数单张失败隔离。
-
-## [未发布] · 2026-06-05 · 试戴数据云端化 & 漏斗埋点 & 品质分
-
-### 新增云数据集合
-- `style_ratings`：每次用户打星追加一条记录（不覆盖历史），字段：`style_id, user_id, rating, rated_at`
-- `user_events`：试戴链路行为埋点，字段：`event_type, style_id, user_id, session_id, timestamp, extra`
-
-### ops 云函数新增 action
-- `logTryOn`：合成成功后 C 端 fire-and-forget 写入 `try_on_logs`，自动跳过 `custom-*` 自定义款
-- `rateStyle`：追加写入 `style_ratings`，rating 值范围 1-5
-- `logEvent`：写入 `user_events`，支持 9 个标准事件节点（见 handler 注释）
-
-### 品质分算法（MVP）
-`style_ratings` 所有历史记录参与计算，按时间衰减加权平均：
-- `weight = 0.5 ^ (days_ago / 30)`（半衰期 30 天）
-- `quality_score = Σ(rating × weight) / Σ(weight)`，保留 1 位小数
-- `getSummary` 返回的 `hotStyles / trendingUp / coldStyles` 均附带 `qualityScore` 字段
-
-### ops 排期逻辑优化
-- `getSummary`：热款综合「近7天试戴量 + 品质分」双维度，`qualityScore` 返回给运营界面
-- `generateReport` LLM prompt：热款行含品质分；boosts 策略注释说明热度+品质分双因子
-
-### C 端改动
-- `pages/try-on-static`：进入页生成 `_sessionId`，试戴各节点自动调 `ops.logEvent`（tryon_enter / shape_confirmed / style_confirmed / compose_start / compose_success / compose_fail + error / save_success / rated）；合成成功额外调 `ops.logTryOn`
-- `services/rating.service.js`：打星本地保存后 fire-and-forget 上报 `ops.rateStyle`
-
-### 涉及文件
-- `cloudfunctions/ops/index.js`、`handlers/logTryOn.js`（新）、`handlers/rateStyle.js`（新）、`handlers/logEvent.js`（新）
-- `cloudfunctions/ops/handlers/getSummary.js`、`cloudfunctions/ops/utils/llm.js`
-- `pages/try-on-static/index.js`、`services/rating.service.js`
 
 ---
 

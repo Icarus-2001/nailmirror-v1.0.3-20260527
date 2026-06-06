@@ -46,6 +46,16 @@
           </view>
           <view class="home__card-body">
             <view class="home__card-title">{{item.title}}</view>
+            <view class="home__card-rating" wx:if="{{item.qualityStarDisplay}}">
+              <view class="home__card-stars">
+                <text
+                  wx:for="{{item.qualityStarDisplay.stars}}"
+                  wx:key="index"
+                  class="home__card-star home__card-star--{{item.state}}"
+                >★</text>
+              </view>
+              <text class="home__card-score">{{item.qualityStarDisplay.scoreText}}</text>
+            </view>
           </view>
         </view>
       </view>

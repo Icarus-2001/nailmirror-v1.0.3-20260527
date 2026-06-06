@@ -85,14 +85,48 @@
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 }
 .home__card-heat {
-  position: absolute; top: 12rpx; right: 12rpx;
-  padding: 4rpx 14rpx; background: rgba(0,0,0,0.55); color: #fff;
-  border-radius: 999rpx; font-size: 20rpx;
+  position: absolute; right: 12rpx; bottom: 12rpx;
+  padding: 6rpx 12rpx; border-radius: 999rpx;
+  background: rgba(255,255,255,0.88);
+  box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.08);
+  font-size: 20rpx; color: #4a3a42; white-space: nowrap;
 }
 .home__card-body { padding: 16rpx 20rpx 20rpx; }
 .home__card-title {
   font-size: 28rpx; color: #1a1a1a; font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.home__card-rating {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+  gap: 8rpx;
+}
+.home__card-stars {
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+  line-height: 1;
+}
+.home__card-star {
+  font-size: 22rpx;
+  color: #e5e5e5;
+  line-height: 1;
+}
+.home__card-star--full {
+  color: #ff6b00;
+}
+.home__card-star--half {
+  background: linear-gradient(90deg, #ff6b00 50%, #e5e5e5 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.home__card-score {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #ff6b00;
+  line-height: 1;
 }
 .home__card-tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; }
 
