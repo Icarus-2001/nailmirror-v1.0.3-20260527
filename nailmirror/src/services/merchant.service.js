@@ -1,4 +1,4 @@
-// MerchantService: getConfig / saveConfig
+// MerchantService: getConfig / saveConfig（B 端轻预约配置，本地缓存）
 const { mockDelay } = require('../utils/request');
 const { safeGet, safeSet } = require('../utils/storage');
 const { STORAGE_MERCHANT } = require('../config/constants');

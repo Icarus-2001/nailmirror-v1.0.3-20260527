@@ -1,5 +1,50 @@
 # 变更记录
 
+## 1.1.12 · 2026-06-06 · 商详联系商家与商家款真实归属
+
+**小程序版本：`1.1.12`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商详「联系商家」按款式来源分流：平台特供提示无入驻商家；来自商家款从云端 `merchants` 拉取真实门店与电话。历史商家款统一归属指定入驻商家，新上传款与认证商家 openid 真实对应。**
+
+### 商详联系商家（C 端）
+
+- **平台特供 / 非商家款**：点击「联系商家」弹窗「该款式不来源于任何入驻商家」。
+- **来自商家款**：调用 `ops.getMerchantContact`，展示门店名称、地区、电话；支持一键拨打。
+- **商详正文**：仅商家款展示云端商家信息卡片（取代原 Mock `merchant.service.getConfig`）。
+- **新服务**：`services/merchant-contact.service.js` 独立封装云端查询，避免与 B 端本地配置服务混用。
+
+### ops 云函数：商家款归属与联系查询
+
+- **新增 action：`getMerchantContact`**：按 `styleId` 查 `styles`；仅 `source=merchant-upload` 时按 `merchant_id`（openid）查 `merchants` 返回真实联系方式。
+- **新增 action：`backfillMerchantStyleOwners`**（一次性迁移）：历史商家款 `merchant_id` 统一为 `0f8f1fb66a2408810038a63b137a2ed3`，并确保 `merchants` 档案手机号为 `17312270775`。
+- **`uploadMerchantStyles` 加固**：不再信任客户端 `merchantId`；使用云函数 `callerOpenid`，且须在 `merchants` 已有档案（须先完成身份认证）；移除 `merchant-debug` 兜底。
+- **新增工具**：`ops/utils/merchant.js`（`normalizeMerchantOpenid`、`findMerchantByOpenid` 等）。
+
+### 涉及文件
+
+- `pages/style-detail/index.{js,wxml}`
+- `services/merchant-contact.service.js`（新）、`services/merchant-style.service.js`、`services/merchant.service.js`
+- `cloudfunctions/ops/handlers/getMerchantContact.js`（新）、`handlers/backfillMerchantStyleOwners.js`（新）、`handlers/uploadMerchantStyles.js`、`utils/merchant.js`（新）、`index.js`
+- `tests/cloudfunctions/getMerchantContact.test.js`（新）、`tests/cloudfunctions/uploadMerchantStyles.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- 微信开发者工具重新上传部署 **`ops`** 云函数；推 Git 不会自动更新云端。
+- **历史迁移（仅需一次）**：`ops` 云端测试 `{ "action": "backfillMerchantStyleOwners" }`，确认 `styles` 中商家款 `merchant_id` 已统一、`merchants` 有对应档案。
+- **联系商家验收**：云端测试 `{ "action": "getMerchantContact", "styleId": "商家款ID" }`，返回 `{ ok: true, contact: { storeName, phone, ... } }`。
+- 小程序须**清缓存后重新编译**（工具 → 清缓存 → 全部清除 → 编译），否则可能仍加载旧版 `merchant.service` 模块。
+
+### 验证
+
+- `npm test -- --runInBand`：`getMerchantContact`、`uploadMerchantStyles` 单测通过。
+- 平台款商详：联系商家 →「该款式不来源于任何入驻商家」。
+- 商家款商详：联系商家 → 显示真实门店名 + `17312270775`（回填商家）或上传者认证档案；可拨打电话。
+
+---
+
 ## 1.1.11 · 2026-06-06 · 商家经营入口与身份验证
 
 **小程序版本：`1.1.11`**（`app.globalData.version`）

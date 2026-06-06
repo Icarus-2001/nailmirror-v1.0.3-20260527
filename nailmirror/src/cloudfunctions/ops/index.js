@@ -17,6 +17,8 @@
  *   getQualityScores C端：读取各款式云端品质分
  *   listMerchantStyles C端：读取所有商家上传款式（全局可见）
  *   verifyMerchant  商家身份验证（内测口令 + 表单信息）
+ *   getMerchantContact C端：商详联系商家（按款式查 merchants 真实档案）
+ *   backfillMerchantStyleOwners 一次性：历史商家款归属回填
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -37,6 +39,8 @@ const { logEvent }               = require('./handlers/logEvent')
 const { getQualityScores }       = require('./handlers/getQualityScores')
 const { listMerchantStyles }     = require('./handlers/listMerchantStyles')
 const { verifyMerchant }         = require('./handlers/verifyMerchant')
+const { getMerchantContact }     = require('./handlers/getMerchantContact')
+const { backfillMerchantStyleOwners } = require('./handlers/backfillMerchantStyleOwners')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -66,7 +70,7 @@ exports.main = async (event, context) => {
         return await tagExternal({ ...event, callerOpenid })
 
       case 'uploadMerchantStyles':
-        return await uploadMerchantStyles({ ...event, callerOpenid })
+        return await uploadMerchantStyles({ ...event, callerOpenid: callerOpenid || event.merchantId || '' })
 
       // ── C端数据收集（无需鉴权，fire-and-forget）──────────────────
       case 'logTryOn':
@@ -86,6 +90,12 @@ exports.main = async (event, context) => {
 
       case 'verifyMerchant':
         return await verifyMerchant(event)
+
+      case 'getMerchantContact':
+        return await getMerchantContact(event)
+
+      case 'backfillMerchantStyleOwners':
+        return await backfillMerchantStyleOwners()
 
       default:
         return { error: `未知 action: ${action}` }
