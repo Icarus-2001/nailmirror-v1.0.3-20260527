@@ -97,19 +97,20 @@ async function runTryon(localPhotoPath, styleMeta, shapeId, wanModel) {
   const fileID = await uploadHandPhoto(localPhotoPath);
   const tryon = resolveTryonFields(styleMeta, shapeId);
   const isCustom = styleMeta && styleMeta.styleSource === 'custom-upload';
+  const styleFileID = styleMeta && styleMeta.styleImageFileID;
   const submitPayload = {
     fileID,
     styleId: styleMeta.id,
     styleTitle: tryon.styleTitle,
     shapePrompt: tryon.shapePrompt
   };
-  if (isCustom && styleMeta.styleImageFileID) {
-    submitPayload.styleFileID = styleMeta.styleImageFileID;
+  if (styleFileID) {
+    submitPayload.styleFileID = styleFileID;
     submitPayload.styleCoverUrl = '';
     submitPayload.styleImageUrl = '';
-    submitPayload.stylePrompt = '';
-    submitPayload.color = '';
-    submitPayload.design = '';
+    submitPayload.stylePrompt = isCustom ? '' : tryon.stylePrompt;
+    submitPayload.color = isCustom ? '' : tryon.color;
+    submitPayload.design = isCustom ? '' : tryon.design;
   } else {
     submitPayload.styleCoverUrl = styleMeta.coverUrl || '';
     submitPayload.styleImageUrl = styleMeta.sourceUrl || styleMeta.coverUrl || '';

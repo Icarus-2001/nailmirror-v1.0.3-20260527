@@ -18,6 +18,7 @@ module.exports = {
   STORAGE_DAILY_QUOTA:'np_daily_quota',
   STORAGE_HD_OUTPUT:  'np_hd_output_url',
   STORAGE_STYLE_RATINGS: 'np_style_ratings',
+  STORAGE_MERCHANT_STYLES: 'np_merchant_styles',
 
   // 分页
   PAGE_SIZE: 20,

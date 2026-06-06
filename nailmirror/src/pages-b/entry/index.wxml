@@ -13,6 +13,11 @@
       <text class="be__label">商家看板</text>
       <text class="be__arrow">›</text>
     </view>
+    <view class="be__item" bindtap="onGoStyleUpload">
+      <text class="be__icon">⬆️</text>
+      <text class="be__label">上传款式</text>
+      <text class="be__arrow">›</text>
+    </view>
     <view class="be__item" bindtap="onGoStock">
       <text class="be__icon">📦</text>
       <text class="be__label">备货建议</text>

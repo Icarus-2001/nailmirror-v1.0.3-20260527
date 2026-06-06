@@ -191,7 +191,14 @@ module.exports = {
 | 步骤 | 与 tryon 相同：先为 **`cloudfunctions` 根目录** 选择云环境 → 右键 **`cloudfunctions/login`** → **上传并部署：云端安装依赖** |
 | 验证 | 真机预览 → 登录页「微信一键登录」→ 弹层选头像、填昵称 → 「我的」显示资料；Storage `np_user` 中 `openid` 应为真实值（非 `mock-openid-*`） |
 
-云未就绪时会自动降级 Mock 登录（仍保留弹层头像昵称），不影响「先随便逛逛」。小程序版本见 `app.globalData.version`（当前 **1.1.4**）。登录页已内置 `privacy-popup`，首屏须先同意隐私再选头像昵称。
+云未就绪时会自动降级 Mock 登录（仍保留弹层头像昵称），不影响「先随便逛逛」。小程序版本见 `app.globalData.version`（当前 **1.1.8**）。登录页已内置 `privacy-popup`，首屏须先同意隐私再选头像昵称。
+
+### 6.x 商家上传款式（1.1.8）
+
+- C 端不直接从云库拉全量 `styles`；调试期商家上传成功后，当前小程序会把云端返回款式缓存到 `np_merchant_styles`，再由 `style.service.getAllStyles()` 合并进款式库。
+- `ops` 新增 `uploadMerchantStyles` action；协作者更新云函数时需重新上传部署 `cloudfunctions/ops`。
+- `ops` 环境变量必须包含 `DASHSCOPE_API_KEY`，否则上传页会显示 VLM 打标失败。
+- 上传款的云库字段包含 `image_file_id`，试戴时会优先传 `styleImageFileID` 给 `tryon`，确保万相参考原始上传图。
 
 ### 7.1 云函数 `tryon` — 何时需要部署
 

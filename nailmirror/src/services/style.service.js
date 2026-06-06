@@ -6,10 +6,20 @@ const featureFlags = require('../config/feature-flags');
 const mockStyles = require('../mock/styles');
 const realStyles = require('../mock/styles.real');
 const ratingService = require('./rating.service');
+const merchantStyleService = require('./merchant-style.service');
 
 function getAllStyles() {
-  if (featureFlags.USE_REAL_STYLES) return realStyles.filter((s) => s.isActive !== false);
-  return mockStyles;
+  const base = featureFlags.USE_REAL_STYLES
+    ? realStyles.filter((s) => s.isActive !== false)
+    : mockStyles;
+  const merchantStyles = merchantStyleService.getCachedMerchantStyles()
+    .filter((s) => s && s.isActive !== false);
+  if (!merchantStyles.length) return base;
+  const byId = {};
+  base.concat(merchantStyles).forEach((style) => {
+    if (style && style.id) byId[style.id] = style;
+  });
+  return Object.keys(byId).map((id) => byId[id]);
 }
 
 function matchListFilter(values, fieldValue) {

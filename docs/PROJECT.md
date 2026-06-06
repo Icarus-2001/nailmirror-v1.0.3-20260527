@@ -67,7 +67,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
-**入口（v1.1.5）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.1.5**。
+**入口（v1.1.8）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 上传款式」批量上传图片，上传成功后当前调试端可立即在 C 端款式库、商详和试戴链路看到新款。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.1.8**。
 
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）
@@ -95,6 +95,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 | `cloudfunctions/tryon/handler.js` | 试戴编排（handler v7） |
 | `cloudfunctions/tryon/wan-backends.js` | 万相 2.1 Mask / 2.7 双图+bbox 双后端 |
 | `services/style.service.js` | 款式列表 / 详情 / 筛选 |
+| `services/merchant-style.service.js` | 商家上传款式的图片上传、云端打标入库调用、本地缓存与 C 端款式对象映射 |
 | `services/rating.service.js` | 款式评分读取、虚拟评分注入、试戴后本地评分保存 |
 | `services/hot-data.service.js` | 热款榜（真实数据时按 heat 排序） |
 

@@ -1,5 +1,48 @@
 # 变更记录
 
+## 1.1.8 · 2026-06-06 · 商家批量上传款式与 C 端款式库展示
+
+**小程序版本：`1.1.8`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家身份下可批量上传款式图片，云端复用标准 VLM 打标流程写入 `styles`，并立即进入当前调试端的 C 端款式库、商详与试戴链路。**
+
+### B 端商家上传
+
+- **商家中心入口**：`pages-b/entry` 新增「上传款式」，仅在前端 `userStore.role === 'b'` 时展示；调试期信任前端商家身份。
+- **批量上传页**：新增 `pages-b/style-upload`，一次最多选择 9 张相册图片，1 张图生成 1 个款式；页面逐条展示待上传、上传打标中、已入库、失败状态。
+- **本地即时可见**：新增 `services/merchant-style.service.js`，上传成功后把云端返回款式映射为 C 端款式对象，并缓存到 `np_merchant_styles`。
+
+### ops 云函数变更
+
+- **新增 action：`uploadMerchantStyles`**，路由已接入 `cloudfunctions/ops/index.js`。
+- **新增 handler：`cloudfunctions/ops/handlers/uploadMerchantStyles.js`**。
+- 入参：`{ action: 'uploadMerchantStyles', role: 'b', merchantId?, items: [{ fileID, originalName? }] }`。
+- 出参：`{ ok: true, styles: [...], failed: [...] }`；单张失败不阻塞其它图片。
+- 云端流程：`fileID` → `getTempFileURL` → `tagNailImage()`（DashScope Qwen-VL + 标准词表归一化）→ 写入云数据库 `styles`。
+- 写入字段：`_id, name, color, design, shape, style, image_url, image_file_id, original_name, rank_weight, is_active, merchant_id, source, created_at`。
+- 部署注意：`ops` 云函数必须配置 `DASHSCOPE_API_KEY`，并在微信开发者工具里重新上传部署；推 Git 不会自动更新云端函数。
+
+### C 端展示与试戴
+
+- **款式库合并上传款**：`services/style.service.js` 在真实款式基础上合并本地缓存的商家上传款，并继续按 `heat` 排序。
+- **商详图片修复**：上传款会生成 `previewUrls`；旧缓存读取时也会自动用 `coverUrl/sourceUrl/imageUrl` 补齐，避免商详轮播空白。
+- **热度与评分**：云端生成稳定 `rank_weight`，前端映射为 `heat = Math.round(rank_weight * 1000)`；评分继续走现有虚拟评分逻辑。
+- **试戴参考图**：`tryon-cloud-adapter` 对上传款优先传 `styleImageFileID`，让万相试戴继续参考原始上传图，而不是只靠文字标签。
+
+### 涉及文件
+
+- `pages-b/entry/index.{js,wxml}`、`pages-b/style-upload/index.{js,wxml,wxss,json}`、`app.json`
+- `services/merchant-style.service.js`、`services/style.service.js`、`services/adapters/tryon-cloud-adapter.js`
+- `cloudfunctions/ops/index.js`、`cloudfunctions/ops/handlers/uploadMerchantStyles.js`
+- `config/constants.js`、`app.js`、`package.json`
+
+### 验证
+
+- `npm test -- --runInBand`：28 个测试套件、139 个测试通过。
+- 回归覆盖：上传款字段映射、旧缓存 `previewUrls` 补齐、C 端款式库合并、云函数单张失败隔离。
+
 ## [未发布] · 2026-06-05 · 试戴数据云端化 & 漏斗埋点 & 品质分
 
 ### 新增云数据集合
