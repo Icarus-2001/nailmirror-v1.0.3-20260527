@@ -3,7 +3,14 @@
   <image class="hrc__cover" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}" wx:if="{{item.coverUrl}}"></image>
   <view class="hrc__cover hrc__cover--ph" wx:else>💅</view>
   <view class="hrc__body">
-    <view class="hrc__title">{{item.title || item.styleId}}</view>
+    <view class="hrc__title-row">
+      <view class="hrc__title">{{item.title || item.styleId}}</view>
+      <view wx:if="{{item.styleSource === 'xhs-hot'}}" class="hrc__badge">全网热款</view>
+    </view>
+    <view class="hrc__meta">
+      <text wx:if="{{item.color}}" class="hrc__tag">{{item.color}}</text>
+      <text wx:if="{{item.design}}" class="hrc__tag">{{item.design}}</text>
+    </view>
     <view class="hrc__heat">🔥 {{item.heat}}</view>
   </view>
 </view>

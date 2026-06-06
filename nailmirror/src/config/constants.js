@@ -19,6 +19,7 @@ module.exports = {
   STORAGE_HD_OUTPUT:  'np_hd_output_url',
   STORAGE_STYLE_RATINGS: 'np_style_ratings',
   STORAGE_MERCHANT_STYLES: 'np_merchant_styles',
+  STORAGE_XHS_HOT_STYLES: 'np_xhs_hot_styles',
 
   // 分页
   PAGE_SIZE: 20,

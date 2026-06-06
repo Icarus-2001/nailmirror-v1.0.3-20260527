@@ -1,5 +1,53 @@
 # 变更记录
 
+## 1.2.0 · 2026-06-06 · 小红书全网热款导入与 C 端展示
+
+**小程序版本：`1.2.0`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**管理员可将小红书爬虫 Top10 一键导入云库（VLM 打标 + 封面上传）；C 端热款榜展示「全网热款 TOP10」，款式库与商详同步可见并标注「全网热款」徽章。**
+
+### 云端导入（ops）
+
+- **新增 action：`importXhsHotTop10`**：读取爬虫 JSON（`cover_url`、`title`、`rank`、`interaction_score`、`note_id` 等）→ 下载封面 → 上传云存储 → VLM 打标 → 写入 `styles`（`source=xhs-hot`，`_id` 形如 `xhs-hot-{scrape_date}-{rank}`）；新批次导入时自动将旧 `scrape_date` 批次设为 `is_active=false`。
+- **新增 action：`listXhsHotStyles`**：返回最新 `scrape_date` 批次 Top10，按 `xhs_rank` 排序；返回前按 `image_file_id` 批量刷新 `image_url` 临时链接。
+- **权限**：`ADMIN_OPENIDS` 环境变量限制导入 openid；未配置时内测默认放行。
+- **脚本**：`scripts/import-xhs-hot.js` 从 `data/小红书爬虫/top10_nail_art.json` 生成 `data/xhs-hot-import-payload.json`，供 `ops` 云端测试粘贴执行。
+
+### C 端展示
+
+- **`xhs-hot.service`**：10 分钟内存缓存 + 本地 `np_xhs_hot_styles`；`styleSource: 'xhs-hot'`，热度取 `interaction_score`。
+- **热款榜**（`pages/hot-rank`）：优先展示 `{scrape_date} 全网热款 TOP10`；热款卡右上角「全网热款」徽章。
+- **款式库 / 商详**：与平台特供、商家款合并展示；款式卡与商详标题旁标注「全网热款」；联系商家仍走平台分流（非入驻商家提示）。
+- **`app.js`**：显式 `require('./utils/star-display')` 纳入主包依赖图，避免子页面报 `module is not defined`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/importXhsHotTop10.js`（新）、`handlers/listXhsHotStyles.js`（新）、`utils/imageRefresh.js`（新）、`index.js`
+- `services/xhs-hot.service.js`（新）、`services/hot-data.service.js`、`services/style.service.js`
+- `components/hot-rank-card/index.{wxml,wxss}`、`components/style-card/index.{wxml,wxss}`
+- `pages/hot-rank/index.wxml`、`pages/style-detail/index.{wxml,wxss}`
+- `config/constants.js`、`app.js`、`package.json`
+- `scripts/import-xhs-hot.js`（新）、`tests/cloudfunctions/importXhsHotTop10.test.js`（新）
+- `AGENTS.md`、`DATA_SCHEMA.md`
+
+### 部署注意
+
+- 微信开发者工具重新上传部署 **`ops`** 云函数；推 Git 不会自动更新云端。
+- **`ops` 环境变量**：`DASHSCOPE_API_KEY`（导入 VLM 打标必需）；可选 `ADMIN_OPENIDS` 限制导入权限。
+- **导入**：`node scripts/import-xhs-hot.js` 生成 payload → `ops` 云端测试粘贴执行（可附 `callerOpenid`）；预期 `{ ok: true, styles: [...] }`。
+- **验收 list**：云端测试 `{ "action": "listXhsHotStyles" }` 返回 10 条且封面 URL 有效。
+- 小程序须**清缓存后重新编译**。
+
+### 验证
+
+- `npm test -- --runInBand`：32 套件、160 测试通过（含 `importXhsHotTop10`、`listXhsHotStyles`、`xhs-hot.service`）。
+- 热款榜：副标题为批次日期 +「全网热款 TOP10」，卡片带徽章与互动热度。
+- 款式库 / 商详：xhs-hot 款可见且标注「全网热款」；试戴链路正常。
+
+---
+
 ## 1.1.12 · 2026-06-06 · 商详联系商家与商家款真实归属
 
 **小程序版本：`1.1.12`**（`app.globalData.version`）

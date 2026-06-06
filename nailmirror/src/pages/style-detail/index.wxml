@@ -6,7 +6,12 @@
   </swiper>
 
   <view class="sd__body np-container">
-    <view class="sd__title">{{style.title}}</view>
+    <view class="sd__head-row">
+      <view class="sd__title">{{style.title}}</view>
+      <view wx:if="{{style.styleSource === 'xhs-hot'}}" class="sd__source sd__source--xhs">全网热款</view>
+      <view wx:elif="{{style.styleSource === 'merchant-upload'}}" class="sd__source sd__source--merchant">来自商家</view>
+      <view wx:elif="{{style.styleSource === 'platform'}}" class="sd__source sd__source--platform">平台特供</view>
+    </view>
     <view class="sd__brief">{{style.brief}}</view>
     <view class="sd__tags" wx:if="{{displayTags.length}}">
       <text class="np-tag" wx:for="{{displayTags}}" wx:for-item="t" wx:key="*this">{{t}}</text>

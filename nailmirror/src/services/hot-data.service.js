@@ -3,6 +3,7 @@ const fetcher = require('./adapters/openclaw-fetcher').default;
 const featureFlags = require('../config/feature-flags');
 const mockStyles = require('../mock/styles');
 const realStyles = require('../mock/styles.real');
+const xhsHotService = require('./xhs-hot.service');
 
 const PLATFORMS = ['xhs', 'douyin', 'weibo'];
 
@@ -62,6 +63,36 @@ function buildRealHotKeywords() {
     }));
 }
 
+function buildXhsHotRanking() {
+  const styles = xhsHotService.getCachedXhsHotStyles()
+    .slice()
+    .sort((a, b) => (Number(a.xhsRank) || 0) - (Number(b.xhsRank) || 0))
+    .slice(0, 10);
+  if (!styles.length) return null;
+  const scrapeDate = xhsHotService.getMeta().scrapeDate
+    || styles[0].scrapeDate
+    || formatFetchedAt(new Date()).slice(0, 10);
+  const items = styles.map((style) => ({
+    styleId: style.id,
+    rank: style.xhsRank || 0,
+    heat: style.heat || style.interactionScore || 0,
+    title: style.title,
+    coverUrl: style.coverUrl,
+    color: style.color,
+    design: style.design,
+    styleLabel: style.styleLabel,
+    styleSource: 'xhs-hot',
+    styleTags: style.styleTags || []
+  }));
+  return {
+    updatedAt: scrapeDate + ' 全网热款 TOP10',
+    city: '全网',
+    rankType: 'xhs-hot',
+    scrapeDate,
+    items
+  };
+}
+
 function buildRealRanking(city) {
   const sorted = getAllStyles().slice().sort((a, b) => (b.heat || 0) - (a.heat || 0)).slice(0, 20);
   const updatedAt = formatFetchedAt(new Date());
@@ -118,7 +149,12 @@ async function fetchTop20() {
 async function fetchRanking(city) {
   if (featureFlags.USE_REAL_STYLES) {
     const { mockDelay } = require('../utils/request');
-    return mockDelay(() => buildRealRanking(city), 120, 180);
+    return mockDelay(async () => {
+      await xhsHotService.ensureXhsHotStyles();
+      const xhsRank = buildXhsHotRanking();
+      if (xhsRank && xhsRank.items.length) return xhsRank;
+      return buildRealRanking(city);
+    }, 120, 180);
   }
   const r = await fetcher.fetchRanking(city);
   const all = getAllStyles();

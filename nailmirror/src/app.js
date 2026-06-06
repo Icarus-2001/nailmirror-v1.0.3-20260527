@@ -5,8 +5,9 @@ const eventBus = require('./utils/event-bus');
 const { initCloud } = require('./utils/cloud');
 const { EVT_USER_LOGIN } = require('./config/constants');
 const { userStore } = require('./stores/user.store');
-// 纳入主包依赖图，避免组件上下文 require tag-vocabulary 报 not defined
+// 纳入主包依赖图，避免子页面/组件 require 报 module is not defined
 require('./config/tag-vocabulary');
+require('./utils/star-display');
 
 App({
   _privacyPopup: null,
@@ -16,7 +17,7 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.1.12',
+    version: '1.2.0',
     pendingHdUrl: '',
     /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
     skipLoginAutoRedirect: false

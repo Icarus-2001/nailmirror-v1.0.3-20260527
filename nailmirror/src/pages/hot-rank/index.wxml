@@ -1,7 +1,7 @@
 <view class="hr np-container">
   <view class="hr__head">
-    <view class="np-title">全网热款 TOP20</view>
-    <view class="np-subtitle">更新于 {{updatedAt}}</view>
+    <view class="np-title">全网热款 TOP10</view>
+    <view class="np-subtitle">{{updatedAt}}</view>
   </view>
 
   <block wx:for="{{items}}" wx:key="styleId" wx:for-index="idx">

@@ -1,0 +1,202 @@
+jest.mock('wx-server-sdk', () => {
+  const add = jest.fn();
+  const update = jest.fn();
+  const get = jest.fn();
+  const doc = jest.fn(() => ({ get, update }));
+  const collection = jest.fn(() => ({ add, doc }));
+  const uploadFile = jest.fn();
+  const getTempFileURL = jest.fn();
+  return {
+    init: jest.fn(),
+    DYNAMIC_CURRENT_ENV: 'test-env',
+    database: jest.fn(() => ({ collection })),
+    uploadFile,
+    getTempFileURL,
+    __mock: { add, update, get, doc, collection, uploadFile, getTempFileURL }
+  };
+}, { virtual: true });
+
+jest.mock('../../cloudfunctions/ops/utils/db', () => ({
+  getAll: jest.fn()
+}));
+
+jest.mock('../../cloudfunctions/ops/utils/llm', () => ({
+  tagNailImage: jest.fn()
+}));
+
+jest.mock('https', () => ({
+  get: jest.fn()
+}));
+
+describe('importXhsHotTop10 cloud handler', () => {
+  let importXhsHotTop10;
+  let cloud;
+  let tagNailImage;
+  let getAll;
+  let https;
+
+  beforeEach(() => {
+    jest.resetModules();
+    delete process.env.ADMIN_OPENIDS;
+    cloud = require('wx-server-sdk');
+    tagNailImage = require('../../cloudfunctions/ops/utils/llm').tagNailImage;
+    getAll = require('../../cloudfunctions/ops/utils/db').getAll;
+    https = require('https');
+    cloud.__mock.add.mockReset();
+    cloud.__mock.update.mockReset();
+    cloud.__mock.get.mockReset();
+    cloud.__mock.uploadFile.mockReset();
+    cloud.__mock.getTempFileURL.mockReset();
+    tagNailImage.mockReset();
+    getAll.mockReset();
+    https.get.mockReset();
+    importXhsHotTop10 = require('../../cloudfunctions/ops/handlers/importXhsHotTop10').importXhsHotTop10;
+  });
+
+  function mockDownload(buf) {
+    https.get.mockImplementation((_url, cb) => {
+      const res = {
+        statusCode: 200,
+        headers: {},
+        on: (ev, fn) => {
+          if (ev === 'data') fn(buf || Buffer.from('img'));
+          if (ev === 'end') fn();
+        },
+        resume: jest.fn()
+      };
+      cb(res);
+      return { on: jest.fn() };
+    });
+  }
+
+  test('rejects non-admin when ADMIN_OPENIDS configured', async () => {
+    const prev = process.env.ADMIN_OPENIDS;
+    process.env.ADMIN_OPENIDS = 'admin-openid';
+    await expect(importXhsHotTop10({
+      callerOpenid: 'other',
+      items: [{ cover_url: 'https://x.test/a.jpg', rank: 1 }]
+    })).rejects.toThrow('无权限');
+    process.env.ADMIN_OPENIDS = prev;
+  });
+
+  test('imports one item with VLM tags and cloud upload', async () => {
+    mockDownload(Buffer.from('webp-image'));
+    cloud.__mock.uploadFile.mockResolvedValueOnce({ fileID: 'cloud://xhs-hot/1.webp' });
+    cloud.__mock.getTempFileURL.mockResolvedValueOnce({
+      fileList: [{ fileID: 'cloud://xhs-hot/1.webp', status: 0, tempFileURL: 'https://temp.test/1.webp' }]
+    });
+    tagNailImage.mockResolvedValueOnce({
+      name: '热款名',
+      color: '红粉色系',
+      design: '纯色',
+      shape: '中长圆',
+      style: '日常百搭'
+    });
+    cloud.__mock.get.mockRejectedValueOnce(new Error('not found'));
+    cloud.__mock.add.mockResolvedValueOnce({ _id: 'xhs-hot-2026-06-06-01' });
+    getAll.mockResolvedValueOnce([]);
+
+    const result = await importXhsHotTop10({
+      callerOpenid: 'admin',
+      scrapeDate: '2026-06-06',
+      items: [{
+        cover_url: 'https://x.test/a.webp',
+        title: '测试款',
+        rank: 1,
+        interaction_score: 100000,
+        note_id: 'note-1',
+        note_url: 'https://xhs.test/note-1',
+        scrape_date: '2026-06-06'
+      }]
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.styles).toHaveLength(1);
+    expect(result.styles[0]).toMatchObject({
+      _id: 'xhs-hot-2026-06-06-01',
+      source: 'xhs-hot',
+      name: '热款名',
+      color: '红粉色系',
+      xhs_rank: 1,
+      interaction_score: 100000,
+      is_active: true
+    });
+    expect(tagNailImage).toHaveBeenCalledWith('https://temp.test/1.webp');
+  });
+});
+
+describe('listXhsHotStyles cloud handler', () => {
+  let listXhsHotStyles;
+
+  beforeEach(() => {
+    jest.resetModules();
+    listXhsHotStyles = require('../../cloudfunctions/ops/handlers/listXhsHotStyles').listXhsHotStyles;
+  });
+
+  test('returns latest scrape batch sorted by rank', async () => {
+    const getAllFn = require('../../cloudfunctions/ops/utils/db').getAll;
+    getAllFn.mockResolvedValueOnce([
+      { _id: 'a', source: 'xhs-hot', scrape_date: '2026-06-05', xhs_rank: 1, is_active: true, image_file_id: '' },
+      { _id: 'b', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 2, is_active: true, image_file_id: '' },
+      { _id: 'c', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 1, is_active: true, image_file_id: '' }
+    ]);
+    const result = await listXhsHotStyles();
+    expect(result.ok).toBe(true);
+    expect(result.scrapeDate).toBe('2026-06-06');
+    expect(result.styles.map((s) => s._id)).toEqual(['c', 'b']);
+  });
+});
+
+describe('xhs-hot.service', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    wx.setStorageSync('np_xhs_hot_styles', null);
+  });
+
+  test('mapCloudStyleToClientStyle sets xhs-hot badge fields', () => {
+    const svc = require('../../services/xhs-hot.service');
+    const mapped = svc.mapCloudStyleToClientStyle({
+      _id: 'xhs-hot-2026-06-06-01',
+      name: '小红书款',
+      color: '莫兰蒂色系',
+      design: '纯色',
+      shape: '中长圆',
+      style: '日常百搭',
+      image_url: 'https://temp.test/1.webp',
+      interaction_score: 120000,
+      xhs_rank: 1,
+      scrape_date: '2026-06-06',
+      source: 'xhs-hot'
+    });
+    expect(mapped.styleSource).toBe('xhs-hot');
+    expect(mapped.heat).toBe(120000);
+    expect(mapped.xhsRank).toBe(1);
+    expect(mapped.scrapeDate).toBe('2026-06-06');
+  });
+});
+
+describe('hot-data xhs ranking', () => {
+  test('buildXhsHotRanking uses cached xhs styles', async () => {
+    jest.resetModules();
+    wx.setStorageSync('np_xhs_hot_styles', {
+      scrapeDate: '2026-06-06',
+      styles: [{
+        id: 'xhs-hot-2026-06-06-01',
+        title: '热款1',
+        coverUrl: 'https://temp.test/1.webp',
+        heat: 99999,
+        xhsRank: 1,
+        scrapeDate: '2026-06-06',
+        styleSource: 'xhs-hot',
+        color: '红粉色系',
+        design: '纯色'
+      }]
+    });
+    const hotData = require('../../services/hot-data.service');
+    const rank = await hotData.fetchRanking();
+    expect(rank.rankType).toBe('xhs-hot');
+    expect(rank.updatedAt).toBe('2026-06-06 全网热款 TOP10');
+    expect(rank.items).toHaveLength(1);
+    expect(rank.items[0].styleSource).toBe('xhs-hot');
+  });
+});

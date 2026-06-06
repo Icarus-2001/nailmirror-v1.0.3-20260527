@@ -2,7 +2,9 @@
   <view class="style-card__cover-wrap">
     <image class="style-card__cover" src="{{style.coverUrl}}" mode="aspectFill" lazy-load="true"></image>
     <view class="style-card__fav {{faved ? 'style-card__fav--on' : ''}}" wx:if="{{showFav}}" catchtap="onFav">{{faved ? '♥' : '♡'}}</view>
-    <view wx:if="{{style.styleSource}}" class="style-card__source-badge style-card__source-badge--{{style.styleSource === 'merchant-upload' ? 'merchant' : 'platform'}}">{{style.styleSource === 'merchant-upload' ? '来自商家' : '平台特供'}}</view>
+    <view wx:if="{{style.styleSource === 'xhs-hot'}}" class="style-card__source-badge style-card__source-badge--xhs">全网热款</view>
+    <view wx:elif="{{style.styleSource === 'merchant-upload'}}" class="style-card__source-badge style-card__source-badge--merchant">来自商家</view>
+    <view wx:elif="{{style.styleSource}}" class="style-card__source-badge style-card__source-badge--platform">平台特供</view>
     <view class="style-card__metrics" wx:if="{{style.heat || style.tryonEffectText || style.qualityText}}">
       <text wx:if="{{style.heat}}" class="style-card__metric">🔥 {{style.heat}}</text>
       <text wx:if="{{style.tryonEffectText}}" class="style-card__metric">试戴 {{style.tryonEffectText}}</text>
