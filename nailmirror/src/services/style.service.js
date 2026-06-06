@@ -7,6 +7,7 @@ const mockStyles = require('../mock/styles');
 const realStyles = require('../mock/styles.real');
 const ratingService = require('./rating.service');
 const merchantStyleService = require('./merchant-style.service');
+const xhsHotService = require('./xhs-hot.service');
 
 function getAllStyles() {
   const base = (featureFlags.USE_REAL_STYLES
@@ -15,9 +16,12 @@ function getAllStyles() {
   ).map((s) => (s.styleSource ? s : Object.assign({}, s, { styleSource: 'platform' })));
   const merchantStyles = merchantStyleService.getCachedMerchantStyles()
     .filter((s) => s && s.isActive !== false);
-  if (!merchantStyles.length) return base;
+  const xhsStyles = xhsHotService.getCachedXhsHotStyles()
+    .filter((s) => s && s.isActive !== false);
+  const merged = base.concat(merchantStyles).concat(xhsStyles);
+  if (!merged.length) return base;
   const byId = {};
-  base.concat(merchantStyles).forEach((style) => {
+  merged.forEach((style) => {
     if (style && style.id) byId[style.id] = style;
   });
   return Object.keys(byId).map((id) => byId[id]);
@@ -55,6 +59,7 @@ async function list(filters) {
     const [scoresCache] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
+      xhsHotService.ensureXhsHotStyles(),
     ]);
     const allStyles = getAllStyles();
     const filtered = allStyles.filter((s) => matchFilters(s, filters));
@@ -73,6 +78,7 @@ async function get(id) {
     const [scoresCache] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
+      xhsHotService.ensureXhsHotStyles(),
     ]);
     const item = getAllStyles().find((s) => s.id === id);
     if (!item) throw makeError(ERR.NOT_FOUND, '款式不存在');
@@ -86,6 +92,7 @@ async function search(opts) {
     const [scoresCache] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
+      xhsHotService.ensureXhsHotStyles(),
     ]);
     const kw = keyword.trim().toLowerCase();
     let items = getAllStyles().filter((s) => matchFilters(s, filters));

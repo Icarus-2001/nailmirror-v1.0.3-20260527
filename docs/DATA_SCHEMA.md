@@ -314,3 +314,82 @@ cd nailmirror/src && node scripts/import-eval-hands.js
 云端流程：`fileID` → `cloud.getTempFileURL` → `tagNailImage()`（DashScope Qwen-VL + 标准词表）→ 写入云数据库 `styles`。单张失败进入 `failed`，不阻塞其它图片。
 
 部署要求：`ops` 云函数环境变量必须配置 `DASHSCOPE_API_KEY`，修改后需在微信开发者工具中重新上传部署 `ops`。
+
+---
+
+## 7. 小红书全网热款（1.2.0）
+
+### 7.1 前端入口与缓存
+
+C 端通过 `pages/hot-rank` 热款榜、`style.service` 款式库与商详展示云端 `source=xhs-hot` 记录。`services/xhs-hot.service.js` 调用 `ops.listXhsHotStyles`，缓存到本地 storage：
+
+| Storage Key | 说明 |
+|----|----|
+| `np_xhs_hot_styles` | 最新一批 xhs-hot 款式；`style.service.getAllStyles()` 与平台目录、商家款合并 |
+
+前端款式对象关键字段：
+
+```json
+{
+  "id": "xhs-hot-2026-06-06-01",
+  "title": "小红书热款名",
+  "coverUrl": "https://...",
+  "styleSource": "xhs-hot",
+  "heat": 120000,
+  "xhsRank": 1,
+  "scrapeDate": "2026-06-06",
+  "noteId": "...",
+  "noteUrl": "https://...",
+  "displayTags": ["莫兰蒂色系", "纯色", "中长圆", "日常百搭"]
+}
+```
+
+热款榜副标题格式：`{scrape_date} 全网热款 TOP10`。款式卡 / 商详徽章文案：**全网热款**。
+
+### 7.2 `ops.importXhsHotTop10`
+
+管理员 action，将爬虫 Top10 导入云库 `styles`。
+
+入参：
+
+```json
+{
+  "action": "importXhsHotTop10",
+  "callerOpenid": "管理员openid（ADMIN_OPENIDS 未配置时可省略）",
+  "scrapeDate": "2026-06-06",
+  "items": [
+    {
+      "cover_url": "https://...",
+      "title": "笔记标题",
+      "rank": 1,
+      "interaction_score": 120000,
+      "note_id": "...",
+      "note_url": "https://...",
+      "scrape_date": "2026-06-06"
+    }
+  ]
+}
+```
+
+云端写入字段（`styles` 集合）：
+
+| 字段 | 说明 |
+|------|------|
+| `_id` | `xhs-hot-{scrape_date}-{rank}` |
+| `source` | 固定 `xhs-hot` |
+| `image_url` / `image_file_id` | 封面临时 URL + 云存储 fileID |
+| `interaction_score` / `xhs_rank` | 爬虫互动分与排名 |
+| `rank_weight` | 由互动分归一化计算，供运营排序 |
+| `scrape_date` | 批次日期；导入新批次时旧批次 `is_active=false` |
+
+生成测试 payload：`node scripts/import-xhs-hot.js`（读取 `data/小红书爬虫/top10_nail_art.json`）。
+
+### 7.3 `ops.listXhsHotStyles`
+
+C 端读取最新活跃批次，返回前按 `image_file_id` 刷新 `image_url`（避免临时链接过期 403）。
+
+```json
+{ "action": "listXhsHotStyles" }
+```
+
+返回：`{ ok, scrapeDate, count, styles: [...] }`。
