@@ -14,33 +14,12 @@
  */
 const cloud = require('wx-server-sdk')
 const { getAll } = require('../utils/db')
-
-// ─── 品质分计算 ───────────────────────────────────────────────────────────────
-
-const HALF_LIFE_DAYS = 30
-const MS_PER_DAY = 24 * 60 * 60 * 1000
-
-/**
- * 对某款的所有评分记录计算时间衰减加权平均分
- * @param {Array} records  style_ratings 中该款的记录数组
- * @param {number} nowMs   当前时间毫秒（统一基准）
- * @returns {number} 0~5，保留1位小数；无记录返回 0
- */
-function _qualityScore(records, nowMs) {
-  if (!records || !records.length) return 0
-  let weightedSum = 0
-  let totalWeight = 0
-  for (const r of records) {
-    const daysAgo = (nowMs - new Date(r.rated_at).getTime()) / MS_PER_DAY
-    // 0.5^(daysAgo/30)：30天前的评分权重减半，90天前权重降至 0.5^3 ≈ 0.125
-    const w = Math.pow(0.5, Math.max(0, daysAgo) / HALF_LIFE_DAYS)
-    weightedSum += r.rating * w
-    totalWeight += w
-  }
-  return totalWeight > 0
-    ? Math.round((weightedSum / totalWeight) * 10) / 10
-    : 0
-}
+const {
+  computeQualityScore,
+  resolveRatingType,
+  RATING_TYPE_QUALITY,
+  MS_PER_DAY,
+} = require('../utils/qualityScore')
 
 // ─── 热款 / 冷款辅助 ─────────────────────────────────────────────────────────
 
@@ -99,10 +78,11 @@ async function getSummary() {
     lastTried[s._id] = sorted.length > 0 ? sorted[0].toISOString() : null
   }
 
-  // 5. 读取评分数据，按 style_id 分组
+  // 5. 读取美甲品质评分，按 style_id 分组（试戴效果分不参与 B 端品质分）
   const allRatings = await getAll('style_ratings', {})
   const ratingsByStyle = {}
   for (const r of allRatings) {
+    if (resolveRatingType(r) !== RATING_TYPE_QUALITY) continue
     if (!ratingsByStyle[r.style_id]) ratingsByStyle[r.style_id] = []
     ratingsByStyle[r.style_id].push(r)
   }
@@ -120,7 +100,7 @@ async function getSummary() {
       tryCount7d:   counts7d[s._id],
       tryCount3d:   counts3d[s._id],
       growthRate:   _computeGrowthRate(counts3d[s._id], countsPrev3d[s._id]),
-      qualityScore: _qualityScore(ratingsByStyle[s._id], nowMs),
+      qualityScore: computeQualityScore(ratingsByStyle[s._id], nowMs),
     }))
 
   // 7. 飙升款
@@ -136,7 +116,7 @@ async function getSummary() {
         tryCount3d:   counts3d[s._id],
         growthRate:   growth,
         trendSignal:  growth >= 200 ? 'rapidly_rising' : 'rising',
-        qualityScore: _qualityScore(ratingsByStyle[s._id], nowMs),
+        qualityScore: computeQualityScore(ratingsByStyle[s._id], nowMs),
       }
     })
     .filter((s) => s.growthRate >= 50)
@@ -153,7 +133,7 @@ async function getSummary() {
       color:        s.color,
       tryCount7d:   0,
       lastTriedAt:  lastTried[s._id],
-      qualityScore: _qualityScore(ratingsByStyle[s._id], nowMs),
+      qualityScore: computeQualityScore(ratingsByStyle[s._id], nowMs),
     }))
 
   // 9. 外部趋势 TOP3

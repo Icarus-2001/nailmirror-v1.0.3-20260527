@@ -1,0 +1,23 @@
+<view class="hsr">
+  <view class="hsr__stars">
+    <view
+      class="hsr__star"
+      wx:for="{{stars}}"
+      wx:key="index"
+    >
+      <text class="hsr__glyph hsr__glyph--{{item.state}}">★</text>
+      <view
+        wx:if="{{!readonly}}"
+        class="hsr__half hsr__half--left"
+        data-value="{{item.half}}"
+        catchtap="onTapHalf"
+      ></view>
+      <view
+        wx:if="{{!readonly}}"
+        class="hsr__half hsr__half--right"
+        data-value="{{item.full}}"
+        catchtap="onTapHalf"
+      ></view>
+    </view>
+  </view>
+</view>

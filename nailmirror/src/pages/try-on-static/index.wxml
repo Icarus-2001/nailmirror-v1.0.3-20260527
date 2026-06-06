@@ -63,6 +63,11 @@
         <view class="ts__style-cover">
           <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" class="ts__style-img" mode="aspectFill"/>
           <view wx:else class="ts__style-fallback">{{item.title}}</view>
+          <view wx:if="{{item.heat || item.tryonEffectText || item.qualityText}}" class="ts__style-metrics">
+            <text wx:if="{{item.heat}}" class="ts__style-metric">🔥 {{item.heat}}</text>
+            <text wx:if="{{item.tryonEffectText}}" class="ts__style-metric">试戴 {{item.tryonEffectText}}</text>
+            <text wx:if="{{item.qualityText}}" class="ts__style-metric">品质 {{item.qualityText}}</text>
+          </view>
           <view wx:if="{{styleId === item.id}}" class="ts__style-check">✓</view>
         </view>
         <view class="ts__style-name">{{item.title}}</view>
@@ -173,20 +178,36 @@
       <view wx:if="{{usedWanModelLabel}}" class="ts__current-model">模型：{{usedWanModelLabel}}</view>
     </view>
 
-    <view class="ts__rating" wx:if="{{composedUrl && canRateStyle}}">
-      <view class="ts__rating-head">
-        <text class="ts__rating-title">试戴效果评分</text>
-        <text class="ts__rating-value">{{styleRating ? styleRating + '.0 / 5' : '未评分'}}</text>
+    <view class="ts__ratings" wx:if="{{composedUrl && canRateStyle}}">
+      <view class="ts__rating">
+        <view class="ts__rating-head">
+          <text class="ts__rating-title">试戴效果评分</text>
+          <text class="ts__rating-value">{{tryonEffectRatingText}}</text>
+        </view>
+        <half-star-rating
+          value="{{tryonEffectDraft}}"
+          readonly="{{ratingsLocked}}"
+          bind:change="onRateTryonEffect"
+        />
       </view>
-      <view class="ts__rating-stars">
-        <text
-          wx:for="{{ratingStars}}"
-          wx:key="*this"
-          class="ts__rating-star {{item <= styleRating ? 'on' : ''}}"
-          data-rating="{{item}}"
-          bindtap="onRateStyle"
-        >★</text>
+      <view class="ts__rating">
+        <view class="ts__rating-head">
+          <text class="ts__rating-title">美甲品质评分</text>
+          <text class="ts__rating-value">{{nailQualityRatingText}}</text>
+        </view>
+        <half-star-rating
+          value="{{nailQualityDraft}}"
+          readonly="{{ratingsLocked}}"
+          bind:change="onRateNailQuality"
+        />
       </view>
+      <button
+        wx:if="{{!ratingsLocked}}"
+        class="np-btn np-btn--block ts__rating-submit"
+        bindtap="onSubmitRatings"
+        disabled="{{!canSubmitRatings}}"
+      >提交评分</button>
+      <view wx:if="{{ratingsLocked}}" class="ts__rating-locked-hint">评分已提交，不可修改</view>
     </view>
 
     <view class="ts__switch">

@@ -3,6 +3,7 @@
   "navigationBarBackgroundColor": "#ffffff",
   "usingComponents": {
     "loading": "/components/loading/index",
-    "privacy-popup": "/components/privacy-popup/index"
+    "privacy-popup": "/components/privacy-popup/index",
+    "half-star-rating": "/components/half-star-rating/index"
   }
 }

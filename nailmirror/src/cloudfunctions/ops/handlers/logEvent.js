@@ -15,6 +15,7 @@
  * 用于计算各步 UV 转化率，支撑精细化运营。
  */
 const cloud = require('wx-server-sdk')
+const { ensureCollection } = require('../utils/collections')
 
 const VALID_EVENTS = new Set([
   'tryon_enter', 'shape_confirmed', 'style_confirmed', 'photo_ready',
@@ -26,6 +27,7 @@ async function logEvent({ eventType, styleId, userId, sessionId, extra }) {
     return { ok: false, error: '未知事件类型: ' + eventType }
   }
   const db = cloud.database()
+  await ensureCollection(db, 'user_events')
   await db.collection('user_events').add({
     data: {
       event_type: eventType,

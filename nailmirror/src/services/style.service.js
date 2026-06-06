@@ -40,13 +40,14 @@ function matchFilters(item, filters) {
 
 async function list(filters) {
   const { page = 1, pageSize = PAGE_SIZE } = filters || {};
-  return mockDelay(() => {
+  return mockDelay(async () => {
+    const scoresCache = await ratingService.ensureStyleScores();
     const allStyles = getAllStyles();
     const filtered = allStyles.filter((s) => matchFilters(s, filters));
     const sorted = filtered.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0));
     const start = (page - 1) * pageSize;
     return {
-      items: ratingService.withRatings(sorted.slice(start, start + pageSize)),
+      items: ratingService.withRatings(sorted.slice(start, start + pageSize), scoresCache),
       total: sorted.length,
       page
     };
@@ -54,16 +55,18 @@ async function list(filters) {
 }
 
 async function get(id) {
-  return mockDelay(() => {
+  return mockDelay(async () => {
+    const scoresCache = await ratingService.ensureStyleScores();
     const item = getAllStyles().find((s) => s.id === id);
     if (!item) throw makeError(ERR.NOT_FOUND, '款式不存在');
-    return ratingService.withRating(item);
+    return ratingService.withRating(item, scoresCache);
   }, 80, 150);
 }
 
 async function search(opts) {
   const { keyword = '', filters } = opts || {};
-  return mockDelay(() => {
+  return mockDelay(async () => {
+    const scoresCache = await ratingService.ensureStyleScores();
     const kw = keyword.trim().toLowerCase();
     let items = getAllStyles().filter((s) => matchFilters(s, filters));
     if (kw) {
@@ -79,9 +82,9 @@ async function search(opts) {
     }
     if (items.length === 0) {
       items = getAllStyles().slice().sort((a, b) => b.heat - a.heat).slice(0, 10);
-      return { items: ratingService.withRatings(items), fallback: true };
+      return { items: ratingService.withRatings(items, scoresCache), fallback: true };
     }
-    return { items: ratingService.withRatings(items), fallback: false };
+    return { items: ratingService.withRatings(items, scoresCache), fallback: false };
   }, 150, 250);
 }
 

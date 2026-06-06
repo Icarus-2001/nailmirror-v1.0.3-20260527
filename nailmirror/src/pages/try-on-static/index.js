@@ -98,8 +98,12 @@ Page({
     selectedWanModelLabel: '',
     usedWanModel: '',
     usedWanModelLabel: '',
-    ratingStars: [1, 2, 3, 4, 5],
-    styleRating: 0,
+    tryonEffectDraft: 0,
+    nailQualityDraft: 0,
+    tryonEffectRatingText: '未评分',
+    nailQualityRatingText: '未评分',
+    ratingsLocked: false,
+    canSubmitRatings: false,
     canRateStyle: false
   },
 
@@ -211,17 +215,52 @@ Page({
     return String(style.id).indexOf('custom-') !== 0;
   },
 
-  _ratingForStyle(style) {
-    if (!this._canRateStyle(style)) return 0;
-    const record = ratingService.getUserRating(style.id);
-    return record ? record.rating : 0;
+  _ratingTextFor(value) {
+    return value > 0 ? (ratingService.formatScoreText(value) + ' / 5') : '未评分';
+  },
+
+  _syncRatingSubmitState(overrides) {
+    const tryonEffectDraft = overrides.tryonEffectDraft != null
+      ? overrides.tryonEffectDraft
+      : this.data.tryonEffectDraft;
+    const nailQualityDraft = overrides.nailQualityDraft != null
+      ? overrides.nailQualityDraft
+      : this.data.nailQualityDraft;
+    const ratingsLocked = overrides.ratingsLocked != null
+      ? overrides.ratingsLocked
+      : this.data.ratingsLocked;
+    this.setData(Object.assign({}, overrides, {
+      tryonEffectRatingText: this._ratingTextFor(tryonEffectDraft),
+      nailQualityRatingText: this._ratingTextFor(nailQualityDraft),
+      canSubmitRatings: (
+        !ratingsLocked
+        && tryonEffectDraft > 0
+        && nailQualityDraft > 0
+      ),
+    }));
   },
 
   _applyStyleRatingState(style) {
-    this.setData({
-      canRateStyle: this._canRateStyle(style),
-      styleRating: this._ratingForStyle(style)
-    });
+    const canRate = this._canRateStyle(style);
+    if (!canRate || !style || !style.id) {
+      this.setData({
+        canRateStyle: false,
+        tryonEffectDraft: 0,
+        nailQualityDraft: 0,
+        ratingsLocked: false,
+        canSubmitRatings: false,
+        tryonEffectRatingText: '未评分',
+        nailQualityRatingText: '未评分',
+      });
+      return;
+    }
+    const locked = ratingService.hasAllCommittedRatings(style.id);
+    const tryonRecord = ratingService.getUserRating(style.id, ratingService.RATING_TYPE_TRYON);
+    const qualityRecord = ratingService.getUserRating(style.id, ratingService.RATING_TYPE_QUALITY);
+    const tryonEffectDraft = locked && tryonRecord ? tryonRecord.rating : 0;
+    const nailQualityDraft = locked && qualityRecord ? qualityRecord.rating : 0;
+    this.setData({ canRateStyle: true, ratingsLocked: locked });
+    this._syncRatingSubmitState({ tryonEffectDraft, nailQualityDraft, ratingsLocked: locked });
   },
 
   // ---- Step: 选甲型 ----
@@ -358,7 +397,17 @@ Page({
         styleImageFileID: fileID,
         coverUrl: tempPath
       };
-      this.setData({ styleId: id, style: customStyle, styleRating: 0, canRateStyle: false });
+      this.setData({
+        styleId: id,
+        style: customStyle,
+        tryonEffectDraft: 0,
+        nailQualityDraft: 0,
+        tryonEffectRatingText: '未评分',
+        nailQualityRatingText: '未评分',
+        ratingsLocked: false,
+        canSubmitRatings: false,
+        canRateStyle: false,
+      });
       tryOnStore.setStyle(id);
       wx.showToast({ title: '已选择参考图', icon: 'success' });
     } catch (e) {
@@ -482,14 +531,44 @@ Page({
       this._applyStyleRatingState(style);
     } catch (e) { /* ignore */ }
   },
-  onRateStyle(e) {
-    if (!this.data.canRateStyle || !this.data.styleId) return;
-    const rating = Number(e.currentTarget.dataset.rating);
-    const record = ratingService.rateStyle(this.data.styleId, rating, 'try-on-static');
-    if (!record) return;
-    this.setData({ styleRating: record.rating });
-    this._logEvent('rated', { rating: record.rating });
-    wx.showToast({ title: '评分已保存', icon: 'success' });
+  onRateTryonEffect(e) {
+    if (this.data.ratingsLocked || !this.data.canRateStyle) return;
+    this._syncRatingSubmitState({ tryonEffectDraft: Number(e.detail.value) || 0 });
+  },
+
+  onRateNailQuality(e) {
+    if (this.data.ratingsLocked || !this.data.canRateStyle) return;
+    this._syncRatingSubmitState({ nailQualityDraft: Number(e.detail.value) || 0 });
+  },
+
+  onSubmitRatings() {
+    if (!this.data.canRateStyle || !this.data.styleId || this.data.ratingsLocked) return;
+    const tryonDraft = this.data.tryonEffectDraft;
+    const qualityDraft = this.data.nailQualityDraft;
+    if (!(tryonDraft > 0 && qualityDraft > 0)) {
+      wx.showToast({ title: '请完成试戴效果与美甲品质评分', icon: 'none' });
+      return;
+    }
+    const tryonRecord = ratingService.commitRating(
+      this.data.styleId,
+      tryonDraft,
+      'try-on-static',
+      ratingService.RATING_TYPE_TRYON
+    );
+    const qualityRecord = ratingService.commitRating(
+      this.data.styleId,
+      qualityDraft,
+      'try-on-static',
+      ratingService.RATING_TYPE_QUALITY
+    );
+    if (!tryonRecord || !qualityRecord) {
+      wx.showToast({ title: '评分提交失败', icon: 'none' });
+      return;
+    }
+    this._logEvent('rated', { rating: tryonRecord.rating, ratingType: ratingService.RATING_TYPE_TRYON });
+    this._logEvent('rated', { rating: qualityRecord.rating, ratingType: ratingService.RATING_TYPE_QUALITY });
+    this.setData({ ratingsLocked: true, canSubmitRatings: false });
+    wx.showToast({ title: '评分已提交', icon: 'success' });
   },
   async onSaveAndOutput() {
     if (!this.data.composedUrl) {
@@ -519,8 +598,9 @@ Page({
         thumbUrl: this.data.composedUrl,
         hdUrl: hd.hdUrl
       };
-      if (this.data.canRateStyle && this.data.styleRating) {
-        hist.rating = this.data.styleRating;
+      if (this.data.canRateStyle && this.data.ratingsLocked) {
+        if (this.data.tryonEffectDraft) hist.tryonEffectRating = this.data.tryonEffectDraft;
+        if (this.data.nailQualityDraft) hist.nailQualityRating = this.data.nailQualityDraft;
       }
       if (this.data.style && this.data.style.styleSource === 'custom-upload') {
         hist.styleSource = 'custom-upload';
