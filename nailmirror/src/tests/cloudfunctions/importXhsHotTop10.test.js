@@ -172,6 +172,23 @@ describe('xhs-hot.service', () => {
     expect(mapped.heat).toBe(120000);
     expect(mapped.xhsRank).toBe(1);
     expect(mapped.scrapeDate).toBe('2026-06-06');
+    expect(mapped.coverUrl).toBe('https://temp.test/1.webp');
+  });
+
+  test('mapCloudStyleToClientStyle prefers cloud fileID over HTTPS temp URL', () => {
+    const svc = require('../../services/xhs-hot.service');
+    const mapped = svc.mapCloudStyleToClientStyle({
+      _id: 'xhs-hot-2026-06-06-01',
+      name: '小红书款',
+      image_url: 'https://636c-cloud1-xxx.tcb.qcloud.la/xhs-hot/01.webp',
+      image_file_id: 'cloud://cloud1-xxx.xhs-hot/2026-06-06/01.webp',
+      interaction_score: 120000,
+      xhs_rank: 1,
+      scrape_date: '2026-06-06',
+      source: 'xhs-hot'
+    });
+    expect(mapped.coverUrl).toBe('cloud://cloud1-xxx.xhs-hot/2026-06-06/01.webp');
+    expect(mapped.previewUrls).toContain('cloud://cloud1-xxx.xhs-hot/2026-06-06/01.webp');
   });
 });
 

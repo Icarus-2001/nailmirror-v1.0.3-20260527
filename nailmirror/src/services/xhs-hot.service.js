@@ -15,18 +15,36 @@ function uniqueList(items) {
   });
 }
 
+function pickCoverUrl(fileID, httpsUrl) {
+  // 真机须用 cloud:// fileID；HTTPS 临时链需配 downloadFile 合法域名，体验版易白屏
+  if (fileID && String(fileID).indexOf('cloud://') === 0) return fileID;
+  return httpsUrl || '';
+}
+
 function normalizeClientStyle(style) {
   if (!style) return style;
   const previewUrls = style.previewUrls && style.previewUrls.length
     ? style.previewUrls
-    : uniqueList([style.coverUrl, style.sourceUrl, style.imageUrl]);
+    : uniqueList([style.coverUrl, style.sourceUrl, style.imageUrl, style.styleImageFileID]);
   return Object.assign({}, style, { previewUrls });
+}
+
+function remapCachedStyle(style) {
+  if (!style || !style.id) return style;
+  const fileID = style.styleImageFileID || '';
+  if (fileID.indexOf('cloud://') !== 0) return normalizeClientStyle(style);
+  const coverUrl = pickCoverUrl(fileID, style.coverUrl || style.imageUrl);
+  return normalizeClientStyle(Object.assign({}, style, {
+    coverUrl,
+    sourceUrl: coverUrl,
+    imageUrl: coverUrl
+  }));
 }
 
 function getCachedXhsHotStyles() {
   const cached = safeGet(STORAGE_XHS_HOT_STYLES, null);
   const styles = cached && Array.isArray(cached.styles) ? cached.styles : [];
-  return styles.filter((s) => s && s.id).map(normalizeClientStyle);
+  return styles.filter((s) => s && s.id).map(remapCachedStyle);
 }
 
 function getCachedScrapeDate() {
@@ -58,17 +76,19 @@ function mapCloudStyleToClientStyle(row) {
   const shapeLabel = (row && (row.shape || row.shapeLabel)) || '';
   const styleLabel = (row && (row.style || row.styleLabel)) || '';
   const title = (row && (row.name || row.title)) || '小红书热款';
-  const imageUrl = (row && (row.image_url || row.coverUrl || row.imageUrl)) || '';
+  const fileID = (row && (row.image_file_id || row.styleImageFileID)) || '';
+  const httpsUrl = (row && (row.image_url || row.coverUrl || row.imageUrl)) || '';
+  const coverUrl = pickCoverUrl(fileID, httpsUrl);
   const scrapeDate = (row && (row.scrape_date || row.scrapeDate)) || '';
   return normalizeClientStyle({
     id,
     title,
     name: title,
     brief: scrapeDate ? (scrapeDate + ' 小红书全网热款') : '小红书全网热款',
-    coverUrl: imageUrl,
-    sourceUrl: imageUrl,
-    imageUrl,
-    styleImageFileID: (row && (row.image_file_id || row.styleImageFileID)) || '',
+    coverUrl,
+    sourceUrl: coverUrl,
+    imageUrl: coverUrl,
+    styleImageFileID: fileID,
     color,
     design,
     shapeLabel,

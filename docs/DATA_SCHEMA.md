@@ -344,7 +344,7 @@ C 端通过 `pages/hot-rank` 热款榜、`style.service` 款式库与商详展�
 }
 ```
 
-热款榜副标题格式：`{scrape_date} 全网热款 TOP10`。款式卡 / 商详徽章文案：**全网热款**。
+热款榜副标题格式：`{scrape_date} 全网热款 TOP10`。款式卡 / 商详徽章文案：**全网热款**。C 端封面优先用 `image_file_id`（`cloud://`），1.2.1 起避免体验版 HTTPS 临时链域名校验导致白屏。
 
 ### 7.2 `ops.importXhsHotTop10`
 

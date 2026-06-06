@@ -7,12 +7,4 @@
   <block wx:for="{{items}}" wx:key="styleId" wx:for-index="idx">
     <hot-rank-card rank="{{idx + 1}}" item="{{item}}"></hot-rank-card>
   </block>
-
-  <view class="hr__head" style="margin-top: 40rpx;">
-    <view class="np-title">热门搜索词</view>
-  </view>
-
-  <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
-    <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}" bind:tap="onKeywordTap"></hot-item>
-  </block>
 </view>
