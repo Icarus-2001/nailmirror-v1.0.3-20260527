@@ -1,5 +1,53 @@
 # 变更记录
 
+## 1.1.10 · 2026-06-06 · 评分清零展示、商家款全局可见与来源标签
+
+**小程序版本：`1.1.10`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**未评分款式统一展示 0.0 与灰星；商家上传款从云端拉取全员可见，款式卡右上角标注「平台特供」/「来自商家」，并修复商家款封面图 403。**
+
+### 评分展示（0.0 / 灰星）
+
+- **无评分默认态**：`formatScoreText(0)` 返回 `'0.0'`；`buildStarDisplay(0)` 返回 5 颗空星 + `0.0`，首页推荐卡与款式库双分均可见。
+- **清空历史 Mock 分**：`seed` 新增 `clearStyleRatings`，仅删除 `style_ratings` 集合记录，不影响 `styles` / `users` / `try_on_logs` 等其它表；后续分数由真实试戴评分累积。
+
+### 商家款全局可见
+
+- **新增 ops action：`listMerchantStyles`**，读取云库 `styles` 中 `source='merchant-upload'` 且 `is_active=true` 的记录。
+- **`merchant-style.service.ensureMerchantStyles`**：10 分钟内存缓存 + 同步 `np_merchant_styles` 本地缓存；`style.service` 的 `list` / `get` / `search` 与 `ensureStyleScores` 并行拉取。
+- **来源标签**：平台目录款前端注入 `styleSource: 'platform'` → 徽章「平台特供」；商家款云库字段 `source: 'merchant-upload'` 映射为 `styleSource: 'merchant-upload'` → 徽章「来自商家」。`styleSource` 为 C 端展示字段，云库仍以 `source` 区分。
+
+### 商家款封面图 403 修复
+
+- 上传时写入的 `image_url` 为云存储临时链接（约 2 小时有效），过期后款式库封面 403。
+- **`listMerchantStyles` 返回前**按 `image_file_id` 批量 `cloud.getTempFileURL` 刷新 `image_url`，所有用户拉取时拿到有效封面。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/listMerchantStyles.js`（新）、`cloudfunctions/ops/index.js`
+- `cloudfunctions/seed/index.js`
+- `services/merchant-style.service.js`、`services/style.service.js`、`services/rating.service.js`
+- `utils/star-display.js`
+- `components/style-card/index.{wxml,wxss}`
+- `__tests__/unit/star-display.test.js`、`__tests__/unit/service-style.test.js`、`tests/services/rating.service.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- 微信开发者工具重新上传部署 **`ops`**、**`seed`** 云函数；推 Git 不会自动更新云端。
+- 需清空历史 Mock 评分时，在 seed 测试面板调用 `{ "action": "clearStyleRatings" }`。
+- 商家款封面依赖 `listMerchantStyles` 刷新临时 URL，**必须部署 ops 后重新编译小程序** 才能在款式库看到修复效果。
+
+### 验证
+
+- `npm test -- --runInBand`：30 套件、151 测试通过。
+- 款式库：平台款「平台特供」+ 商家款「来自商家」徽章；未评分显示 `试戴 0.0` / `品质 0.0` 与灰星。
+- 商家款：非上传者设备打开款式库可见同款；封面不再 403。
+
+---
+
 ## 1.1.9 · 2026-06-06 · 双维度半星评分与云端品质分展示
 
 **小程序版本：`1.1.9`**（`app.globalData.version`）
