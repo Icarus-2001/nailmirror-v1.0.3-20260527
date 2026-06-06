@@ -14,6 +14,40 @@ function isMerchantStyle(style) {
   return !!(style && style.styleSource === 'merchant-upload');
 }
 
+function normalizePhone(phone) {
+  return String(phone || '').replace(/[\s-]/g, '');
+}
+
+function dialPhone(phone, contact) {
+  const number = normalizePhone(phone);
+  if (!number) {
+    wx.showModal({
+      title: '联系商家',
+      content: '商家暂未留联系电话',
+      showCancel: false,
+      confirmText: '知道了'
+    });
+    return;
+  }
+  wx.makePhoneCall({
+    phoneNumber: number,
+    fail: (err) => {
+      const msg = String((err && err.errMsg) || '');
+      if (msg.indexOf('cancel') > -1) return;
+      const lines = [
+        contact && contact.storeName ? '门店：' + contact.storeName : '',
+        '电话：' + number
+      ].filter(Boolean);
+      wx.showModal({
+        title: '联系商家',
+        content: lines.join('\n'),
+        showCancel: false,
+        confirmText: '知道了'
+      });
+    }
+  });
+}
+
 Page({
   data: {
     style: null,
@@ -55,6 +89,15 @@ Page({
     const id = this.data.style.id;
     wx.navigateTo({ url: '/pages/try-on-static/index?styleId=' + id });
   },
+  async resolveMerchantContact(style) {
+    if (!style || !isMerchantStyle(style)) return null;
+    if (this.data.merchantContact) return this.data.merchantContact;
+    const res = await merchantContactService.getContactByStyleId(style.id);
+    if (!res || !res.ok || !res.contact) return null;
+    this.setData({ merchantContact: res.contact });
+    return res.contact;
+  },
+
   async onContact() {
     const style = this.data.style;
     if (!isMerchantStyle(style)) {
@@ -67,38 +110,27 @@ Page({
       return;
     }
 
-    let contact = this.data.merchantContact;
+    const contact = await this.resolveMerchantContact(style);
     if (!contact) {
-      const res = await merchantContactService.getContactByStyleId(style.id);
-      if (!res || !res.ok || !res.contact) {
-        wx.showModal({
-          title: '联系商家',
-          content: (res && res.message) || '商家信息暂未配置',
-          showCancel: false,
-          confirmText: '知道了'
-        });
-        return;
-      }
-      contact = res.contact;
-      this.setData({ merchantContact: contact });
+      wx.showModal({
+        title: '联系商家',
+        content: '商家信息暂未配置',
+        showCancel: false,
+        confirmText: '知道了'
+      });
+      return;
     }
 
-    const region = [contact.province, contact.city].filter(Boolean).join(' ');
-    const lines = [
-      contact.storeName ? '门店：' + contact.storeName : '',
-      region ? '地区：' + region : '',
-      contact.phone ? '电话：' + contact.phone : ''
-    ].filter(Boolean);
-    wx.showModal({
-      title: '联系商家',
-      content: lines.join('\n'),
-      cancelText: '关闭',
-      confirmText: contact.phone ? '拨打电话' : '知道了',
-      success: (res) => {
-        if (res.confirm && contact.phone) {
-          wx.makePhoneCall({ phoneNumber: contact.phone });
-        }
-      }
-    });
+    dialPhone(contact.phone, contact);
+  },
+
+  async onDialPhone() {
+    const style = this.data.style;
+    const contact = await this.resolveMerchantContact(style);
+    if (!contact) {
+      wx.showToast({ title: '暂无联系电话', icon: 'none' });
+      return;
+    }
+    dialPhone(contact.phone, contact);
   }
 });

@@ -26,7 +26,7 @@
     <view class="sd__merchant" wx:if="{{style.styleSource === 'merchant-upload' && merchantContact}}">
       <view class="np-title">{{merchantContact.storeName}}</view>
       <view class="np-subtitle" wx:if="{{merchantContact.province || merchantContact.city}}">{{merchantContact.province}} {{merchantContact.city}}</view>
-      <view class="np-subtitle" wx:if="{{merchantContact.phone}}">联系电话 {{merchantContact.phone}}</view>
+      <view class="sd__phone" wx:if="{{merchantContact.phone}}" bindtap="onDialPhone">联系电话 {{merchantContact.phone}}</view>
     </view>
   </view>
 

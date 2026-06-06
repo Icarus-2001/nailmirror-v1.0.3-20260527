@@ -1,9 +1,11 @@
 /* V1.6 主页样式 — 自包含，不依赖外部 cover 图 */
 .home {
+  width: 100%;
   min-height: 100vh;
   padding: 24rpx 24rpx 100rpx;
   background: #f7f7fb;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .home__hero { padding: 16rpx 8rpx 24rpx; }
@@ -26,26 +28,26 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 56rpx; margin-right: 24rpx;
 }
-.home__main-text { flex: 1; color: #fff; }
+.home__main-text { flex: 1; min-width: 0; color: #fff; }
 .home__main-title { font-size: 38rpx; font-weight: 700; margin-bottom: 8rpx; }
-.home__main-sub { font-size: 26rpx; opacity: 0.92; }
+.home__main-sub { font-size: 26rpx; opacity: 0.92; line-height: 1.45; }
 .home__main-arrow { color: #fff; font-size: 60rpx; line-height: 1; opacity: 0.85; }
 
-/* 副入口三宫格 */
+/* 副入口二宫格 */
 .home__sub-entries {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
   margin-bottom: 36rpx;
 }
 .home__sub-entry {
-  flex: 1;
+  min-width: 0;
   background: #fff;
   border-radius: 20rpx;
   padding: 28rpx 0;
   text-align: center;
-  margin-right: 18rpx;
   box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
 }
-.home__sub-entry:last-child { margin-right: 0; }
 .home__sub-icon {
   width: 80rpx; height: 80rpx; border-radius: 20rpx;
   margin: 0 auto 14rpx;
@@ -66,14 +68,26 @@
 .home__section-title { font-size: 34rpx; font-weight: 600; color: #1a1a1a; }
 .home__section-more  { font-size: 26rpx; color: #888; }
 
-/* 推荐网格 */
-.home__grid { display: flex; flex-wrap: wrap; }
-.home__grid-col { width: calc(50% - 10rpx); margin-right: 20rpx; margin-bottom: 20rpx; }
-.home__grid-col:nth-child(2n) { margin-right: 0; }
+/* 推荐网格：与款式库一致，用 CSS Grid 适配各机型（避免 calc+flex 在部分设备溢出） */
+.home__grid {
+  width: 100%;
+}
+.home__grid-item {
+  min-width: 0;
+  width: 100%;
+}
 
-.home__card { background: #fff; border-radius: 20rpx; overflow: hidden; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04); }
+.home__card {
+  width: 100%;
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+}
 .home__card-cover {
-  position: relative; width: 100%; height: 240rpx;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
   background: #f0f0f5;
   overflow: hidden;
 }
@@ -91,7 +105,7 @@
   box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.08);
   font-size: 20rpx; color: #4a3a42; white-space: nowrap;
 }
-.home__card-body { padding: 16rpx 20rpx 20rpx; }
+.home__card-body { padding: 16rpx 20rpx 20rpx; min-width: 0; }
 .home__card-title {
   font-size: 28rpx; color: #1a1a1a; font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -101,6 +115,8 @@
   align-items: center;
   margin-top: 10rpx;
   gap: 8rpx;
+  min-width: 0;
+  overflow: hidden;
 }
 .home__card-stars {
   display: flex;
