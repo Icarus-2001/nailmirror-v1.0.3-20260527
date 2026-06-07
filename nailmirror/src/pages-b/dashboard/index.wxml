@@ -34,9 +34,7 @@
           bindtap="onMetricTap"
         >{{item.label}}</view>
       </view>
-      <view class="bd__chart-wrap" hidden="{{adviceVisible}}">
-        <line-chart id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
-      </view>
+      <line-chart wx:if="{{!adviceVisible}}" id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
       <view class="bd__picker-title">款式对比（最多3个）</view>
       <view class="bd__picker-hint">右侧为综合热度分，非款式数量</view>
       <view class="bd__picker-trigger" bindtap="onToggleStylePicker">
@@ -123,7 +121,10 @@
     </view>
   </block>
 
-  <view class="bd__advice-modal" wx:if="{{adviceVisible}}">
+</view>
+
+<root-portal wx:if="{{adviceVisible}}">
+  <view class="bd__advice-modal">
     <view class="bd__advice-mask" bindtap="onCloseAdvice"></view>
     <view class="bd__advice-box">
       <view class="bd__advice-title">AI智能建议</view>
@@ -134,4 +135,4 @@
       <view class="bd__advice-close np-btn np-btn--block" bindtap="onCloseAdvice">知道了</view>
     </view>
   </view>
-</view>
+</root-portal>
