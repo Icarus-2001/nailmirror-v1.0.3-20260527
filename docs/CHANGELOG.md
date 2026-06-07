@@ -1,5 +1,42 @@
 # 变更记录
 
+## 1.2.11 · 2026-06-07 · 历史热款保留款式库
+
+**小程序版本：`1.2.11`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**导入新一批小红书热款后，昨日及更早热款仍在款式库展示（徽章「全网热款」），但不再出现在热款榜 TOP10。**
+
+### 热款榜与款式库分流
+
+- **问题**：`importXhsHotTop10` 将旧批次 `is_active: false` 后，历史热款从款式库消失，用户无法试戴或收藏昨日热款。
+- **`ops.listXhsHotStyles`**：新增 `scope` 参数——`rank`（默认，仅 `is_active` 最新一批 TOP10，供热款榜）与 `library`（全部 `xhs-hot` 历史批次，供款式库）。
+- **C 端**：`xhs-hot.service` 拆分为榜单缓存（`np_xhs_hot_styles`）与款式库全量缓存（`np_xhs_hot_library_styles`）；`style.service` / `favorite.service` 合并全量热款；`hot-data.buildXhsHotRanking` 仍只展示活跃款。
+- **脚本**：`scripts/push-xhs-hot.js` 从 dated JSON 生成 `data/xhs-hot-import-payload.json`（`--latest --dry-run`）；`import-xhs-hot.js` 兼容委托。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/listXhsHotStyles.js`、`ops/index.js`
+- `services/xhs-hot.service.js`、`style.service.js`、`hot-data.service.js`、`favorite.service.js`
+- `config/constants.js`
+- `scripts/push-xhs-hot.js`、`scripts/import-xhs-hot.js`
+- `tests/cloudfunctions/importXhsHotTop10.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（`listXhsHotStyles` 新增 `scope`）：微信开发者工具 → 云函数 `ops` → **上传并部署：云端安装依赖**。
+2. 小程序端：清缓存 → 重新编译 → 体验版版本号 **`1.2.11`**。
+3. 云端可选验证：`{ "action": "listXhsHotStyles", "scope": "library" }` 应返回含 `is_active: false` 的旧批次。
+
+### 验证
+
+- 首页热款榜仅显示最新 `scrape_date` TOP10（如 `2026-06-07 全网热款 TOP10`）。
+- 款式库筛选「全网热款」可见昨日 + 今日共约 20 款；旧款仍可进商详试戴。
+- 收藏昨日热款后「我的收藏」可正常展示。
+
+---
+
 ## 1.2.10 · 2026-06-07 · 我的页头像资料弹窗
 
 **小程序版本：`1.2.10`**（`app.globalData.version`）

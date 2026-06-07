@@ -52,8 +52,8 @@ function getAllStyles() {
   ).map((s) => (s.styleSource ? s : Object.assign({}, s, { styleSource: 'platform' })));
   const merchantStyles = merchantStyleService.getCachedMerchantStyles()
     .filter((s) => s && s.isActive !== false);
-  const xhsStyles = xhsHotService.getCachedXhsHotStyles()
-    .filter((s) => s && s.isActive !== false);
+  const xhsStyles = xhsHotService.getCachedXhsHotLibraryStyles()
+    .filter((s) => s && s.id);
   const merged = base.concat(merchantStyles).concat(xhsStyles);
   if (!merged.length) return base;
   const byId = {};
@@ -120,6 +120,7 @@ async function list(filters) {
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      xhsHotService.ensureXhsHotLibraryStyles(),
       ensureStyleHeatScores(),
     ]);
     const withHeat = _applyHeatScores(getAllStyles(), heatResult);
@@ -140,6 +141,7 @@ async function get(id) {
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      xhsHotService.ensureXhsHotLibraryStyles(),
       ensureStyleHeatScores(),
     ]);
     const withHeat = _applyHeatScores(getAllStyles(), heatResult);
@@ -157,6 +159,7 @@ async function search(opts) {
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      xhsHotService.ensureXhsHotLibraryStyles(),
       ensureStyleHeatScores(),
     ]);
     const withHeat = _applyHeatScores(getAllStyles(), heatResult);

@@ -1,10 +1,11 @@
 const cloudUtil = require('../utils/cloud');
 const { safeGet, safeSet } = require('../utils/storage');
-const { STORAGE_XHS_HOT_STYLES } = require('../config/constants');
+const { STORAGE_XHS_HOT_STYLES, STORAGE_XHS_HOT_LIBRARY_STYLES } = require('../config/constants');
 const { buildDisplayTags } = require('../config/tag-vocabulary');
 
 const XHS_CACHE_TTL_MS = 10 * 60 * 1000;
 let _xhsCache = { styles: [], scrapeDate: '', fetchedAt: 0 };
+let _xhsLibraryCache = { styles: [], fetchedAt: 0 };
 
 function uniqueList(items) {
   const seen = {};
@@ -47,6 +48,12 @@ function getCachedXhsHotStyles() {
   return styles.filter((s) => s && s.id).map(remapCachedStyle);
 }
 
+function getCachedXhsHotLibraryStyles() {
+  const cached = safeGet(STORAGE_XHS_HOT_LIBRARY_STYLES, null);
+  const styles = cached && Array.isArray(cached.styles) ? cached.styles : [];
+  return styles.filter((s) => s && s.id).map(remapCachedStyle);
+}
+
 function getCachedScrapeDate() {
   const cached = safeGet(STORAGE_XHS_HOT_STYLES, null);
   return (cached && cached.scrapeDate) || _xhsCache.scrapeDate || '';
@@ -61,6 +68,17 @@ function mergeCachedXhsHotStyles(styles, scrapeDate) {
   };
   safeSet(STORAGE_XHS_HOT_STYLES, payload);
   _xhsCache = { styles: mapped, scrapeDate: payload.scrapeDate, fetchedAt: Date.now() };
+  return mapped;
+}
+
+function mergeCachedXhsHotLibraryStyles(styles) {
+  const mapped = (styles || []).map(mapCloudStyleToClientStyle).filter((s) => s && s.id);
+  const payload = {
+    styles: mapped,
+    updatedAt: new Date().toISOString()
+  };
+  safeSet(STORAGE_XHS_HOT_LIBRARY_STYLES, payload);
+  _xhsLibraryCache = { styles: mapped, fetchedAt: Date.now() };
   return mapped;
 }
 
@@ -114,7 +132,7 @@ async function ensureXhsHotStyles(force) {
   }
   try {
     if (!cloudUtil.isCloudReady()) return getCachedXhsHotStyles();
-    const res = await cloudUtil.callFunction('ops', { action: 'listXhsHotStyles' });
+    const res = await cloudUtil.callFunction('ops', { action: 'listXhsHotStyles', scope: 'rank' });
     if (res && res.ok && Array.isArray(res.styles)) {
       return mergeCachedXhsHotStyles(res.styles, res.scrapeDate || '');
     }
@@ -122,6 +140,23 @@ async function ensureXhsHotStyles(force) {
     // 降级本地缓存
   }
   return getCachedXhsHotStyles();
+}
+
+async function ensureXhsHotLibraryStyles(force) {
+  const now = Date.now();
+  if (!force && _xhsLibraryCache.fetchedAt && (now - _xhsLibraryCache.fetchedAt) < XHS_CACHE_TTL_MS) {
+    return _xhsLibraryCache.styles;
+  }
+  try {
+    if (!cloudUtil.isCloudReady()) return getCachedXhsHotLibraryStyles();
+    const res = await cloudUtil.callFunction('ops', { action: 'listXhsHotStyles', scope: 'library' });
+    if (res && res.ok && Array.isArray(res.styles)) {
+      return mergeCachedXhsHotLibraryStyles(res.styles);
+    }
+  } catch (e) {
+    // 降级本地缓存
+  }
+  return getCachedXhsHotLibraryStyles();
 }
 
 function getMeta() {
@@ -132,9 +167,12 @@ function getMeta() {
 
 module.exports = {
   getCachedXhsHotStyles,
+  getCachedXhsHotLibraryStyles,
   getCachedScrapeDate,
   mergeCachedXhsHotStyles,
+  mergeCachedXhsHotLibraryStyles,
   mapCloudStyleToClientStyle,
   ensureXhsHotStyles,
+  ensureXhsHotLibraryStyles,
   getMeta
 };
