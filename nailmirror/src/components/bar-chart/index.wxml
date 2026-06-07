@@ -1,0 +1,13 @@
+<view class="bc">
+  <view class="bc__row" wx:for="{{normalized}}" wx:key="key">
+    <view class="bc__label">{{item.label}}</view>
+    <view class="bc__track">
+      <view class="bc__bar" style="width: {{item.pct}}%;"></view>
+    </view>
+    <view class="bc__val-wrap">
+      <view class="bc__val">{{item.value}}{{valueSuffix}}</view>
+      <view class="bc__sub" wx:if="{{showSub && item.sub > 0}}">总热度 {{item.sub}}</view>
+    </view>
+  </view>
+  <view class="bc__empty" wx:if="{{!normalized.length}}">暂无标签数据</view>
+</view>

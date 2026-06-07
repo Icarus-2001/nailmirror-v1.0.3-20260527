@@ -28,6 +28,7 @@
       <view class="np-title">{{merchantContact.storeName}}</view>
       <view class="np-subtitle" wx:if="{{merchantContact.province || merchantContact.city}}">{{merchantContact.province}} {{merchantContact.city}}</view>
       <view class="sd__phone" wx:if="{{merchantContact.phone}}" bindtap="onDialPhone">联系电话 {{merchantContact.phone}}</view>
+      <view class="sd__hours" wx:if="{{merchantContact.businessHours}}">营业时间 {{merchantContact.businessHours}}</view>
     </view>
   </view>
 

@@ -1,5 +1,277 @@
 # 变更记录
 
+## 1.2.19–1.2.21 · 2026-06-07 · 合并发布（#45 + #46 + #47）
+
+**小程序版本：`1.2.21`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**一次性合入看板数据修复与趋势优化、AI 智能建议、退出商家模式修复、店铺信息云端化；请审阅本 PR 取代 #45/#46/#47 分别合并。**
+
+### 包含版本
+
+| 版本 | 主题 | 原 PR |
+|------|------|-------|
+| 1.2.19 | 看板 Mock/快照修复、趋势分页、筛选规则 | #45 |
+| 1.2.20 | 退出商家模式、AI 智能建议（Moonshot）、弹窗层级修复 | #46 |
+| 1.2.21 | 店铺信息读写云库、每月限改、C 端营业时间 | #47 |
+
+### 一次性部署（合并进 main 后执行一次即可）
+
+1. 云环境 `cloud1-d2g3df4y16873034b` 配置 **`MOONSHOT_API_KEY`**（AI 建议需要）。
+2. 微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+3. 可选注入看板演示数据后验收 AI 建议：
+   ```json
+   { "action": "mockMerchantDashboardData", "phone": "17312270775", "clearFirst": true }
+   ```
+   ```json
+   { "action": "refreshMerchantDashboardSnapshots" }
+   ```
+4. 小程序清缓存 → 体验版版本号 **`1.2.21`**。
+
+### 合并说明
+
+- 分支 `feature/release-1.2.19-21` 已线性包含 #45→#46→#47 全部提交，与 `main` 无冲突。
+- **请勿**再分别合并 #45/#46/#47，避免 CHANGELOG 与 `ops` 重复冲突。
+
+---
+
+## 1.2.21 · 2026-06-07 · 商家店铺信息云端化
+
+**小程序版本：`1.2.21`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**B 端店铺信息读写云库 merchants，保存后 C 端商详同步展示；移除企微二维码；每月仅可修改一次。**
+
+### 店铺信息（B 端）
+
+- **云端化**：`getMerchantStoreProfile` / `updateMerchantStoreProfile` 读写 `merchants`（门店名称、联系电话、营业时间）。
+- **删除**企微二维码上传区块。
+- **限频**：`store_profile_updated_at` 冷却 **30 天**，保存后提示下次可编辑日期；首次入驻后首次保存不受限。
+- 省市仍为资质认证字段，本页只读展示。
+
+### C 端联通
+
+- `getMerchantContact` 返回 `businessHours`；商详商家区块展示营业时间。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{getMerchantStoreProfile,updateMerchantStoreProfile}.js`
+- `cloudfunctions/ops/utils/{storeProfile,merchant}.js`、`ops/index.js`
+- `services/merchant.service.js`、`pages-b/contact-config/*`
+- `pages/style-detail/index.wxml`、`index.wxss`
+- `tests/cloudfunctions/{getMerchantStoreProfile,updateMerchantStoreProfile,getMerchantContact}.test.js`
+- `__tests__/smoke/merchant-config.smoke.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 部署 `cloudfunctions/ops`（云端安装依赖）到 `cloud1-d2g3df4y16873034b`。
+2. 云端测试读取：`{ "action": "getMerchantStoreProfile", "openid": "<商家openid>" }`
+3. 云端测试保存：`{ "action": "updateMerchantStoreProfile", "openid": "...", "storeName": "星辰美甲·国贸店", "phone": "13800138001", "businessHours": "10:00-22:00" }`
+4. 再次保存应返回冷却错误；C 端商家款商详应显示新信息与营业时间。
+5. 小程序清缓存 → 体验版 **`1.2.21`**。
+
+### 验证
+
+- 商家中心 → 店铺信息：无企微二维码，保存成功，冷却期内按钮禁用。
+- 商详「来自商家」款：门店名/电话/营业时间与云库一致。
+- `npm test -- --testPathPattern="getMerchantStoreProfile|updateMerchantStoreProfile|getMerchantContact|merchant-config.smoke"` 通过。
+
+---
+
+## 1.2.20 · 2026-06-07 · 退出商家模式修复与看板 AI 智能建议
+
+**小程序版本：`1.2.20`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**修复商家中心「退出商家模式」无效；看板新增 AI 智能建议，每日 10:00 随快照由 Moonshot 生成并缓存展示。**
+
+### 退出商家模式（Bug 修复）
+
+- **根因**：商家中心经 `redirectTo` 进入时页面栈仅 1 层，`navigateBack()` 静默失败；`onShow` 再次 `setRole('b')`。
+- **修复**：栈深为 1 时 `switchTab` 回「我的」；栈深 > 1 仍 `navigateBack`；提示「已退出商家模式」。仅切换本地会话角色，不注销资质。
+
+### 看板 AI 智能建议
+
+- **入口**：商家看板标题区下「AI智能建议」卡片，点击弹出可滚动弹窗。
+- **生成**：`refreshMerchantDashboardSnapshots`（每日 10:00）在写入看板快照后调用 Moonshot，将 `ai_advice` 写入 `merchant_dashboard_snapshots`。
+- **读取**：`getMerchantDashboardAdvice` 仅返回当日 T-1 缓存；无缓存提示「今日建议尚未生成，请明日 10:00 后再看」（不现场调 LLM）。
+- **Prompt**：商业分析 + 美甲行业专家角色；注入近 7 日经营概况、热度 Top3、爆款/冷门、标签聚合；输出四段 Markdown 建议。
+
+### 涉及文件
+
+- `pages-b/entry/index.js`、`utils/merchant-exit.js`
+- `cloudfunctions/ops/utils/llm.js`
+- `cloudfunctions/ops/handlers/{getMerchantDashboardAdvice,refreshMerchantDashboardSnapshots,getMerchantDashboard}.js`
+- `cloudfunctions/ops/index.js`
+- `pages-b/dashboard/*`、`services/merchant-dashboard.service.js`
+- `tests/cloudfunctions/merchantDashboardAdvice.test.js`、`tests/utils/merchant-exit.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 云环境 `cloud1-d2g3df4y16873034b` 须配置 **`MOONSHOT_API_KEY`**（可选 `MOONSHOT_MODEL`）。
+2. 部署 `cloudfunctions/ops`（云端安装依赖）。
+3. 手动触发快照刷新以生成首日建议：
+   ```json
+   { "action": "refreshMerchantDashboardSnapshots" }
+   ```
+4. 验证读取：
+   ```json
+   { "action": "getMerchantDashboardAdvice", "role": "b", "openid": "<商家openid>" }
+   ```
+5. 小程序清缓存 → 体验版 **`1.2.20`**。
+
+### 验证
+
+- 商家中心点「退出商家模式」→ 回到「我的」且为普通用户身份。
+- 看板点「AI智能建议」→ 弹窗展示四段结构化建议；无缓存时有友好提示。
+- `npm test -- --testPathPattern="merchantDashboardAdvice|merchant-exit|refreshMerchantDashboardSnapshots"` 通过。
+
+---
+
+## 1.2.19 · 2026-06-07 · 商家看板数据链路修复与趋势区优化
+
+**小程序版本：`1.2.19`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**修复 Mock/快照不同步导致看板全 0；爆款/冷门分页展示与筛选规则说明；T-1 快照定时刷新与演示数据一键注入。**
+
+### 看板数据链路（核心修复）
+
+- **根因**：快照 `hasRecentData=true` 但 7 日计数为 0 时仍直接返回；mock 写入后未刷新快照；云库时间字段解析失败；openid 与 `merchant_id` 不一致。
+- **`getMerchantDashboard`**：仅当 `hasRecentData` 且 `events7d + tryOn7d > 0` 才读快照，否则 live 重算并回写；快照 docId 统一 `normalizeMerchantOpenid`。
+- **`styleHeat.toMs`**：支持毫秒数、`$date`、`getTime()` 对象、ISO 字符串，避免 7 日窗口计数为 0。
+- **`mockMerchantDashboardData`**（新）：按手机号查 `merchants.openid`；时间戳写毫秒数；注入后自动写 `merchant_dashboard_snapshots`。
+- **`refreshMerchantDashboardSnapshots`**（新）：每日 10:00 定时刷新各商家 T-1 快照；`merchantId` 统一 normalize。
+
+### 商家看板 UI
+
+- **删除**折线图下方「近7日暂无行为数据…」黄字提示。
+- **趋势洞察**：爆款/冷门每页 **3** 条，支持上一页/下一页；标题下「筛选规则」可点击查看（对齐 `classifyTrends`）。
+- **折线图**：Y 轴刻度、`metricKey` 联动；Canvas 绑定 `.in(this)` 与重绘重试。
+- **柱状图**：展示各标签下**款式数量**（`styleCount`），非热度总和误读。
+
+### 登录隐私（附带修复）
+
+- 登录页 `onReady` 改为 `checkPrivacyNeeded` 探测，不在页面加载时阻塞 `requirePrivacyAuthorize`；用户点击登录/选头像时再 `ensurePrivacyAuthorized`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{getMerchantDashboard,mockMerchantDashboardData,refreshMerchantDashboardSnapshots}.js`
+- `cloudfunctions/ops/utils/styleHeat.js`、`ops/config.json`、`ops/index.js`
+- `pages-b/dashboard/*`、`config/dashboard-trend-rules.js`
+- `components/{line-chart,bar-chart}/*`
+- `pages/login/index.js`、`utils/privacy.js`
+- `scripts/mock-merchant-dashboard.js`
+- `tests/cloudfunctions/{getMerchantDashboard,mockMerchantDashboardData,refreshMerchantDashboardSnapshots,styleHeat}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含新 action 与 10:00 定时器）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. **演示数据**（可选）：云端测试
+   ```json
+   { "action": "mockMerchantDashboardData", "phone": "17312270775", "clearFirst": true }
+   ```
+   预期返回 `snapshot.ok: true` 且 `dataHealth.events7d > 0`；再测 `getMerchantDashboard` 应有非 0 折线与 2 爆款 + 花漾冷门。
+4. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.19`**。
+
+### 验证
+
+- Mock 后看板 `events7d > 0`，折线图有上升曲线；无黄字空数据提示。
+- 爆款/冷门每页 3 条可翻页；筛选规则弹窗文案正确。
+- 登录页可正常进入（隐私在用户点击时授权）。
+- `npm test -- --testPathPattern="getMerchantDashboard|mockMerchantDashboardData|refreshMerchantDashboardSnapshots|styleHeat"` 通过。
+
+---
+
+## 1.2.18 · 2026-06-07 · B 端商家看板重构
+
+**小程序版本：`1.2.18`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家看板改为仅统计本店已上线款式：整体洞察折线图、爆款/冷门趋势、标签聚合柱状图；复用站内综合热度公式。**
+
+### 商家看板（B 端）
+
+- **删除**原平台热词/本城热款展示，**重写** [`pages-b/dashboard`](nailmirror/src/pages-b/dashboard/index.js)。
+- **整体洞察**：近 7 日折线图，指标可切换（商详 UV / 试戴完成 / 收藏 / 综合热度 / 试戴转化率）；默认热度 Top3 款式，最多勾选 3 款对比。
+- **趋势洞察**：爆款趋势与冷门预警互斥分区；展示热度与环比。
+- **标签聚合**：颜色 / 风格 / 图案三 Tab 柱状图（按标签热度总和排序）。
+- **`dataHealth`**：近 7 日行为数据计数与空数据提示。
+
+### 云端 ops
+
+- **`getMerchantDashboard`**：仅 `merchant-upload` + `is_active=true` + 当前商家 openid。
+- **`utils/styleHeat.js`**：抽取站内热度算法；`getStyleHeatScores` 复用同一公式。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/getMerchantDashboard.js`、`utils/styleHeat.js`、`handlers/getStyleHeatScores.js`、`index.js`
+- `pages-b/dashboard/*`、`services/merchant-dashboard.service.js`
+- `components/{line-chart,bar-chart}/*`
+- `tests/cloudfunctions/{getMerchantDashboard,styleHeat}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含 `getMerchantDashboard`、`styleHeat`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`；云端测试 `{ "action": "getMerchantDashboard" }`（商家登录上下文）。
+3. 若无近 7 日 UV/试戴/收藏，看板会提示空态；可用真实商详浏览与试戴产生数据。
+4. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.18`**。
+
+### 验证
+
+- 商家 A 看板仅含 A 的已上线款，不含平台款/他商家/已下架款。
+- 折线图 7 日横轴、指标切换、第 4 款勾选被拦截。
+- 爆款/冷门互斥；标签聚合三 Tab 正确。
+- `npm test -- --testPathPattern="getMerchantDashboard|styleHeat"` 通过。
+
+---
+
+## 1.2.17 · 2026-06-07 · 全网热款款式库 note_id 去重
+
+**小程序版本：`1.2.17`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**同一小红书帖子跨天重复导入时，款式库只保留一条；热款榜仍展示最新批次 TOP10。**
+
+### 款式库热款去重
+
+- **问题**：`importXhsHotTop10` 按 `scrape_date + rank` 生成 `_id`，同一 `note_id` 跨天进榜会在 `scope=library` 出现两张相似卡片（如「十字黑银 / 暗夜十字」）。
+- **`ops.listXhsHotStyles` `scope=library`**：按 `note_id` 合并，保留 `is_active` → 较新 `scrape_date` → 较高 `interaction_score` → 较小 `xhs_rank`；无 `note_id` 的旧记录不去重。
+- **`scope=rank`**：逻辑不变，仍为最新活跃批次 TOP10。
+
+### 涉及文件
+
+- `cloudfunctions/ops/utils/xhsHotDedup.js`
+- `cloudfunctions/ops/handlers/listXhsHotStyles.js`
+- `tests/cloudfunctions/{xhsHotDedup,importXhsHotTop10}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（`listXhsHotStyles` library 去重）：微信开发者工具 → `ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.17`**。
+
+### 验证
+
+- 款式库筛「全网热款」：同一帖子跨天导入只显示 **1** 张卡片。
+- 热款榜仍为 **`{最新 scrape_date} 全网热款 TOP10`** 共 **10** 条。
+- 云端测试：`{ "action": "listXhsHotStyles", "scope": "library" }`，有跨天重复时 `count` 小于去重前。
+- `npm test -- --testPathPattern="xhsHotDedup|listXhsHotStyles"` 通过。
+
+---
+
 ## 1.2.16 · 2026-06-07 · 款式库管理三 Tab
 
 **小程序版本：`1.2.16`**（`app.globalData.version`）

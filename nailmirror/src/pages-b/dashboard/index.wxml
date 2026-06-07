@@ -1,21 +1,137 @@
 <view class="bd np-container">
   <view class="bd__head">
-    <view class="np-title">今日商家看板 · {{city}}</view>
-    <view class="np-subtitle">数据更新于 {{updatedAt}}（每日 9 / 14 / 18 点更新）</view>
+    <view class="np-title">商家看板</view>
+    <view class="np-subtitle">数据截至 {{updatedAtText}} · 仅统计本店已上线款式</view>
   </view>
 
-  <view class="bd__section">
-    <view class="np-title">热门搜索词 TOP20</view>
-    <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
-      <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}"></hot-item>
-    </block>
+  <view class="bd__alert" wx:if="{{dataHealth.message}}">{{dataHealth.message}}</view>
+  <view class="bd__health" wx:if="{{!loading && dataHealth.merchantStyleCount}}">
+    近7日：商详事件 {{dataHealth.events7d}} · 试戴 {{dataHealth.tryOn7d}} · 收藏 {{dataHealth.favorites7d}}
   </view>
 
-  <view class="bd__section">
-    <view class="np-title">本城热款榜 TOP10</view>
-    <block wx:for="{{ranking}}" wx:key="styleId" wx:for-index="idx">
-      <hot-rank-card rank="{{idx + 1}}" item="{{item}}"></hot-rank-card>
-    </block>
+  <view class="bd__ai-entry" wx:if="{{!loading}}" bindtap="onTapAiAdvice">
+    <view class="bd__ai-entry-main">
+      <text class="bd__ai-entry-icon">✨</text>
+      <view class="bd__ai-entry-text">
+        <text class="bd__ai-entry-title">AI智能建议</text>
+        <text class="bd__ai-entry-sub">每日 10:00 更新 · 基于看板数据生成</text>
+      </view>
+    </view>
+    <text class="bd__ai-entry-arrow">{{adviceLoading ? '…' : '›'}}</text>
   </view>
 
+  <view class="bd__loading" wx:if="{{loading}}">加载中…</view>
+
+  <block wx:if="{{!loading}}">
+    <view class="bd__section">
+      <view class="bd__section-title">整体洞察</view>
+      <view class="bd__tabs">
+        <view
+          class="bd__tab {{activeMetric === item.key ? 'bd__tab--on' : ''}}"
+          wx:for="{{metrics}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onMetricTap"
+        >{{item.label}}</view>
+      </view>
+      <line-chart wx:if="{{!adviceVisible}}" id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
+      <view class="bd__picker-title">款式对比（最多3个）</view>
+      <view class="bd__picker-hint">右侧为综合热度分，非款式数量</view>
+      <view class="bd__picker-trigger" bindtap="onToggleStylePicker">
+        <text class="bd__picker-summary">{{selectedSummary}}</text>
+        <text class="bd__picker-arrow">{{stylePickerOpen ? '▲' : '▼'}}</text>
+      </view>
+      <view class="bd__picker-panel" wx:if="{{stylePickerOpen}}">
+        <scroll-view scroll-y class="bd__picker-scroll">
+          <view
+            class="bd__pick {{item.checked ? 'bd__pick--on' : ''}}"
+            wx:for="{{styleOptions}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onToggleStyle"
+          >
+            <text class="bd__pick-check">{{item.checked ? '✓' : ''}}</text>
+            <text class="bd__pick-name">{{item.title}}</text>
+            <text class="bd__pick-heat">热度 {{item.heatNow}}</text>
+          </view>
+        </scroll-view>
+        <view class="bd__picker-done" bindtap="onCloseStylePicker">完成</view>
+      </view>
+      <empty-state wx:if="{{!styleOptions.length}}" text="暂无已上线款式" hint="请先在款式库管理中上传并上架"></empty-state>
+    </view>
+
+    <view class="bd__section">
+      <view class="bd__section-title">趋势洞察</view>
+      <view class="bd__trend-grid">
+        <view class="bd__trend-col">
+          <view class="bd__trend-head bd__trend-head--hot">爆款趋势</view>
+          <view class="bd__rule-link" bindtap="onShowHotRules">筛选规则</view>
+          <view class="bd__trend-card" wx:for="{{trendsHot}}" wx:key="styleId">
+            <image class="bd__cover" src="{{item.coverUrl}}" mode="aspectFill"></image>
+            <view class="bd__trend-meta">
+              <view class="bd__trend-name">{{item.title}}</view>
+              <view class="bd__trend-stat">热度 {{item.heatNow}} · {{item.wowText}}</view>
+            </view>
+          </view>
+          <view class="bd__trend-empty" wx:if="{{!trendsHot.length}}">暂无爆款款式</view>
+          <view class="bd__pager" wx:if="{{hotPageText}}">
+            <view class="bd__pager-btn {{hotCanPrev ? '' : 'bd__pager-btn--off'}}" bindtap="onHotPrev">上一页</view>
+            <text class="bd__pager-text">{{hotPageText}}</text>
+            <view class="bd__pager-btn {{hotCanNext ? '' : 'bd__pager-btn--off'}}" bindtap="onHotNext">下一页</view>
+          </view>
+        </view>
+        <view class="bd__trend-col">
+          <view class="bd__trend-head bd__trend-head--cold">冷门预警</view>
+          <view class="bd__rule-link" bindtap="onShowColdRules">筛选规则</view>
+          <view class="bd__trend-card" wx:for="{{trendsCold}}" wx:key="styleId">
+            <image class="bd__cover" src="{{item.coverUrl}}" mode="aspectFill"></image>
+            <view class="bd__trend-meta">
+              <view class="bd__trend-name">{{item.title}}</view>
+              <view class="bd__trend-stat">
+                热度 {{item.heatNow}} · {{item.wowText}}
+                <text wx:if="{{item.zeroTryon}}"> · 近7日零试戴</text>
+              </view>
+            </view>
+          </view>
+          <view class="bd__trend-empty" wx:if="{{!trendsCold.length}}">暂无冷门款式</view>
+          <view class="bd__pager" wx:if="{{coldPageText}}">
+            <view class="bd__pager-btn {{coldCanPrev ? '' : 'bd__pager-btn--off'}}" bindtap="onColdPrev">上一页</view>
+            <text class="bd__pager-text">{{coldPageText}}</text>
+            <view class="bd__pager-btn {{coldCanNext ? '' : 'bd__pager-btn--off'}}" bindtap="onColdNext">下一页</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="bd__section">
+      <view class="bd__section-title">标签聚合分析</view>
+      <view class="bd__picker-hint">柱图数字为各标签下的款式数量</view>
+      <view class="bd__tabs">
+        <view
+          class="bd__tab {{activeTagTab === item.key ? 'bd__tab--on' : ''}}"
+          wx:for="{{tagTabs}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onTagTabTap"
+        >{{item.label}}</view>
+      </view>
+      <bar-chart wx:if="{{activeTagTab === 'color'}}" items="{{tagItemsColor}}"></bar-chart>
+      <bar-chart wx:if="{{activeTagTab === 'style'}}" items="{{tagItemsStyle}}"></bar-chart>
+      <bar-chart wx:if="{{activeTagTab === 'design'}}" items="{{tagItemsDesign}}"></bar-chart>
+    </view>
+  </block>
+
+  <root-portal wx:if="{{adviceVisible}}">
+    <view class="bd__advice-modal">
+      <view class="bd__advice-mask" bindtap="onCloseAdvice"></view>
+      <view class="bd__advice-box">
+        <view class="bd__advice-title">AI智能建议</view>
+        <scroll-view scroll-y class="bd__advice-scroll">
+          <text class="bd__advice-body">{{adviceContent}}</text>
+        </scroll-view>
+        <view class="bd__advice-foot" wx:if="{{adviceSnapshotDate}}">基于 {{adviceSnapshotDate}} 看板数据</view>
+        <view class="bd__advice-close np-btn np-btn--block" bindtap="onCloseAdvice">知道了</view>
+      </view>
+    </view>
+  </root-portal>
 </view>

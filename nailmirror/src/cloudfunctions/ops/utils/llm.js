@@ -171,6 +171,100 @@ async function generateDailyReport(summaryData) {
   return _parseLlmResponse(content)
 }
 
+// ============ 商家看板 AI 智能建议：Moonshot ============
+
+const MERCHANT_ADVICE_SYSTEM = '你是资深商业分析专家与美甲行业专家，擅长将门店运营数据转化为可执行的策略建议。输出须简短清晰、结构化，使用 Markdown 标题。'
+
+function _formatWowPct(val) {
+  const n = Number(val)
+  if (!Number.isFinite(n)) return '0%'
+  return (n > 0 ? '+' : '') + n + '%'
+}
+
+function _formatTagTopLines(tagAnalysis, field, limit) {
+  const rows = (tagAnalysis && tagAnalysis[field]) || []
+  if (!rows.length) return '（无）'
+  return rows.slice(0, limit).map((item) => (
+    item.tag + '（' + (item.styleCount != null ? item.styleCount : 0) + ' 款）'
+  )).join('、')
+}
+
+function _formatTrendLines(list, limit) {
+  if (!list || !list.length) return '（无）'
+  return list.slice(0, limit).map((item) => {
+    const zero = item.zeroTryon ? ' · 近7日零试戴' : ''
+    return '「' + (item.title || '') + '」热度' + (item.heatNow != null ? item.heatNow : 0)
+      + ' · 环比' + _formatWowPct(item.wowHeat) + zero
+  }).join('\n')
+}
+
+/**
+ * 拼装商家看板 AI 建议 user prompt（可单测）
+ * @param {object} payload buildMerchantDashboardPayload 返回值
+ * @param {{ storeName?: string }} meta
+ */
+function buildMerchantDashboardAdvicePrompt(payload, meta) {
+  const p = payload || {}
+  const dh = p.dataHealth || {}
+  const styles = (p.styles || []).slice().sort((a, b) => (b.heatNow || 0) - (a.heatNow || 0))
+  const top3 = styles.slice(0, 3).map((s) => (
+    '「' + s.title + '」热度' + s.heatNow + ' · 环比' + _formatWowPct(s.wowHeat)
+  )).join('\n') || '（无）'
+
+  const storeLine = (meta && meta.storeName) ? ('店铺名称：' + meta.storeName + '\n') : ''
+
+  return '你现在是一位资深的商业分析专家和美甲行业专家，请根据该店铺在今天的运营看板数据，结构化输出一段策略建议。\n\n'
+    + storeLine
+    + '【数据截至】' + (p.snapshotDate || '') + '（T-1 看板快照）\n\n'
+    + '【近7日经营概况】\n'
+    + '- 已上线款式：' + (dh.merchantStyleCount != null ? dh.merchantStyleCount : 0) + ' 款\n'
+    + '- 商详浏览：' + (dh.events7d != null ? dh.events7d : 0) + ' 次\n'
+    + '- 试戴完成：' + (dh.tryOn7d != null ? dh.tryOn7d : 0) + ' 次\n'
+    + '- 收藏：' + (dh.favorites7d != null ? dh.favorites7d : 0) + ' 次\n\n'
+    + '【热度 Top3 款式】\n' + top3 + '\n\n'
+    + '【爆款趋势（近7日）】\n' + _formatTrendLines((p.trends && p.trends.hot) || [], 5) + '\n\n'
+    + '【冷门预警（近7日）】\n' + _formatTrendLines((p.trends && p.trends.cold) || [], 5) + '\n\n'
+    + '【标签聚合 Top】\n'
+    + '- 颜色：' + _formatTagTopLines(p.tagAnalysis, 'color', 2) + '\n'
+    + '- 风格：' + _formatTagTopLines(p.tagAnalysis, 'style', 2) + '\n'
+    + '- 图案：' + _formatTagTopLines(p.tagAnalysis, 'design', 2) + '\n\n'
+    + '请严格按以下 Markdown 四段输出（总字数 200-350 字，不要 JSON，不要多余前言）：\n\n'
+    + '## 经营概况\n（1-2 句总结）\n\n'
+    + '## 亮点与机会\n（结合爆款与标签）\n\n'
+    + '## 风险关注\n（结合冷门与零试戴）\n\n'
+    + '## 明日可执行动作\n（2-3 条具体建议，每条一行）'
+}
+
+/**
+ * 调用 Moonshot 生成商家看板 AI 智能建议
+ * @returns {Promise<{ content: string, model: string }>}
+ */
+async function generateMerchantDashboardAdvice(dashboardPayload, meta) {
+  const apiKey = process.env.MOONSHOT_API_KEY
+  const baseUrl = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'
+  const model = process.env.MOONSHOT_MODEL || 'moonshot-v1-8k'
+  if (!apiKey) throw new Error('MOONSHOT_API_KEY 未配置')
+
+  const userPrompt = buildMerchantDashboardAdvicePrompt(dashboardPayload, meta || {})
+
+  const res = await _post(
+    `${baseUrl.replace(/\/$/, '')}/chat/completions`,
+    { Authorization: `Bearer ${apiKey}` },
+    {
+      model,
+      messages: [
+        { role: 'system', content: MERCHANT_ADVICE_SYSTEM },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.4,
+    }
+  )
+  if (res.error) throw new Error(res.error.message || JSON.stringify(res.error))
+
+  const content = (res.choices[0].message.content || '').trim()
+  return { content, model }
+}
+
 // ============ 图片打标：DashScope qwen-vl-max（与 import-styles.js --vlm 一致） ============
 
 const { buildVlmPrompt, buildAnalyzeNailStylePrompt, normalizeTag } = require('./tag-vocabulary')
@@ -257,4 +351,10 @@ async function analyzeNailStyleImage(imageUrl) {
   return Object.assign({ isNailArt: true, confidence }, tags)
 }
 
-module.exports = { generateDailyReport, tagNailImage, analyzeNailStyleImage }
+module.exports = {
+  generateDailyReport,
+  buildMerchantDashboardAdvicePrompt,
+  generateMerchantDashboardAdvice,
+  tagNailImage,
+  analyzeNailStyleImage,
+}
