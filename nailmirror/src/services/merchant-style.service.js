@@ -3,6 +3,7 @@ const imageUtil = require('../utils/image');
 const { safeGet, safeSet } = require('../utils/storage');
 const { STORAGE_MERCHANT_STYLES } = require('../config/constants');
 const { buildDisplayTags } = require('../config/tag-vocabulary');
+const { formatUploadFailure } = require('../utils/upload-validation');
 const { userStore } = require('../stores/user.store');
 const MERCHANT_CACHE_TTL_MS = 10 * 60 * 1000; // 10 分钟
 let _merchantCache = { styles: [], fetchedAt: 0 };
@@ -188,7 +189,13 @@ async function uploadMerchantStyles(localPaths) {
       const style = successByName[item.originalName];
       if (style) return Object.assign({}, item, { status: 'success', style });
       const cloudFail = cloudFailedByName[item.originalName];
-      if (cloudFail) return Object.assign({}, item, { status: 'failed', error: cloudFail.error || 'VLM failed' });
+      if (cloudFail) {
+        return Object.assign({}, item, {
+          status: 'failed',
+          code: cloudFail.code || '',
+          error: formatUploadFailure(cloudFail)
+        });
+      }
       return Object.assign({}, item, { status: 'failed', error: 'upload result missing' });
     })
   };

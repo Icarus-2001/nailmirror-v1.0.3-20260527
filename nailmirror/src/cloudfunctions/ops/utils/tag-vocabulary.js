@@ -70,6 +70,21 @@ function buildVlmPrompt() {
   ].join('\n');
 }
 
+function buildAnalyzeNailStylePrompt() {
+  return [
+    '你是美甲款式识别与审核器。先判断图片是否为「美甲款式参考图」（手指/甲片上的美甲设计特写或沙龙作品）。',
+    '非美甲内容（风景、人脸自拍、宠物、食物、文字截图等）只输出：',
+    '{"isNailArt":false,"confidence":0.0-1.0,"reason":"10字内"}',
+    '若是美甲款式图，必须从下列词表各选一项（逐字匹配，不得自造词）并输出：',
+    '{"isNailArt":true,"confidence":0.0-1.0,"color":"...","design":"...","shape":"...","style":"...","name":"10字内展示名"}',
+    'color: ' + COLOR_FAMILIES.join('、'),
+    'design: ' + DESIGNS.join('、'),
+    'shape: ' + SHAPES.join('、'),
+    'style: ' + STYLES.join('、'),
+    '禁止任何解释，只输出 JSON。'
+  ].join('\n');
+}
+
 function defaultTags(idx) {
   const i = idx - 1;
   return {
@@ -92,6 +107,7 @@ module.exports = {
   STYLES,
   normalizeTag,
   buildVlmPrompt,
+  buildAnalyzeNailStylePrompt,
   defaultTags,
   buildDisplayTags
 };

@@ -1,6 +1,7 @@
 const { userStore } = require('../../stores/user.store');
 const merchantStyleService = require('../../services/merchant-style.service');
 const { ensurePrivacyAuthorized } = require('../../utils/privacy');
+const { formatUploadFailure } = require('../../utils/upload-validation');
 
 const MAX_COUNT = 9;
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -129,7 +130,7 @@ Page({
         return Object.assign({}, file, {
           status: 'failed',
           statusText: '上传失败',
-          error: item.error || '上传失败'
+          error: formatUploadFailure(item)
         });
       });
       const successCount = files.filter((file) => file.status === 'success').length;

@@ -1,5 +1,41 @@
 # 变更记录
 
+## 1.2.13 · 2026-06-07 · 上传美甲图门禁与商家去重
+
+**小程序版本：`1.2.13`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家上传与同商家去重（MD5 + 感知哈希）；商家与用户试戴参考图均经 VLM 拦截非美甲图。**
+
+### 商家去重 + 非美甲图门禁
+
+- **商家上传**：`uploadMerchantStyles` 下载云图计算 `image_md5` / `image_phash`，同一商家内拦截完全相同或过于相似的款式；单次 VLM `analyzeNailStyleImage` 同时完成「是否美甲图」门禁与四标签打标。
+- **C 端试戴参考图**：上传后调用 `ops.validateStyleRef` 校验，非美甲图拒绝并清理云文件；通过后才可选为自定义参考款。
+- **错误码**：`NOT_NAIL_ART`、`DUPLICATE_EXACT`、`DUPLICATE_SIMILAR`；B/C 端 `utils/upload-validation.js` 映射中文提示。
+
+### 涉及文件
+
+- `cloudfunctions/ops/utils/{imageFingerprint,merchantDuplicate,uploadValidation,cloudImage}.js`
+- `cloudfunctions/ops/handlers/{uploadMerchantStyles,validateStyleRef}.js`、`ops/utils/llm.js`
+- `pages-b/style-upload`、`pages/try-on-static`、`services/merchant-style.service.js`
+- `utils/upload-validation.js`、`utils/cloud.js`（`deleteCloudFile`）
+- `tests/cloudfunctions/{uploadMerchantStyles,merchantDuplicate,validateStyleRef}.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（新增 `jimp` 依赖 + `validateStyleRef`）：微信开发者工具 → `ops` → **上传并部署：云端安装依赖**。
+2. 可选环境变量：`NAIL_ART_MIN_CONFIDENCE=0.75`、`PHASH_SIMILAR_THRESHOLD=10`。
+3. 小程序体验版版本号 **`1.2.13`**。
+
+### 验证
+
+- B 端：同一张图上传两次 → 第二张提示重复/过于相似；上传风景图 → 「请上传美甲款式参考图」。
+- C 端：试戴页上传非美甲参考图 → 弹窗拦截；美甲图正常试戴。
+- `npm test -- --testPathPattern="uploadMerchantStyles|merchantDuplicate|validateStyleRef"` 通过。
+
+---
+
 ## 1.2.12 · 2026-06-07 · 商家手机号核验与热度榜单规则说明
 
 **小程序版本：`1.2.12`**（`app.globalData.version`）

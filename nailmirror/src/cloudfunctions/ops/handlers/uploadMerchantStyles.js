@@ -1,6 +1,10 @@
 const cloud = require('wx-server-sdk');
-const { tagNailImage } = require('../utils/llm');
+const { analyzeNailStyleImage } = require('../utils/llm');
 const { findMerchantByOpenid } = require('../utils/merchant');
+const { downloadCloudBuffer } = require('../utils/cloudImage');
+const { computeFingerprint } = require('../utils/imageFingerprint');
+const { assertNotDuplicate } = require('../utils/merchantDuplicate');
+const { safeUploadError } = require('../utils/uploadValidation');
 
 function assertMerchantRole(role) {
   if (role !== 'b') throw new Error('debug auth requires merchant role');
@@ -9,11 +13,6 @@ function assertMerchantRole(role) {
 function sanitizeName(name) {
   const value = String(name || '').replace(/\.[^.]+$/, '').trim();
   return value || '商家上传款式';
-}
-
-function safeError(err) {
-  const msg = err && (err.message || err.errMsg) ? (err.message || err.errMsg) : String(err || 'unknown error');
-  return msg.length > 120 ? msg.slice(0, 120) : msg;
 }
 
 function rankWeightFor(fileID, index) {
@@ -46,8 +45,13 @@ async function getTempUrl(fileID) {
 
 async function createStyle(db, item, index, merchantId) {
   if (!item || !item.fileID) throw new Error('missing fileID');
+
+  const buffer = await downloadCloudBuffer(cloud, item.fileID);
+  const fingerprint = await computeFingerprint(buffer);
+  await assertNotDuplicate(db, merchantId, fingerprint);
+
   const imageUrl = await getTempUrl(item.fileID);
-  const tags = await tagNailImage(imageUrl);
+  const tags = await analyzeNailStyleImage(imageUrl);
   const styleId = styleIdFor(item.fileID, index);
   const now = new Date().toISOString();
   const doc = {
@@ -59,6 +63,8 @@ async function createStyle(db, item, index, merchantId) {
     style: tags.style || '',
     image_url: imageUrl,
     image_file_id: item.fileID,
+    image_md5: fingerprint.md5,
+    image_phash: fingerprint.phash,
     original_name: item.originalName || '',
     rank_weight: rankWeightFor(item.fileID, index),
     is_active: true,
@@ -88,10 +94,12 @@ async function uploadMerchantStyles(event) {
     try {
       styles.push(await createStyle(db, items[i], i, merchantOpenid));
     } catch (err) {
+      const safe = safeUploadError(err);
       failed.push({
         fileID: items[i] && items[i].fileID,
         originalName: items[i] && items[i].originalName,
-        error: safeError(err)
+        error: safe.error,
+        code: safe.code
       });
     }
   }

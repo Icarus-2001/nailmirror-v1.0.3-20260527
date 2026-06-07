@@ -173,7 +173,8 @@ async function generateDailyReport(summaryData) {
 
 // ============ 图片打标：DashScope qwen-vl-max（与 import-styles.js --vlm 一致） ============
 
-const { buildVlmPrompt, normalizeTag } = require('./tag-vocabulary')
+const { buildVlmPrompt, buildAnalyzeNailStylePrompt, normalizeTag } = require('./tag-vocabulary')
+const { uploadValidationError, CODES } = require('./uploadValidation')
 
 function _toHttpsUrl(url) {
   if (!url || typeof url !== 'string') return url
@@ -197,7 +198,13 @@ function _normalizeVlmTags(raw) {
  * @param {string} imageUrl  公开 HTTPS 图片 URL
  * @returns {Promise<{color:string, design:string, shape:string, style:string, name:string}>}
  */
-async function tagNailImage(imageUrl) {
+function _minNailArtConfidence() {
+  const raw = process.env.NAIL_ART_MIN_CONFIDENCE
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 0 && n <= 1 ? n : 0.75
+}
+
+async function _callDashScopeVlm(imageUrl, promptText) {
   const apiKey = process.env.DASHSCOPE_API_KEY
   if (!apiKey) throw new Error('DASHSCOPE_API_KEY 未配置')
   const model = process.env.QWEN_VL_MODEL || 'qwen-vl-max'
@@ -212,7 +219,7 @@ async function tagNailImage(imageUrl) {
           role: 'user',
           content: [
             { type: 'image_url', image_url: { url: _toHttpsUrl(imageUrl) } },
-            { type: 'text', text: buildVlmPrompt() },
+            { type: 'text', text: promptText },
           ],
         },
       ],
@@ -223,7 +230,31 @@ async function tagNailImage(imageUrl) {
   const text = (res.choices[0].message.content || '')
   const match = text.match(/\{[\s\S]*\}/)
   if (!match) throw new Error('VLM 未返回 JSON: ' + text.slice(0, 200))
-  return _normalizeVlmTags(JSON.parse(match[0]))
+  return JSON.parse(match[0])
 }
 
-module.exports = { generateDailyReport, tagNailImage }
+async function tagNailImage(imageUrl) {
+  const raw = await _callDashScopeVlm(imageUrl, buildVlmPrompt())
+  return _normalizeVlmTags(raw)
+}
+
+/**
+ * 门禁 + 打标合一：商家上传 / C 端参考图校验
+ */
+async function analyzeNailStyleImage(imageUrl) {
+  const raw = await _callDashScopeVlm(imageUrl, buildAnalyzeNailStylePrompt())
+  const confidence = Number(raw.confidence) || 0
+  const minConf = _minNailArtConfidence()
+
+  if (raw.isNailArt !== true || confidence < minConf) {
+    throw uploadValidationError(
+      CODES.NOT_NAIL_ART,
+      (raw.reason && String(raw.reason).trim()) || undefined
+    )
+  }
+
+  const tags = _normalizeVlmTags(raw)
+  return Object.assign({ isNailArt: true, confidence }, tags)
+}
+
+module.exports = { generateDailyReport, tagNailImage, analyzeNailStyleImage }
