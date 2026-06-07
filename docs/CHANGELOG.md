@@ -1,5 +1,48 @@
 # 变更记录
 
+## 1.2.14 · 2026-06-07 · 商家手机号手动核验与主包修复
+
+**小程序版本：`1.2.14`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家手机号二次核验改为手动输入完整号码比对（摆脱微信 getPhoneNumber）；修复款式库 upload-validation 主包依赖。**
+
+### 商家手机号手动核验（替代 getPhoneNumber）
+
+- **背景**：体验版/真机上 `getPhoneNumber` 常失败（主体资质、API 限制等），1.2.12 微信快捷验证无法稳定完成。
+- **`pages-b/entry`**：展示脱敏认证号，商家输入完整 11 位手机号 →「确认验证」；模拟器与真机均可完成。
+- **`ops.verifyMerchantPhone`**：入参改为 `{ openid, phone }`，云端与 `merchants.phone` 比对，写 `last_phone_verified_at`；24h 内免重复核验逻辑不变。
+- **`merchant-entry.service`**：门禁未确认 `phoneVerified` 时一律进入核验 UI，避免云端异常时静默放行。
+
+### 主包依赖图补丁（#36）
+
+- **`app.js`**：显式 `require('./utils/upload-validation')`，修复 1.2.13 后款式库报 `module upload-validation.js is not defined`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/verifyMerchantPhone.js`、`ops/index.js`
+- `pages-b/entry/index.{js,wxml,wxss}`
+- `services/merchant-entry.service.js`
+- `app.js`、`package.json`
+- `tests/cloudfunctions/verifyMerchantPhone.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（`verifyMerchantPhone` 改为接收 `phone`）：微信开发者工具 → `ops` → **上传并部署：云端安装依赖**。
+2. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.14`**。
+3. 不再依赖 `phonenumber.getPhoneNumber` openapi；核验在模拟器与真机均可测。
+
+### 验证
+
+- 已认证商家 → 商家经营入口 → 输入正确认证手机号 → 进入商家中心。
+- 输入错误号码 →「手机号与认证资料不一致」。
+- 24h 内已核验 → 直接进入商家中心。
+- 款式库、热度榜单等主包页面正常打开。
+- `npm test -- --testPathPattern="verifyMerchantPhone|getMerchantPhoneGate"` 通过。
+
+---
+
 ## 1.2.13 · 2026-06-07 · 上传美甲图门禁与商家去重
 
 **小程序版本：`1.2.13`**（`app.globalData.version`）
