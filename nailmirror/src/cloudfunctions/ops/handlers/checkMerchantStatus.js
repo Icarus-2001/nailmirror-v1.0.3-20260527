@@ -23,7 +23,7 @@ async function checkMerchantStatus({ openid }) {
     .get()
 
   const merchant = res.data && res.data[0]
-  const verified = !!(merchant && merchant.status !== 'rejected')
+  const verified = !!(merchant && merchant.status !== 'rejected' && merchant.status !== 'revoked')
 
   return { ok: true, verified }
 }

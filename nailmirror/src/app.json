@@ -19,6 +19,7 @@
       "pages": [
         "entry/index",
         "merchant-verify/index",
+        "merchant-phone-verify/index",
         "dashboard/index",
         "style-upload/index",
         "contact-config/index",

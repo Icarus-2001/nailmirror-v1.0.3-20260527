@@ -1,0 +1,37 @@
+.mpv {
+  min-height: 100vh;
+  padding-bottom: 48rpx;
+}
+.mpv__card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 8rpx 28rpx rgba(31, 31, 41, 0.06);
+}
+.mpv__title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+.mpv__desc,
+.mpv__hint {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--np-text-weak);
+}
+.mpv__phone {
+  margin: 28rpx 0 12rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--np-text);
+}
+.mpv__btn {
+  margin-top: 36rpx;
+  width: 100%;
+}
+.mpv__back {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--np-text-weak);
+}

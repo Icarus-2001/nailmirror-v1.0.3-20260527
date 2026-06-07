@@ -52,7 +52,7 @@ Page({
       if (res && res.ok) {
         userStore.setRole('b');
         wx.showToast({ title: '验证成功，欢迎入驻！', icon: 'success' });
-        setTimeout(() => wx.redirectTo({ url: '/pages-b/entry/index' }), 1200);
+        setTimeout(() => wx.redirectTo({ url: '/pages-b/merchant-phone-verify/index' }), 1200);
       } else {
         wx.showToast({ title: (res && res.error) || '口令错误，无法切换', icon: 'none' });
       }

@@ -1,5 +1,9 @@
 {
-  "permissions": { "openapi": [] },
+  "permissions": {
+    "openapi": [
+      "phonenumber.getPhoneNumber"
+    ]
+  },
   "timeout": 60,
   "memorySize": 512,
   "runtime": "Nodejs16",

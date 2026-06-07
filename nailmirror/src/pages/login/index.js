@@ -79,15 +79,17 @@ Page({
     });
   },
 
-  _afterLoginSuccess() {
+  async _afterLoginSuccess() {
     if (this._from === 'merchant') {
       this._redirecting = true;
-      wx.redirectTo({
-        url: '/pages-b/entry/index',
-        fail: () => {
-          this._redirecting = false;
-        }
-      });
+      const { userStore } = require('../../stores/user.store');
+      const merchantEntryService = require('../../services/merchant-entry.service');
+      userStore.init();
+      try {
+        await merchantEntryService.goMerchantEntry(userStore.openid);
+      } catch (e) {
+        this._redirecting = false;
+      }
       return;
     }
     if (this._from === 'me' && getCurrentPages().length > 1) {

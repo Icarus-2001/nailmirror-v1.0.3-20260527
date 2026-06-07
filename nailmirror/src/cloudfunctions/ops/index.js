@@ -53,6 +53,8 @@ const { verifyMerchant }         = require('./handlers/verifyMerchant')
 const { getMerchantContact }     = require('./handlers/getMerchantContact')
 const { backfillMerchantStyleOwners } = require('./handlers/backfillMerchantStyleOwners')
 const { checkMerchantStatus }      = require('./handlers/checkMerchantStatus')
+const { getMerchantPhoneGate }     = require('./handlers/getMerchantPhoneGate')
+const { verifyMerchantPhone }      = require('./handlers/verifyMerchantPhone')
 const { addFavorite }              = require('./handlers/addFavorite')
 const { removeFavorite }           = require('./handlers/removeFavorite')
 const { listFavorites }            = require('./handlers/listFavorites')
@@ -136,6 +138,12 @@ exports.main = async (event, context) => {
 
       case 'checkMerchantStatus':
         return await checkMerchantStatus(event)
+
+      case 'getMerchantPhoneGate':
+        return await getMerchantPhoneGate({ openid: callerOpenid || event.openid })
+
+      case 'verifyMerchantPhone':
+        return await verifyMerchantPhone({ openid: callerOpenid || event.openid, code: event.code })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':
