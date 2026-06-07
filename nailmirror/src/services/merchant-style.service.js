@@ -8,7 +8,7 @@ let _merchantCache = { styles: [], fetchedAt: 0 };
 
 function getCachedMerchantStyles() {
   const cached = safeGet(STORAGE_MERCHANT_STYLES, []);
-  return Array.isArray(cached) ? cached.filter((s) => s && s.id).map(normalizeClientStyle) : [];
+  return Array.isArray(cached) ? cached.filter((s) => s && s.id).map(remapCachedStyle) : [];
 }
 
 function uniqueList(items) {
@@ -20,12 +20,31 @@ function uniqueList(items) {
   });
 }
 
+function pickCoverUrl(fileID, httpsUrl) {
+  // 真机优先 cloud:// fileID，避免 HTTPS 临时链过期 403
+  if (fileID && String(fileID).indexOf('cloud://') === 0) return fileID;
+  return httpsUrl || '';
+}
+
 function normalizeClientStyle(style) {
   if (!style) return style;
+  const fileID = style.styleImageFileID || '';
+  const https = style.coverUrl || style.imageUrl || style.sourceUrl || '';
+  const coverUrl = pickCoverUrl(fileID, https);
   const previewUrls = style.previewUrls && style.previewUrls.length
     ? style.previewUrls
-    : uniqueList([style.coverUrl, style.sourceUrl, style.imageUrl]);
-  return Object.assign({}, style, { previewUrls });
+    : uniqueList([coverUrl, style.sourceUrl, style.imageUrl, fileID]);
+  return Object.assign({}, style, {
+    coverUrl,
+    sourceUrl: coverUrl || style.sourceUrl,
+    imageUrl: coverUrl || style.imageUrl,
+    previewUrls,
+  });
+}
+
+function remapCachedStyle(style) {
+  if (!style || !style.id) return style;
+  return normalizeClientStyle(style);
 }
 
 function mergeCachedMerchantStyles(styles) {
@@ -69,7 +88,9 @@ function mapCloudStyleToClientStyle(row) {
   const shapeLabel = (row && (row.shape || row.shapeLabel)) || '';
   const styleLabel = (row && (row.style || row.styleLabel)) || '';
   const title = (row && (row.name || row.title)) || '商家上传款式';
-  const imageUrl = (row && (row.image_url || row.coverUrl || row.imageUrl)) || '';
+  const fileID = (row && (row.image_file_id || row.styleImageFileID)) || '';
+  const httpsUrl = (row && (row.image_url || row.coverUrl || row.imageUrl)) || '';
+  const imageUrl = pickCoverUrl(fileID, httpsUrl);
   return normalizeClientStyle({
     id,
     title,
@@ -78,7 +99,7 @@ function mapCloudStyleToClientStyle(row) {
     coverUrl: imageUrl,
     sourceUrl: imageUrl,
     imageUrl,
-    styleImageFileID: (row && (row.image_file_id || row.styleImageFileID)) || '',
+    styleImageFileID: fileID,
     originalName: (row && (row.original_name || row.originalName)) || '',
     color,
     design,

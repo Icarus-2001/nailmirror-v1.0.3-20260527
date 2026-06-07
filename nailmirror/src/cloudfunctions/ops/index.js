@@ -22,6 +22,10 @@
  *   getMerchantContact C端：商详联系商家（按款式查 merchants 真实档案）
  *   backfillMerchantStyleOwners 一次性：历史商家款归属回填
  *   checkMerchantStatus 查询 openid 是否已入驻 merchants
+ *   addFavorite     C端：用户收藏款式写入 user_favorites
+ *   removeFavorite  C端：用户取消收藏从 user_favorites 删除
+ *   listFavorites   C端：读取用户收藏款式 ID 列表
+ *   getStyleHeatScores C端：聚合 UV/试戴完成/收藏量，按公式计算站内热度
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -47,6 +51,10 @@ const { verifyMerchant }         = require('./handlers/verifyMerchant')
 const { getMerchantContact }     = require('./handlers/getMerchantContact')
 const { backfillMerchantStyleOwners } = require('./handlers/backfillMerchantStyleOwners')
 const { checkMerchantStatus }      = require('./handlers/checkMerchantStatus')
+const { addFavorite }              = require('./handlers/addFavorite')
+const { removeFavorite }           = require('./handlers/removeFavorite')
+const { listFavorites }            = require('./handlers/listFavorites')
+const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
 
 exports.main = async (event, context) => {
   const { action } = event
@@ -111,6 +119,20 @@ exports.main = async (event, context) => {
 
       case 'checkMerchantStatus':
         return await checkMerchantStatus(event)
+
+      // ── C端收藏（优先使用云函数上下文 FROM_OPENID）──────────────────
+      case 'addFavorite':
+        return await addFavorite({ ...event, openid: callerOpenid || event.openid })
+
+      case 'removeFavorite':
+        return await removeFavorite({ ...event, openid: callerOpenid || event.openid })
+
+      case 'listFavorites':
+        return await listFavorites({ ...event, openid: callerOpenid || event.openid })
+
+      // ── 站内热度计算 ───────────────────────────────────────────────
+      case 'getStyleHeatScores':
+        return await getStyleHeatScores()
 
       default:
         return { error: `未知 action: ${action}` }

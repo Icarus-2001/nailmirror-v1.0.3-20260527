@@ -11,6 +11,7 @@
  *   compose_fail      合成失败（extra.error 含错误信息）
  *   save_success      保存导出成功
  *   rated             用户打星（extra.rating）
+ *   style_detail_view 款式曝光 UV（商详页进入 / 试戴选款步点击卡片，近30天 user_id 去重）
  *
  * 用于计算各步 UV 转化率，支撑精细化运营。
  */
@@ -20,6 +21,7 @@ const { ensureCollection } = require('../utils/collections')
 const VALID_EVENTS = new Set([
   'tryon_enter', 'shape_confirmed', 'style_confirmed', 'photo_ready',
   'compose_start', 'compose_success', 'compose_fail', 'save_success', 'rated',
+  'style_detail_view',
 ])
 
 async function logEvent({ eventType, styleId, userId, sessionId, extra }) {

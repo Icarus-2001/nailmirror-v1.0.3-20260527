@@ -42,7 +42,7 @@
           <view class="home__card-cover">
             <image wx:if="{{item.coverUrl}}" class="home__card-img" src="{{item.coverUrl}}" mode="aspectFill" lazy-load="{{true}}"/>
             <text wx:else class="home__card-emoji">💅</text>
-            <view wx:if="{{item.heat}}" class="home__card-heat">🔥 {{item.heat}}</view>
+            <view wx:if="{{item.heat}}" class="home__card-heat {{item.styleSource === 'xhs-hot' ? 'home__card-heat--xhs' : 'home__card-heat--site'}}">{{item.styleSource === 'xhs-hot' ? '📈' : '🔥'}} {{item.heat}}</view>
           </view>
           <view class="home__card-body">
             <view class="home__card-title">{{item.title}}</view>

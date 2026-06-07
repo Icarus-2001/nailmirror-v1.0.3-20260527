@@ -2,6 +2,8 @@ const styleService = require('../../services/style.service');
 const favoriteService = require('../../services/favorite.service');
 const merchantContactService = require('../../services/merchant-contact.service');
 const { tryOnStore } = require('../../stores/try-on.store');
+const { userStore } = require('../../stores/user.store');
+const cloudUtil = require('../../utils/cloud');
 const { buildDisplayTags } = require('../../config/tag-vocabulary');
 
 function resolveDisplayTags(style) {
@@ -66,6 +68,7 @@ Page({
         faved: favoriteService.has(id)
       });
       tryOnStore.setStyle(id);
+      this._logStyleDetailView(id);
       if (isMerchantStyle(style)) {
         await this.loadMerchantContact(id);
       }
@@ -132,5 +135,18 @@ Page({
       return;
     }
     dialPhone(contact.phone, contact);
-  }
+  },
+
+  _logStyleDetailView(styleId) {
+    if (!styleId || !cloudUtil.isCloudReady()) return;
+    const openid = (userStore && userStore.openid) || 'guest';
+    cloudUtil.callFunction('ops', {
+      action: 'logEvent',
+      eventType: 'style_detail_view',
+      styleId,
+      userId: openid,
+      sessionId: '',
+      extra: { source: 'style_detail' },
+    }).catch(() => {});
+  },
 });
