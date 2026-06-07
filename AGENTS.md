@@ -12,6 +12,8 @@
 - `ops` 云函数与 B 端云数据库由协作者负责；优先做不阻塞主试戴链路的 C 端修复。
 - **云开发操作说明（强制）**：凡涉及微信云开发（云函数部署/更新、环境变量、云数据库、云存储、云端测试等），每次交付或答疑时须用中文给出**详细、可逐步照做**的操作步骤（在哪点哪个按钮、选哪个环境、预期看到什么结果、失败时怎么排查）；不要只说「上传部署就行」而不说明是否还需云端测试、小程序端验证、数据库核对等。
 - **CHANGELOG 写入时机**：只有用户**明确要求**写 CHANGELOG 时才能写；功能未验收前不主动写 CHANGELOG/docs，用户验证通过且明确说要写时再补。
+- **PR 与版本号**：**一个 PR 对应一个 CHANGELOG 版本**；功能未验收、用户未确认前**不要主动提 PR**；**禁止 Agent 自动合并 PR 到 main**（须用户/协作者 review 后手动合并）。
+- **当前版本规划（2026-06-07）**：**1.2.14** = PR #38 范围（`upload-validation` 主包修复 + #37 商家手机号手动核验，见 `feature/release-1.2.14`）；**PR #39** 注销资质待验收通过后再定版本号与 CHANGELOG。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
 - **B 端待办（分 PR 依次实现）**：① 已认证商家入口手机号二次核验（微信 `getPhoneNumber` 比对 `merchants.phone`，24h 有效）— 进行中/见 `feature/merchant-phone-verify-gate`；② 商家主页【注销资质】（复用手机核验 → `merchants.status=revoked`、款式立即 `is_active=false`、热款榜 T+1 移除、 interim 提示页）；③【上传款式】改名为【款式库管理】三 Tab（查看款式 / 上传款式 / 下架与删除，下架可重上架，删除不可逆，热款榜 T+1 与下架提示页）。

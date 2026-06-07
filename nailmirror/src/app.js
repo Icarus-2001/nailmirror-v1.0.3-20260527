@@ -9,6 +9,7 @@ const { userStore } = require('./stores/user.store');
 require('./config/tag-vocabulary');
 require('./config/hot-rank-rules');
 require('./utils/upload-validation');
+require('./utils/ops-error');
 require('./utils/star-display');
 require('./services/xhs-hot.service');
 

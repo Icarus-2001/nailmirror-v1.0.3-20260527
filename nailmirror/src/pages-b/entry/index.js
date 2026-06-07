@@ -2,6 +2,7 @@ const { userStore } = require('../../stores/user.store');
 const merchantAuthService = require('../../services/merchant-auth.service');
 const merchantStyleService = require('../../services/merchant-style.service');
 const cloudUtil = require('../../utils/cloud');
+const { showOpsError } = require('../../utils/ops-error');
 
 Page({
   data: {
@@ -144,7 +145,7 @@ Page({
         });
         return;
       }
-      wx.showToast({ title: (res && res.error) || '验证失败', icon: 'none' });
+      showOpsError(res, '验证失败');
     } catch (err) {
       wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
     } finally {
@@ -172,7 +173,7 @@ Page({
         });
         return;
       }
-      wx.showToast({ title: (res && res.error) || '注销失败', icon: 'none' });
+      showOpsError(res, '注销失败');
     } catch (err) {
       wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
     } finally {
