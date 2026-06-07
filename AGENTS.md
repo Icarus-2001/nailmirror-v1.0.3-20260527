@@ -16,8 +16,9 @@
 - **当前版本规划（2026-06-07）**：**1.2.14** = PR #38 范围（`upload-validation` 主包修复 + #37 商家手机号手动核验，见 `feature/release-1.2.14`）；**PR #39** 注销资质待验收通过后再定版本号与 CHANGELOG。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
-- **B 端待办（分 PR 依次实现）**：① 已认证商家入口手机号二次核验（微信 `getPhoneNumber` 比对 `merchants.phone`，24h 有效）— 进行中/见 `feature/merchant-phone-verify-gate`；② 商家主页【注销资质】（复用手机核验 → `merchants.status=revoked`、款式立即 `is_active=false`、热款榜 T+1 移除、 interim 提示页）；③【上传款式】改名为【款式库管理】三 Tab（查看款式 / 上传款式 / 下架与删除，下架可重上架，删除不可逆，热款榜 T+1 与下架提示页）。
-- **商家手机号核验**：首期不用短信验证码（需企业主体+腾讯云模板审核）；用微信手机号快捷验证 + 云端比对认证手机号；`ops` 须开通 `phonenumber.getPhoneNumber` openapi 并重新部署。
+- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合入 main（#37）**，改为手动输入 11 位号码比对 `merchants.phone`（1.2.14）；② 商家主页【注销资质】— **PR #39 待验收**（`revokeMerchantQualification` / `checkStyleAvailability`，**须部署 ops**）；③【上传款式】→【款式库管理】三 Tab。
+- **商家手机号核验**：不用短信；**1.2.14 起**为手动输入认证手机号 + 云端比对（已摆脱 `getPhoneNumber`）。
+- **注销资质部署**：除小程序编译外，**必须**在共享环境 `cloud1-d2g3df4y16873034b` 重新部署 `ops`（含 `revokeMerchantQualification`）；仅上传小程序代码而未部署云函数会报「未知 action」。
 
 ## 已学习的工作区事实
 
