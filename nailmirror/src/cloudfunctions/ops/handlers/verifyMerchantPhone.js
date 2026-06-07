@@ -1,16 +1,20 @@
 /**
- * verifyMerchantPhone — 微信手机号快捷验证，比对商家认证手机号
+ * verifyMerchantPhone — 比对商家认证手机号
  *
- * 入参：{ openid, code }  code 来自 button open-type="getPhoneNumber"
+ * 入参：{ openid, phone }  phone 为商家手动输入的 11 位手机号（与认证资料比对）
  * 成功：更新 merchants.last_phone_verified_at
  */
 const cloud = require('wx-server-sdk');
 const { ensureCollection } = require('../utils/collections');
 const { normalizePhone } = require('../utils/phone');
 
-async function verifyMerchantPhone({ openid, code }) {
+async function verifyMerchantPhone({ openid, phone }) {
   if (!openid) return { ok: false, error: '请先登录' };
-  if (!code) return { ok: false, error: '请授权微信手机号' };
+
+  const inputPhone = normalizePhone(phone);
+  if (!inputPhone || !/^1\d{10}$/.test(inputPhone)) {
+    return { ok: false, error: '请输入正确的 11 位手机号' };
+  }
 
   const db = cloud.database();
   await ensureCollection(db, 'merchants');
@@ -26,24 +30,8 @@ async function verifyMerchantPhone({ openid, code }) {
     return { ok: false, error: '认证资料缺少手机号，请重新完成商家认证' };
   }
 
-  let phoneInfo;
-  try {
-    const apiRes = await cloud.openapi.phonenumber.getPhoneNumber({ code });
-    phoneInfo = apiRes && apiRes.phoneInfo;
-  } catch (err) {
-    console.error('[verifyMerchantPhone] getPhoneNumber failed:', err);
-    return { ok: false, error: '手机号验证失败，请稍后重试' };
-  }
-
-  const wxPhone = normalizePhone(
-    (phoneInfo && (phoneInfo.purePhoneNumber || phoneInfo.phoneNumber)) || ''
-  );
-  if (!wxPhone) {
-    return { ok: false, error: '未能获取微信手机号' };
-  }
-
-  if (wxPhone !== boundPhone) {
-    return { ok: false, error: '微信手机号与认证手机号不一致，请使用认证时绑定的号码' };
+  if (inputPhone !== boundPhone) {
+    return { ok: false, error: '手机号与认证资料不一致，请填写认证时绑定的号码' };
   }
 
   const now = new Date().toISOString();
