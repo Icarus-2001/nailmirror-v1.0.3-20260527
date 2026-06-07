@@ -1,5 +1,58 @@
 # 变更记录
 
+## 1.2.12 · 2026-06-07 · 商家手机号核验与热度榜单规则说明
+
+**小程序版本：`1.2.12`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**已认证商家进入 B 端前须微信手机号二次核验（24h 有效）；热度榜单增加站外/站内规则说明弹窗。**
+
+### 商家手机号二次核验（B 端门禁）
+
+- **需求**：已认证商家从「商家经营入口」进入 B 端前，比对微信 `getPhoneNumber` 与 `merchants.phone`；未认证仍走资质验证页；不用短信。
+- **`ops`**：新增 `getMerchantPhoneGate`（查询是否 24h 内已核验、返回脱敏手机号）、`verifyMerchantPhone`（`phonenumber.getPhoneNumber` 比对并写 `last_phone_verified_at`）；`config.json` 增加 openapi 权限。
+- **`merchant-entry.service`**：统一路由——未登录 → 登录；未认证 → `merchant-verify`；已认证未核验 → `entry` 内嵌核验 UI；已核验 → 商家中心菜单。
+- **`pages-b/entry`**：合并手机号核验界面（避免新增分包页导致开发者工具 `wxml not found`，与 1.2.9 hot-rank 同类修复）；隐私授权前置；模拟器提示须真机预览。
+- **入口**：`pages/me`、`pages/login?from=merchant` 改走 `goMerchantEntry`。
+
+### 热度榜单规则说明弹窗（并入本版，原 PR #32）
+
+- **背景**：`feature/hot-rank-rules-modal`（PR #32）未合入 main（团队以 PR #33 发布 1.2.11），本 PR 在最新 main 上 cherry-pick 规则弹窗功能，避免与 #32 冲突重复合并。
+- **`pages/hot-rank`**：标题旁「榜单规则 ›」链接 + 可滚动说明弹窗（站外/站内按当前 Tab 切换文案）。
+- **`config/hot-rank-rules.js`**：集中维护用户向规则文案。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/getMerchantPhoneGate.js`、`verifyMerchantPhone.js`、`utils/phone.js`、`config.json`、`index.js`
+- `services/merchant-entry.service.js`
+- `pages-b/entry/index.{js,wxml,wxss}`、`pages-b/merchant-verify/index.js`
+- `pages/me/index.js`、`pages/login/index.js`
+- `config/hot-rank-rules.js`、`pages/hot-rank/index.{js,wxml,wxss}`
+- `tests/cloudfunctions/getMerchantPhoneGate.test.js`、`verifyMerchantPhone.test.js`、`config/hot-rank-rules.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含 `getMerchantPhoneGate`、`verifyMerchantPhone` 及 `phonenumber.getPhoneNumber`）：微信开发者工具 → 云函数 `ops` → **上传并部署：云端安装依赖**。
+2. 小程序端：清缓存 → 重新编译 → 体验版版本号 **`1.2.12`**。
+3. **手机号核验须真机预览/调试**；开发者工具模拟器不支持 `getPhoneNumber`。
+4. 云端可选验证：`{ "action": "getMerchantPhoneGate", "openid": "<商家openid>" }` 返回 `phoneVerified` / `phoneMasked`。
+
+### 验证
+
+- 已认证商家 → 商家经营入口 → 显示脱敏手机号与「微信手机号快捷验证」（真机授权通过后进入商家中心）。
+- 24h 内已核验商家直接进入商家中心，无需重复验证。
+- 未认证商家仍进入资质验证页。
+- 热度榜单两 Tab →「榜单规则 ›」→ 对应规则可滚动关闭。
+- `npm test -- --testPathPattern="getMerchantPhoneGate|verifyMerchantPhone|hot-rank-rules"` 通过。
+
+### 合并说明（协作者）
+
+- **请关闭 PR #32**（`feature/hot-rank-rules-modal`），其功能已包含在本 PR；#32 基于旧 main 与 1.2.11 CHANGELOG 冲突，勿再单独合并。
+
+---
+
 ## 1.2.11 · 2026-06-07 · 历史热款保留款式库
 
 **小程序版本：`1.2.11`**（`app.globalData.version`）
