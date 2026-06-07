@@ -1,3 +1,4 @@
+.mh__notice { font-size: 22rpx; color: var(--np-text-weak); text-align: center; padding: 12rpx 0 20rpx; }
 .mh__card { display: flex; background: var(--np-card); border-radius: 16rpx; padding: 20rpx; margin-bottom: 16rpx; }
 .mh__thumb { width: 200rpx; height: 266rpx; border-radius: 12rpx; background: #eee; margin-right: 20rpx; }
 .mh__info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }

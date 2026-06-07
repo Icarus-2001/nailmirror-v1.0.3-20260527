@@ -10,7 +10,9 @@
 .sd__brief { color: var(--np-text-weak); margin: 14rpx 0 20rpx; font-size: 26rpx; line-height: 1.6; }
 .sd__tags { display: flex; flex-wrap: wrap; }
 .sd__metrics { margin-top: 24rpx; display: flex; flex-wrap: wrap; align-items: center; gap: 20rpx; }
-.sd__heat { color: var(--np-danger); font-size: 28rpx; }
+.sd__heat { font-size: 28rpx; font-weight: 500; }
+.sd__heat--site { color: #c2410c; }
+.sd__heat--xhs { color: #b7791f; }
 .sd__tryon { color: #7c3aed; font-size: 28rpx; font-weight: 500; }
 .sd__quality { color: #b45309; font-size: 28rpx; font-weight: 500; }
 .sd__merchant { margin-top: 32rpx; padding: 24rpx; background: var(--np-card); border-radius: 16rpx; }

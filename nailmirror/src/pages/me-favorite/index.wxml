@@ -6,7 +6,7 @@
 
   <view class="mf__grid" wx:if="{{list.length > 0}}">
     <view class="mf__item {{selected[item.id] ? 'mf__item--on' : ''}}" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="onPick">
-      <image src="{{item.coverUrl}}" class="mf__cover" mode="aspectFill"/>
+      <image src="{{item.coverUrl}}" class="mf__cover" mode="aspectFill" lazy-load="true"/>
       <view class="mf__title">{{item.title}}</view>
       <view class="mf__check" wx:if="{{selectMode}}">{{selected[item.id] ? '✓' : '○'}}</view>
     </view>

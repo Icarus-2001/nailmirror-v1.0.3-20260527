@@ -1,14 +1,16 @@
 <view class="mh np-container">
+  <view class="mh__notice">仅保留近 30 天试戴记录</view>
+
   <block wx:if="{{list.length > 0}}" wx:for="{{list}}" wx:key="id">
-    <view class="mh__card">
+    <view class="mh__card" data-style-id="{{item.styleId}}" data-source="{{item.styleSource}}" bindtap="onGoDetail">
       <image class="mh__thumb" src="{{item.thumbUrl}}" mode="aspectFill"/>
       <view class="mh__info">
         <view class="mh__style">{{item.styleTitle}}</view>
         <view class="mh__tags" wx:if="{{item.displayTagsText}}">{{item.displayTagsText}}</view>
         <view class="mh__meta">{{item.metaLine}}</view>
         <view class="mh__actions">
-          <view class="np-btn mh__btn" data-id="{{item.id}}" bindtap="onRegenerate">重新出图</view>
-          <view class="np-btn np-btn--ghost mh__btn" data-id="{{item.id}}" bindtap="onRemove">删除</view>
+          <view class="np-btn mh__btn" data-id="{{item.id}}" catchtap="onRegenerate">重新出图</view>
+          <view class="np-btn np-btn--ghost mh__btn" data-id="{{item.id}}" catchtap="onRemove">删除</view>
         </view>
       </view>
     </view>

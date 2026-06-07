@@ -1,5 +1,81 @@
 # 变更记录
 
+## 1.2.5 · 2026-06-07 · 收藏云端化、站内热度算法与试戴历史增强
+
+**小程序版本：`1.2.5`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**收藏写入云库 `user_favorites` 多端同步；站内热度按 UV/收藏/试戴公式实时计算；试戴成功自动记历史；我的收藏首屏加速并修复商家款封面 403。须部署 `ops` 与 `login` 云函数。**
+
+### 收藏云端化
+
+- **`ops` 新增 action**：`addFavorite` / `removeFavorite` / `listFavorites`，写入云库集合 **`user_favorites`**（`user_id` + `style_id` + `created_at`）。
+- **`resolveOpenid.js`**：优先使用云函数上下文 `OPENID`，修复云端测试/真机 openid 不一致导致收藏不落库。
+- **`favorite.service.js`**：`add`/`remove` 本地即时响应并异步同步云端；`mergeFromCloud` 拉取云端 id 合并本地；`syncPendingToCloud` 冷启动一次性回填。
+- **`app.js`**：冷启动静默 `login` 换 openid 后触发 `syncPendingToCloud`，避免每次进收藏页逐条回填。
+- **`me-favorite`**：先 `list({ skipRefresh: true })` 本地快显，再后台 `mergeFromCloud` + 刷新款式目录；封面图 `lazy-load`。
+
+### 我的收藏性能与商家款封面 403
+
+- **`merchant-style.service.js`**：商家款封面优先 `cloud://` fileID（与全网热款一致），避免 HTTPS 临时链过期导致渲染层 403。
+- 收藏列表刷新时并行 `ensureMerchantStyles` + `ensureXhsHotStyles`，映射完整款式对象（含最新封面）。
+
+### 站内热度算法
+
+- **`getStyleHeatScores`**（`ops`）：聚合近 30 天 `user_events`（`style_detail_view` UV 去重）、`user_favorites`（有效收藏）、`try_on_logs`（试戴完成，不去重），按公式计算平台/商家款热度；`xhs-hot` 全网热款不参与，仍用站外 `interaction_score`。
+- **公式**：基础分 = UV×3 + 收藏×30 + 试戴×50；转化率加成 = UV>0 时 (试戴/UV)×200；时间衰减 = e^(-0.023×天数)，天数取最近触达或 `created_at`，上限 30 天。
+- **`style.service.js`**：`ensureStyleHeatScores()` 10 分钟缓存；`list`/`get`/`search` 合并算法热度排序。
+
+### 热度展示区分
+
+- **平台/商家款**：🔥 橙红色站内热度（`style-card` / 首页推荐 / 商详）。
+- **全网热款**：📈 琥珀色站外互动分，与站内算法分离。
+
+### 款式曝光 UV 埋点
+
+- **`logEvent`** 新增事件类型 `style_detail_view`。
+- **商详** `style-detail/onLoad`：进入即上报，`extra.source: style_detail`。
+- **试戴选款** `try-on-static/onPickStyle`：点击款式卡片上报，`extra.source: tryon_style_step`。
+
+### 试戴历史增强
+
+- **`try-on-static`**：`compose_success` 后调用 `historyService.append`（缩略图用合成图 `composedUrl`）。
+- **`history.service.js`**：`list()` 仅保留近 30 天记录。
+- **`me-history`**：顶部「仅保留近 30 天」提示；点击卡片跳转商详（自定义上传款除外）。
+
+### 涉及文件
+
+- `services/favorite.service.js`、`services/merchant-style.service.js`、`services/style.service.js`、`services/history.service.js`
+- `pages/me-favorite/index.{js,wxml}`、`pages/me-history/index.{js,wxml,wxss}`
+- `pages/style-detail/index.{js,wxml,wxss}`、`pages/try-on-static/index.{js,wxml,wxss}`
+- `pages/home/index.{wxml,wxss}`、`components/style-card/index.{wxml,wxss}`
+- `cloudfunctions/ops/index.js`、`handlers/addFavorite.js`、`handlers/removeFavorite.js`、`handlers/listFavorites.js`、`handlers/getStyleHeatScores.js`、`handlers/logEvent.js`、`utils/resolveOpenid.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+- **须重新部署 `ops` 云函数**（新增收藏与热度 action；`logEvent` 扩充 `style_detail_view`）：
+  1. 微信开发者工具 → 打开 `nailmirror/src/` 项目
+  2. 左侧 `cloudfunctions/ops` → 右键 → **上传并部署：云端安装依赖**
+  3. 等待控制台提示部署成功
+- **须重新部署 `login` 云函数**（收藏依赖真实 `openid` 身份）：
+  1. 同上，对 `cloudfunctions/login` 右键上传部署
+- **`tryon` 云函数本轮无改动**，无需重新部署。
+- **云数据库**：确认存在集合 **`user_favorites`**（首次 `addFavorite` 会自动创建）；收藏数据查此集合，非 `favorite`。
+- **云端测试面板**：`listFavorites`/`addFavorite` 无真实用户 `OPENID`，**收藏写入建议真机验证**；`getStyleHeatScores` 可在面板直接测 `action: getStyleHeatScores`。
+- **小程序侧**：清除缓存 → 重新编译；真机：收藏一款 → 云库 `user_favorites` 应有记录；打开「我的收藏」无 403、首屏更快。
+
+### 验证
+
+- 商详/试戴选款点击后，`user_events` 有 `style_detail_view` 记录。
+- 收藏/取消收藏后，本地与云库 `user_favorites` 同步；换设备登录后收藏列表一致。
+- 款式库/首页平台款显示 🔥 算法热度，全网热款显示 📈 站外分。
+- 试戴成功后「试戴历史」有新记录；仅显示 30 天内；点击可跳商详。
+- 「我的收藏」快速出列表，商家款封面无 403。
+
+---
+
 ## 1.2.4 · 2026-06-07 · 简约 UI 精修与甲型三分组重构
 
 **小程序版本：`1.2.4`**（`app.globalData.version`）

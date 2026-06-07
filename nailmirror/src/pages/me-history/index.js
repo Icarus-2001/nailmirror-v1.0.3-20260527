@@ -8,6 +8,14 @@ Page({
     const list = await historyService.list();
     this.setData({ list });
   },
+  onGoDetail(e) {
+    const { styleId, source } = e.currentTarget.dataset;
+    if (!styleId || source === 'custom-upload' || String(styleId).indexOf('custom-') === 0) {
+      wx.showToast({ title: '自定义款无商详', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/style-detail/index?id=' + styleId });
+  },
   async onRegenerate(e) {
     const id = e.currentTarget.dataset.id;
     wx.showLoading({ title: '重新出图…' });

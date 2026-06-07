@@ -66,7 +66,8 @@
           <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" class="ts__style-img" mode="aspectFill"/>
           <view wx:else class="ts__style-fallback">{{item.title}}</view>
           <view wx:if="{{item.heat || item.tryonEffectText || item.qualityText}}" class="ts__style-metrics">
-            <text wx:if="{{item.heat}}" class="ts__style-metric">🔥 {{item.heat}}</text>
+            <text wx:if="{{item.heat && item.styleSource === 'xhs-hot'}}" class="ts__style-metric ts__style-metric--xhs">📈 {{item.heat}}</text>
+            <text wx:elif="{{item.heat}}" class="ts__style-metric ts__style-metric--site">🔥 {{item.heat}}</text>
             <text wx:if="{{item.tryonEffectText}}" class="ts__style-metric">试戴 {{item.tryonEffectText}}</text>
             <text wx:if="{{item.qualityText}}" class="ts__style-metric">品质 {{item.qualityText}}</text>
           </view>

@@ -1,15 +1,25 @@
 const favoriteService = require('../../services/favorite.service');
-const { favoriteStore } = require('../../stores/favorite.store');
 
 Page({
   data: {
     list: [],
     selected: {},
-    selectMode: false
+    selectMode: false,
+    loading: false
   },
   async onShow() {
-    const list = await favoriteService.list();
-    this.setData({ list, selectMode: false, selected: {} });
+    // 1. 先用本地缓存快速展示
+    const quickList = await favoriteService.list({ skipRefresh: true });
+    this.setData({ list: quickList, loading: quickList.length === 0 });
+
+    // 2. 后台拉云端收藏 + 刷新款式目录（含商家图 cloud://）
+    try {
+      await favoriteService.mergeFromCloud();
+      const list = await favoriteService.list();
+      this.setData({ list, selectMode: false, selected: {}, loading: false });
+    } catch (e) {
+      this.setData({ loading: false });
+    }
   },
   onToggleSelect() {
     this.setData({ selectMode: !this.data.selectMode, selected: {} });

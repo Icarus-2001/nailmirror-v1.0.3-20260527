@@ -18,7 +18,7 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.2.4',
+    version: '1.2.5',
     pendingHdUrl: '',
     /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
     skipLoginAutoRedirect: false
@@ -48,6 +48,13 @@ App({
 
       initCloud();
       userStore.init();
+      // 冷启动静默换取 openid，并一次性回填本地收藏到云端
+      try {
+        const favSvc = require('./services/favorite.service');
+        favSvc.ensureCloudIdentity()
+          .then(() => favSvc.syncPendingToCloud())
+          .catch(() => {});
+      } catch (e) { /* ignore */ }
       if (userStore.openid) {
         this.globalData.skipLoginAutoRedirect = true;
         wx.switchTab({ url: '/pages/home/index' });

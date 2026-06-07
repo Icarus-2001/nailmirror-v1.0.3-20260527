@@ -289,6 +289,8 @@
 .ts__style-metric {
   padding: 4rpx 8rpx; font-size: 18rpx; color: #4a3a42; white-space: nowrap;
 }
+.ts__style-metric--site { color: #c2410c; font-weight: 500; }
+.ts__style-metric--xhs { color: #b7791f; font-weight: 500; }
 .ts__style-metric + .ts__style-metric {
   border-left: 1rpx solid rgba(255,94,138,0.18); color: #b45309;
 }

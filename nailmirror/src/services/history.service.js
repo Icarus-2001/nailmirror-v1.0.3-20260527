@@ -98,9 +98,14 @@ function _loadAll() {
   return cleaned.slice();
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 async function list() {
   return mockDelay(async () => {
-    const rows = _loadAll().sort((a, b) => _sortKey(b.createdAt) - _sortKey(a.createdAt));
+    const cutoff = Date.now() - THIRTY_DAYS_MS;
+    const rows = _loadAll()
+      .filter(r => _sortKey(r.createdAt) > cutoff)
+      .sort((a, b) => _sortKey(b.createdAt) - _sortKey(a.createdAt));
     const enriched = await Promise.all(
       rows.map(async (item) => {
         const fields = await _styleFieldsFor(item);

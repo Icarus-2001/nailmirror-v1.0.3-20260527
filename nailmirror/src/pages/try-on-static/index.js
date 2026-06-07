@@ -311,6 +311,7 @@ Page({
   },
   async onPickStyle(e) {
     const id = e.currentTarget.dataset.id;
+    this._logStyleUv(id, 'tryon_style_step');
     this.setData({ styleId: id });
     tryOnStore.setStyle(id);
     try {
@@ -462,6 +463,7 @@ Page({
       this._applyStyleRatingState(this.data.style);
       this._logEvent('compose_success');
       this._logTryOn(this.data.styleId);
+      this._appendHistory(r.composedUrl);
     } catch (e) {
       this._logEvent('compose_fail', { error: (e && e.message) || String(e) });
       wx.showToast({ title: e.message || '合成失败', icon: 'none' });
@@ -536,6 +538,7 @@ Page({
         tryOnStore.setStyle(id);
         this._logEvent('compose_success', { switched: true });
         this._logTryOn(id);
+        this._appendHistory(r.composedUrl);
         try {
           const style = await styleService.get(id);
           this.setData({ style });
@@ -617,25 +620,6 @@ Page({
         sourceUrl: this.data.composedUrl
       });
       quotaService.consumeFreeHDOnSuccess();
-      const hist = {
-        userOpenid: userStore.openid || 'guest',
-        styleId: this.data.styleId,
-        nailShape: this.data.selectedShape,
-        mode: 'static',
-        thumbUrl: this.data.composedUrl,
-        hdUrl: hd.hdUrl
-      };
-      if (this.data.canRateStyle && this.data.ratingsLocked) {
-        if (this.data.tryonEffectDraft) hist.tryonEffectRating = this.data.tryonEffectDraft;
-        if (this.data.nailQualityDraft) hist.nailQualityRating = this.data.nailQualityDraft;
-      }
-      if (this.data.style && this.data.style.styleSource === 'custom-upload') {
-        hist.styleSource = 'custom-upload';
-        hist.styleTitle = this.data.style.title || '自定义参考图';
-        hist.displayTags = ['上传参考图'];
-        hist.referenceStyleFileID = this.data.style.styleImageFileID || '';
-      }
-      await historyService.append(hist);
       wx.hideLoading();
       this._logEvent('save_success');
       require('../../utils/hd-output-nav').navigateTo(this.data.styleId, hd.hdUrl);
@@ -670,5 +654,39 @@ Page({
       styleId: sid,
       openid,
     }).catch(() => {});
+  },
+
+  /** 款式 UV：商详页与试戴选款步共用 style_detail_view 事件 */
+  _logStyleUv(styleId, source) {
+    if (!styleId || !cloudUtil.isCloudReady()) return;
+    if (String(styleId).indexOf('custom-') === 0) return;
+    const openid = (userStore && userStore.openid) || 'guest';
+    cloudUtil.callFunction('ops', {
+      action: 'logEvent',
+      eventType: 'style_detail_view',
+      styleId,
+      userId: openid,
+      sessionId: this._sessionId || '',
+      extra: { source: source || '' },
+    }).catch(() => {});
+  },
+
+  _appendHistory(composedUrl) {
+    const styleId = this.data.styleId;
+    if (!styleId || !composedUrl) return;
+    const hist = {
+      userOpenid: (userStore && userStore.openid) || 'guest',
+      styleId,
+      nailShape: this.data.selectedShape,
+      mode: 'static',
+      thumbUrl: composedUrl,
+      hdUrl: ''
+    };
+    if (this.data.style && this.data.style.styleSource === 'custom-upload') {
+      hist.styleSource = 'custom-upload';
+      hist.styleTitle = (this.data.style && this.data.style.title) || '自定义参考图';
+      hist.displayTags = ['上传参考图'];
+    }
+    historyService.append(hist).catch(() => {});
   },
 });

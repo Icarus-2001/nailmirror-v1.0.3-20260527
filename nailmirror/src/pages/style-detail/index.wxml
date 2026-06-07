@@ -18,7 +18,8 @@
     </view>
 
     <view class="sd__metrics">
-      <text class="sd__heat">🔥 热度 {{style.heat}}</text>
+      <text wx:if="{{style.styleSource === 'xhs-hot'}}" class="sd__heat sd__heat--xhs">📈 {{style.heat}}</text>
+      <text wx:else class="sd__heat sd__heat--site">🔥 {{style.heat}}</text>
       <text wx:if="{{style.tryonEffectText}}" class="sd__tryon">试戴效果 {{style.tryonEffectText}}</text>
       <text wx:if="{{style.qualityText}}" class="sd__quality">美甲品质 {{style.qualityText}}</text>
     </view>

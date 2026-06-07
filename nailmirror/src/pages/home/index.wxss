@@ -131,8 +131,10 @@
   padding: 6rpx 12rpx; border-radius: 999rpx;
   background: rgba(255,255,255,0.88);
   box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.08);
-  font-size: 20rpx; color: #4a3a42; white-space: nowrap;
+  font-size: 20rpx; white-space: nowrap; font-weight: 500;
 }
+.home__card-heat--site { color: #c2410c; }
+.home__card-heat--xhs { color: #b7791f; }
 .home__card-body { padding: 16rpx 20rpx 20rpx; min-width: 0; }
 .home__card-title {
   font-size: 28rpx; color: #1a1a1a; font-weight: 500;

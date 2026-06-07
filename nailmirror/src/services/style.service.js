@@ -8,6 +8,42 @@ const realStyles = require('../mock/styles.real');
 const ratingService = require('./rating.service');
 const merchantStyleService = require('./merchant-style.service');
 const xhsHotService = require('./xhs-hot.service');
+const cloudUtil = require('../utils/cloud');
+
+// ── 站内热度缓存（10 分钟 TTL）──────────────────────────────────────────────
+let _heatCache = null;
+let _heatCacheTs = 0;
+let _heatFetched = false;
+const HEAT_TTL = 10 * 60 * 1000;
+
+async function ensureStyleHeatScores() {
+  if (_heatFetched && _heatCache && Date.now() - _heatCacheTs < HEAT_TTL) {
+    return { heatScores: _heatCache, fetched: true };
+  }
+  try {
+    const r = await cloudUtil.callFunction('ops', { action: 'getStyleHeatScores' });
+    if (r && r.ok && r.heatScores) {
+      _heatCache = r.heatScores;
+      _heatCacheTs = Date.now();
+      _heatFetched = true;
+      return { heatScores: _heatCache, fetched: true };
+    }
+  } catch (e) {
+    // 云端不可用时静默降级，保留现有 heat 字段
+  }
+  return { heatScores: {}, fetched: false };
+}
+
+/** 将算法热度合并到款式列表（xhs-hot 款保持原 interaction_score） */
+function _applyHeatScores(items, heatResult) {
+  const heatScores = (heatResult && heatResult.heatScores) || {};
+  const fetched = !!(heatResult && heatResult.fetched);
+  if (!fetched) return items;
+  return items.map(s => {
+    if (s.styleSource === 'xhs-hot') return s;
+    return Object.assign({}, s, { heat: heatScores[s.id] || 0 });
+  });
+}
 
 function getAllStyles() {
   const base = (featureFlags.USE_REAL_STYLES
@@ -56,13 +92,14 @@ function matchFilters(item, filters) {
 async function list(filters) {
   const { page = 1, pageSize = PAGE_SIZE } = filters || {};
   return mockDelay(async () => {
-    const [scoresCache] = await Promise.all([
+    const [scoresCache, , , heatResult] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      ensureStyleHeatScores(),
     ]);
-    const allStyles = getAllStyles();
-    const filtered = allStyles.filter((s) => matchFilters(s, filters));
+    const withHeat = _applyHeatScores(getAllStyles(), heatResult);
+    const filtered = withHeat.filter((s) => matchFilters(s, filters));
     const sorted = filtered.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0));
     const start = (page - 1) * pageSize;
     return {
@@ -75,12 +112,14 @@ async function list(filters) {
 
 async function get(id) {
   return mockDelay(async () => {
-    const [scoresCache] = await Promise.all([
+    const [scoresCache, , , heatResult] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      ensureStyleHeatScores(),
     ]);
-    const item = getAllStyles().find((s) => s.id === id);
+    const withHeat = _applyHeatScores(getAllStyles(), heatResult);
+    const item = withHeat.find((s) => s.id === id);
     if (!item) throw makeError(ERR.NOT_FOUND, '款式不存在');
     return ratingService.withRating(item, scoresCache);
   }, 80, 150);
@@ -89,13 +128,15 @@ async function get(id) {
 async function search(opts) {
   const { keyword = '', filters } = opts || {};
   return mockDelay(async () => {
-    const [scoresCache] = await Promise.all([
+    const [scoresCache, , , heatResult] = await Promise.all([
       ratingService.ensureStyleScores(),
       merchantStyleService.ensureMerchantStyles(),
       xhsHotService.ensureXhsHotStyles(),
+      ensureStyleHeatScores(),
     ]);
+    const withHeat = _applyHeatScores(getAllStyles(), heatResult);
     const kw = keyword.trim().toLowerCase();
-    let items = getAllStyles().filter((s) => matchFilters(s, filters));
+    let items = withHeat.filter((s) => matchFilters(s, filters));
     if (kw) {
       items = items.filter(
         (s) =>
@@ -108,8 +149,8 @@ async function search(opts) {
       );
     }
     if (items.length === 0) {
-      items = getAllStyles().slice().sort((a, b) => b.heat - a.heat).slice(0, 10);
-      return { items: ratingService.withRatings(items, scoresCache), fallback: true };
+      const fallbackItems = withHeat.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0)).slice(0, 10);
+      return { items: ratingService.withRatings(fallbackItems, scoresCache), fallback: true };
     }
     return { items: ratingService.withRatings(items, scoresCache), fallback: false };
   }, 150, 250);
@@ -131,4 +172,4 @@ function getCategories() {
   return { styles, colors, designs, shapes };
 }
 
-module.exports = { list, get, search, getCategories, getAllStyles };
+module.exports = { list, get, search, getCategories, getAllStyles, ensureStyleHeatScores };
