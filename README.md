@@ -14,10 +14,11 @@
 [![Platform](https://img.shields.io/badge/平台-微信小程序-07c160?style=for-the-badge&logo=wechat&logoColor=white)](https://developers.weixin.qq.com/miniprogram/dev/framework/)
 [![Cloud](https://img.shields.io/badge/后端-微信云开发-1677ff?style=for-the-badge)](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html)
 [![AI](https://img.shields.io/badge/AI-DashScope_万相_2.7-ff6a00?style=for-the-badge)](https://help.aliyun.com/zh/model-studio/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 
 <br/>
 
-[**GitHub 仓库**](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**文档中心**](./docs/README.md)
+[**GitHub 仓库**](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**文档**](#文档) · [**English**](./README.en.md)
 
 </div>
 
@@ -123,16 +124,27 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 
 ---
 
-## 文档中心
+## 文档
+
+**评委 / 体验快速入口**
+
+| 文档 | 说明 |
+|------|------|
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 架构摘要：试戴链路、云函数、数据流 |
+| [docs/SETUP_USER.md](./docs/SETUP_USER.md) | 体验指南：DashScope、云开发、部署与试戴验证 |
+
+<details>
+<summary><strong>更多文档（协作者）</strong></summary>
 
 | 文档 | 说明 |
 |------|------|
 | [docs/PROJECT.md](./docs/PROJECT.md) | 项目概述、目录结构、当前能力 |
-| [docs/SETUP_USER.md](./docs/SETUP_USER.md) | DashScope、云开发、部署、试戴测试 |
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 试戴链路、云函数、数据流 |
 | [docs/DATA_SCHEMA.md](./docs/DATA_SCHEMA.md) | 款式字段、VLM 打标、API |
 | [docs/CHANGELOG.md](./docs/CHANGELOG.md) | 迭代记录 |
 | [docs/美甲标签与标准词表.md](./docs/美甲标签与标准词表.md) | 封闭标签词表 |
+| [docs/README.md](./docs/README.md) | 完整文档索引 |
+
+</details>
 
 ---
 
@@ -142,6 +154,6 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 
 <br/>
 
-[GitHub](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [文档](./docs/README.md) · [变更记录](./docs/CHANGELOG.md)
+[GitHub](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [English](./README.en.md) · [License](./LICENSE)
 
 </div>
