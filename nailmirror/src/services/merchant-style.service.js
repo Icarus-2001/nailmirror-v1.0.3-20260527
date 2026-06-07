@@ -3,6 +3,7 @@ const imageUtil = require('../utils/image');
 const { safeGet, safeSet } = require('../utils/storage');
 const { STORAGE_MERCHANT_STYLES } = require('../config/constants');
 const { buildDisplayTags } = require('../config/tag-vocabulary');
+const { userStore } = require('../stores/user.store');
 const MERCHANT_CACHE_TTL_MS = 10 * 60 * 1000; // 10 分钟
 let _merchantCache = { styles: [], fetchedAt: 0 };
 
@@ -149,6 +150,7 @@ async function uploadMerchantStyles(localPaths) {
   const result = await cloudUtil.callFunction('ops', {
     action: 'uploadMerchantStyles',
     role: 'b',
+    merchantId: userStore.openid || '',
     items
   });
   if (result && result.error) throw new Error(result.error);
