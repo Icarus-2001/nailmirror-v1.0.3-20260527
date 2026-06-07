@@ -1,5 +1,50 @@
 # 变更记录
 
+## 1.2.7 · 2026-06-07 · B 端商家上传身份修复与本地款式隔离
+
+**小程序版本：`1.2.7`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**修复商家上传款式时 `merchantId` 缺失导致入库失败；B 端「上传款式」页「本地款式」按商家 openid 隔离统计，互不可见对方数量；须部署 `ops` 云函数。**
+
+### 商家上传身份修复
+
+- **问题**：1.1.12 起客户端 `uploadMerchantStyles` 未传 `merchantId`，`ops` 又单独依赖不可靠的 `context.FROM_OPENID`，真机上传报 `missing merchant identity`。
+- **`merchant-style.service.js`**：恢复 `merchantId: userStore.openid` 传参。
+- **`cloudfunctions/ops/index.js`**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），不再单独信任 `FROM_OPENID`。
+
+### B 端本地款式数商家隔离
+
+- **问题**：「上传款式」页「本地款式」读取全局 `np_merchant_styles` 缓存总数，商家 A 能看到含其他商家在内的数量（如 19）。
+- **`getCachedMerchantStylesForMerchant(merchantId)`**：按 `merchantId`（openid）过滤本地缓存款式，专供 B 端统计。
+- **`pages-b/style-upload`**：`onShow` 与上传成功后改用 `userStore.openid` 过滤计数。
+- **C 端不变**：款式库仍通过 `getCachedMerchantStyles()` 展示全平台商家款。
+
+### 涉及文件
+
+- `cloudfunctions/ops/index.js`
+- `services/merchant-style.service.js`
+- `pages-b/style-upload/index.js`
+- `tests/services/merchant-style.service.test.js`
+- `AGENTS.md`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 微信开发者工具 → `nailmirror/src/` → 右键 **`cloudfunctions/ops`** → **上传并部署：云端安装依赖**
+2. **`login` / `tryon` 本轮无改动**
+3. 小程序清除缓存 → 重新编译 → B 端验收
+
+### 验证
+
+- 商家身份登录 B 端 →「上传款式」→ 选图上传 → 入库成功（不再报 `missing merchant identity`）
+- 商家 A「本地款式」仅显示 A 自己缓存数量；切换商家 B 后显示 B 自己的数量
+- C 端款式库仍能看到各商家上传的款式
+- `npm test -- --testPathPattern=merchant-style.service.test` 通过（含商家隔离用例）
+
+---
+
 ## 1.2.6 · 2026-06-07 · 热度榜单站外/站内双 Tab 与每日 10 点更新
 
 **小程序版本：`1.2.6`**（`app.globalData.version`）
