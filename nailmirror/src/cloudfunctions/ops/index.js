@@ -59,10 +59,13 @@ const { listFavorites }            = require('./handlers/listFavorites')
 const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
 const { refreshSiteHotRank }       = require('./handlers/refreshSiteHotRank')
 const { listSiteHotRank }          = require('./handlers/listSiteHotRank')
+const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
   const { action } = event
-  const callerOpenid = context.FROM_OPENID || event.callerOpenid || ''
+  const callerOpenid = resolveOpenid(
+    event.callerOpenid || event.openid || event.merchantId || ''
+  )
 
   // 定时触发器：每日 10:00 刷新站内榜单
   if (event.TriggerName === 'refreshSiteHotRank') {
@@ -134,7 +137,7 @@ exports.main = async (event, context) => {
       case 'checkMerchantStatus':
         return await checkMerchantStatus(event)
 
-      // ── C端收藏（优先使用云函数上下文 FROM_OPENID）──────────────────
+      // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':
         return await addFavorite({ ...event, openid: callerOpenid || event.openid })
 

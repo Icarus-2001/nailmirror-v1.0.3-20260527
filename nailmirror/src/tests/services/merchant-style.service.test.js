@@ -7,6 +7,10 @@ jest.mock('../../utils/image', () => ({
   compress: jest.fn((p) => Promise.resolve(p + '-compressed'))
 }));
 
+jest.mock('../../stores/user.store', () => ({
+  userStore: { openid: 'merchant-openid-test' }
+}));
+
 describe('MerchantStyleService', () => {
   let merchantStyleService;
   let styleService;
@@ -113,6 +117,7 @@ describe('MerchantStyleService', () => {
     expect(cloudUtil.callFunction).toHaveBeenCalledWith('ops', expect.objectContaining({
       action: 'uploadMerchantStyles',
       role: 'b',
+      merchantId: 'merchant-openid-test',
       items: [
         { fileID: 'cloud://style/1.jpg', originalName: 'a.jpg' },
         { fileID: 'cloud://style/2.jpg', originalName: 'b.png' }
