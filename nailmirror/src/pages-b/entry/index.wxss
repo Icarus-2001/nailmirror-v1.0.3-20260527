@@ -31,6 +31,15 @@
   margin-top: 36rpx;
   width: 100%;
 }
+.be__phone-btn--danger {
+  background: #e11d48 !important;
+}
+.be__revoke {
+  margin-top: 48rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #e11d48;
+}
 .be__phone-back {
   margin-top: 32rpx;
   text-align: center;

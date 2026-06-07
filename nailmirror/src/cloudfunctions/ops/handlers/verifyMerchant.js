@@ -40,16 +40,19 @@ async function verifyMerchant({ token, phone, storeName, province, city, reviewU
   if (existing.data && existing.data.length > 0) {
     merchantId = existing.data[0]._id
     merchantAction = 'updated'
-    await db.collection('merchants').doc(merchantId).update({
-      data: {
-        phone,
-        store_name: storeName,
-        province,
-        city,
-        review_url: reviewUrl || '',
-        updated_at: now
-      }
-    })
+    const patch = {
+      phone,
+      store_name: storeName,
+      province,
+      city,
+      review_url: reviewUrl || '',
+      updated_at: now,
+    }
+    if (existing.data[0].status === 'revoked') {
+      patch.status = 'approved'
+      patch.revoked_at = null
+    }
+    await db.collection('merchants').doc(merchantId).update({ data: patch })
   } else {
     const added = await db.collection('merchants').add({
       data: {

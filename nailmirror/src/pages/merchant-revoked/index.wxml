@@ -1,0 +1,10 @@
+<view class="mr np-container">
+  <view class="mr__card">
+    <view class="mr__icon">!</view>
+    <view class="mr__title">商家已注销</view>
+    <view class="mr__desc">该商家已注销平台资质，其上传的款式暂不可查看或试戴。</view>
+    <view class="mr__hint">若该款式仍在热度榜单中，将于次日榜单更新后移除。</view>
+    <view class="np-btn np-btn--block mr__btn" bindtap="onBack">返回上一页</view>
+    <view class="mr__link" bindtap="onGoHome">去首页</view>
+  </view>
+</view>

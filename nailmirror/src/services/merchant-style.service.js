@@ -227,6 +227,11 @@ async function ensureMerchantStyles(force) {
   return getCachedMerchantStyles();
 }
 
+function invalidateMerchantStylesCache() {
+  _merchantCache = { styles: [], fetchedAt: 0 };
+  safeSet(STORAGE_MERCHANT_STYLES, []);
+}
+
 module.exports = {
   getCachedMerchantStyles,
   getCachedMerchantStylesForMerchant,
@@ -234,4 +239,5 @@ module.exports = {
   mapCloudStyleToClientStyle,
   uploadMerchantStyles,
   ensureMerchantStyles,
+  invalidateMerchantStylesCache,
 };

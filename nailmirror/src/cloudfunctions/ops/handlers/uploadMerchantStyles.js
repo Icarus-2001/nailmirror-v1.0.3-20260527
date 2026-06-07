@@ -86,6 +86,8 @@ async function uploadMerchantStyles(event) {
   const db = cloud.database();
   const merchant = await findMerchantByOpenid(db, merchantOpenid);
   if (!merchant) throw new Error('请先完成商家身份认证');
+  if (merchant.status === 'revoked') throw new Error('商家资质已注销，请重新完成认证');
+  if (merchant.status === 'rejected') throw new Error('商家身份未通过认证');
 
   const styles = [];
   const failed = [];
