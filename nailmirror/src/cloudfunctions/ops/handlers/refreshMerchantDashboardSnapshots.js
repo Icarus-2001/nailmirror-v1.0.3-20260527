@@ -8,12 +8,31 @@ const {
   getDashboardAsOfMs,
   formatSnapshotDate,
 } = require('../utils/styleHeat');
-const { normalizeMerchantOpenid } = require('../utils/merchant');
+const { normalizeMerchantOpenid, findMerchantByOpenid } = require('../utils/merchant');
+const { generateMerchantDashboardAdvice } = require('../utils/llm');
 const {
   buildMerchantDashboardPayload,
   SNAPSHOT_COLLECTION,
   snapshotDocId,
 } = require('./getMerchantDashboard');
+
+async function buildAiAdviceForMerchant(db, merchantId, payload, snapshotDate) {
+  if (!process.env.MOONSHOT_API_KEY) return null;
+  try {
+    const merchant = await findMerchantByOpenid(db, merchantId);
+    const storeName = (merchant && merchant.store_name) || '';
+    const result = await generateMerchantDashboardAdvice(payload, { storeName });
+    return {
+      snapshot_date: snapshotDate,
+      content: result.content,
+      model: result.model,
+      generated_at: db.serverDate(),
+    };
+  } catch (err) {
+    console.warn('[refreshMerchantDashboardSnapshots] ai_advice failed for', merchantId, err && err.message);
+    return null;
+  }
+}
 
 async function refreshMerchantDashboardSnapshots() {
   const db = cloud.database();
@@ -54,12 +73,15 @@ async function refreshMerchantDashboardSnapshots() {
       snapshotDate,
     });
 
+    const aiAdvice = await buildAiAdviceForMerchant(db, merchantId, payload, snapshotDate);
+
     await db.collection(SNAPSHOT_COLLECTION).doc(snapshotDocId(merchantId)).set({
       data: {
         merchant_id: merchantId,
         snapshot_date: snapshotDate,
         updated_at: db.serverDate(),
         payload,
+        ai_advice: aiAdvice,
       },
     });
 
@@ -67,6 +89,7 @@ async function refreshMerchantDashboardSnapshots() {
       merchantId,
       styleCount: activeStyles.length,
       snapshot_date: snapshotDate,
+      hasAiAdvice: !!(aiAdvice && aiAdvice.content),
     });
   }
 

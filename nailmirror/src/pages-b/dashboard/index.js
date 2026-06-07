@@ -93,6 +93,10 @@ Page({
     tagItemsStyle: [],
     tagItemsDesign: [],
     emptyHint: '',
+    adviceLoading: false,
+    adviceVisible: false,
+    adviceContent: '',
+    adviceSnapshotDate: '',
   },
 
   _raw: null,
@@ -294,6 +298,31 @@ Page({
       showCancel: false,
       confirmText: '知道了',
     });
+  },
+
+  async onTapAiAdvice() {
+    if (this.data.adviceLoading) return;
+    this.setData({ adviceLoading: true });
+    try {
+      const res = await merchantDashboardService.fetchDashboardAdvice();
+      this.setData({
+        adviceLoading: false,
+        adviceVisible: true,
+        adviceContent: res.content || '',
+        adviceSnapshotDate: res.snapshotDate || '',
+      });
+    } catch (e) {
+      this.setData({ adviceLoading: false });
+      wx.showToast({
+        title: (e.message || '加载失败').slice(0, 24),
+        icon: 'none',
+        duration: 2800,
+      });
+    }
+  },
+
+  onCloseAdvice() {
+    this.setData({ adviceVisible: false });
   },
 
 });

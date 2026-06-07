@@ -71,6 +71,7 @@ const { deleteMerchantStyle }    = require('./handlers/deleteMerchantStyle')
 const { getMerchantDashboard }   = require('./handlers/getMerchantDashboard')
 const { refreshMerchantDashboardSnapshots } = require('./handlers/refreshMerchantDashboardSnapshots')
 const { mockMerchantDashboardData } = require('./handlers/mockMerchantDashboardData')
+const { getMerchantDashboardAdvice } = require('./handlers/getMerchantDashboardAdvice')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -187,6 +188,9 @@ exports.main = async (event, context) => {
 
       case 'getMerchantDashboard':
         return await getMerchantDashboard({ openid: callerOpenid || event.openid })
+
+      case 'getMerchantDashboardAdvice':
+        return await getMerchantDashboardAdvice({ openid: callerOpenid || event.openid })
 
       case 'refreshMerchantDashboardSnapshots':
         return await refreshMerchantDashboardSnapshots()

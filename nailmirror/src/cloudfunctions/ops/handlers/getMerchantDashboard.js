@@ -308,12 +308,22 @@ async function getMerchantDashboard({ openid }) {
   if (snapPayloadLooksValid(enriched)) {
     try {
       const db = cloud.database();
+      let existingAdvice = null;
+      try {
+        const prev = await db.collection(SNAPSHOT_COLLECTION)
+          .doc(snapshotDocId(normalizedOpenid))
+          .get();
+        existingAdvice = (prev.data && prev.data.ai_advice) || null;
+      } catch (readErr) {
+        // 无历史快照
+      }
       await db.collection(SNAPSHOT_COLLECTION).doc(snapshotDocId(normalizedOpenid)).set({
         data: {
           merchant_id: normalizedOpenid,
           snapshot_date: expectedSnapshotDate,
           updated_at: db.serverDate(),
           payload: enriched,
+          ai_advice: existingAdvice,
         },
       });
     } catch (err) {

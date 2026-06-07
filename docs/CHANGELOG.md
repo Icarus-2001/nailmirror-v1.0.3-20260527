@@ -1,5 +1,57 @@
 # 变更记录
 
+## 1.2.20 · 2026-06-07 · 退出商家模式修复与看板 AI 智能建议
+
+**小程序版本：`1.2.20`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**修复商家中心「退出商家模式」无效；看板新增 AI 智能建议，每日 10:00 随快照由 Moonshot 生成并缓存展示。**
+
+### 退出商家模式（Bug 修复）
+
+- **根因**：商家中心经 `redirectTo` 进入时页面栈仅 1 层，`navigateBack()` 静默失败；`onShow` 再次 `setRole('b')`。
+- **修复**：栈深为 1 时 `switchTab` 回「我的」；栈深 > 1 仍 `navigateBack`；提示「已退出商家模式」。仅切换本地会话角色，不注销资质。
+
+### 看板 AI 智能建议
+
+- **入口**：商家看板标题区下「AI智能建议」卡片，点击弹出可滚动弹窗。
+- **生成**：`refreshMerchantDashboardSnapshots`（每日 10:00）在写入看板快照后调用 Moonshot，将 `ai_advice` 写入 `merchant_dashboard_snapshots`。
+- **读取**：`getMerchantDashboardAdvice` 仅返回当日 T-1 缓存；无缓存提示「今日建议尚未生成，请明日 10:00 后再看」（不现场调 LLM）。
+- **Prompt**：商业分析 + 美甲行业专家角色；注入近 7 日经营概况、热度 Top3、爆款/冷门、标签聚合；输出四段 Markdown 建议。
+
+### 涉及文件
+
+- `pages-b/entry/index.js`、`utils/merchant-exit.js`
+- `cloudfunctions/ops/utils/llm.js`
+- `cloudfunctions/ops/handlers/{getMerchantDashboardAdvice,refreshMerchantDashboardSnapshots,getMerchantDashboard}.js`
+- `cloudfunctions/ops/index.js`
+- `pages-b/dashboard/*`、`services/merchant-dashboard.service.js`
+- `tests/cloudfunctions/merchantDashboardAdvice.test.js`、`tests/utils/merchant-exit.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 云环境 `cloud1-d2g3df4y16873034b` 须配置 **`MOONSHOT_API_KEY`**（可选 `MOONSHOT_MODEL`）。
+2. 部署 `cloudfunctions/ops`（云端安装依赖）。
+3. 手动触发快照刷新以生成首日建议：
+   ```json
+   { "action": "refreshMerchantDashboardSnapshots" }
+   ```
+4. 验证读取：
+   ```json
+   { "action": "getMerchantDashboardAdvice", "role": "b", "openid": "<商家openid>" }
+   ```
+5. 小程序清缓存 → 体验版 **`1.2.20`**。
+
+### 验证
+
+- 商家中心点「退出商家模式」→ 回到「我的」且为普通用户身份。
+- 看板点「AI智能建议」→ 弹窗展示四段结构化建议；无缓存时有友好提示。
+- `npm test -- --testPathPattern="merchantDashboardAdvice|merchant-exit|refreshMerchantDashboardSnapshots"` 通过。
+
+---
+
 ## 1.2.19 · 2026-06-07 · 商家看板数据链路修复与趋势区优化
 
 **小程序版本：`1.2.19`**（`app.globalData.version`）
