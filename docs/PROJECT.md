@@ -1,13 +1,17 @@
 # NailMirror 项目说明
 
-美甲试戴 + 商家运营微信小程序。**当前版本以「云试戴 MVP + 真实款式数据」为主。**
+**美甲 AI 试戴 + 智能款式运营** 微信小程序，面向 C 端消费者与 B 端美甲商家。
+
+- **C 端**：参考款式图与真实手照融合试戴；50+ 真实款式（含平台特供、商家上传、小红书全网热款）；款式库筛选排序、双轨热榜、收藏与高清出图。
+- **B 端**：商家身份认证、款式库三 Tab 管理（查看 / 上传 / 下架）、店铺信息配置、日更数据看板与 AI 运营策略建议。
+- **后端**：微信云开发（`login` / `tryon` / `ops` 云函数 + 云数据库 + 云存储）；AI 能力由阿里云 DashScope（Qwen-VL + 万相 2.1 / 2.7）提供。
 
 ## 技术栈
 
 | 层 | 技术 |
 |----|------|
 | 前端 | 微信小程序原生（WXML / WXSS / JS） |
-| 后端 | 微信云开发（云函数 + 云存储） |
+| 后端 | 微信云开发（`login` / `tryon` / `ops` 云函数 + 云数据库 + 云存储） |
 | AI | 阿里云 DashScope：Qwen-VL + 万相（2.1 / 2.7，试戴页可切换） |
 
 ## 目录结构
@@ -28,7 +32,7 @@ nailmirror-v1.6-20260519-r3/
     ├── cloudfunctions/tryon/      ← 试戴云函数
     ├── components/privacy-popup/  ← 隐私授权弹窗（登录/首页/试戴/我的/B 端上传等页面须挂载）
     ├── mock/
-    │   ├── styles.real.js         ← 25 条真实款式
+    │   ├── styles.real.js         ← 平台基础款式（本地）；商家 / 热款由云端扩展，C 端合计 50+
     │   └── eval-hands.js          ← 13 张评测手照 URL
     ├── pages/                     ← 页面
     ├── services/                  ← 业务 + Adapter
@@ -39,13 +43,13 @@ nailmirror-v1.6-20260519-r3/
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
-| 款式库 / 详情 / 收藏 / 评分 | ✅ 真实数据 | `USE_REAL_STYLES: true`；VLM 标准四标签 + 筛选抽屉（色系/工艺/甲型/风格 + **来源三标签** + **热度/上传时间排序**）；热度旁展示 5 分评分 |
-| 热门搜索词 | ✅ 真实聚合 | `hot-data.service` 从 25 款 `heat` 汇总 |
-| 静态试戴 | ✅ 云试戴 | Qwen-VL + 万相 2.1/2.7；prompt 由 `tryon-prompt.js` 从 VLM 标签生成英文 |
-| 首页推荐 / 热款榜 | ✅ 真实封面 | `coverUrl` 来自美团 CDN |
+| 款式库 / 详情 / 收藏 / 评分 | ✅ 真实数据 | 平台 + 商家 + 小红书热款；VLM 封闭四标签 + 筛选抽屉（色系/工艺/甲型/风格 + **来源三标签** + **热度/上传时间排序**）；试戴效果 / 美甲品质双维度半星评分（云端 `style_ratings`） |
+| 站内热度 / 热款榜 | ✅ 真实聚合 | UV / 收藏 / 试戴公式计分；双轨热榜（站内平台热度 + 站外小红书 TOP10） |
+| 静态试戴 | ✅ 云试戴 | 默认万相 2.7 Pro（`0531-stable` 双图+bbox）；参考图 + 英文 prompt 融合；`tryon-prompt.js` 与列表 VLM 标签同源 |
+| 首页推荐 / 款式封面 | ✅ | 平台款 CDN；商家 / 热款优先 `cloud://` fileID |
 | 评测手照 | ✅ | 13 张，可与拍照/相册并存 |
-| 商家 / 预约 / 订单 | Mock | 演示流程 |
-| AR / AI 同款 / 爬虫 | Mock | 页面未全部接入 app.json |
+| 商家运营 | ✅ 核心已接入 | 身份认证、款式库三 Tab、日更看板、AI 运营策略（`ops` 云函数） |
+| 预约 / 订单 / AR / AI 同款 | Mock 或未注册 | 非当前主链路 |
 
 ## 关键配置
 
@@ -67,20 +71,40 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
-**入口（v1.2.17）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。甲型按短款/中长款/长款九款三分组选择；选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 款式库管理」批量上传图片（**选图前须完成微信隐私授权**，B 端页挂载 `privacy-popup`）；B 端上传经 **同商家 MD5/pHash 去重** 与 **VLM 非美甲图门禁**，C 端试戴参考图须 `ops.validateStyleRef` 通过。小红书热款（`styleSource: xhs-hot`，徽章「全网热款」）由 `ops.importXhsHotTop10` 导入：**热款榜**仅最新一批 TOP10（`scope=rank`）；**款式库**保留历史批次且 **按 `note_id` 去重**（`scope=library`）。封面 C 端优先 `cloud://` fileID。本地可用 `node scripts/push-xhs-hot.js --latest --dry-run` 生成导入 payload。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.2.17**。
+### 入口
+
+| 入口 | 步骤 |
+|------|------|
+| 首页「立即试戴」 | **四步**：选甲型 → 选款式 → 选手照 → 预览评分 |
+| 款式详情「立即试戴」 | **三步**：选甲型 → 选手照 → 预览（`styleId` 由 URL 带入，跳过选款） |
+
+甲型按短款 / 中长款 / 长款 **九款三分组**；选款式支持目录款与相册参考图（`uploadStyleRef`）。
+
+### 客户端 → 云端
 
 ```
-选款式 → 选手照（相册 / Mock / 评测手照）
-  → wx.cloud.uploadFile
-  → 云函数 tryon（submitTryonJob + 可选 wanModel）
-      → Qwen-VL：款式图+手照 → inpaint prompt
-      → Qwen-VL：指甲位置
-      → 万相 2.1 Mask 或 2.7 双图+bbox → 轮询结果
-  → 结果页展示 composedUrl 与所用模型，可为目录款评分
-  → 导出 2K → pages/hd-output → 保存到相册（真机须配 downloadFile 域名，见 SETUP_USER.md §7）
+选甲型 → 选款式（目录款 / 相册参考图 uploadStyleRef）
+  → 选手照（拍照 / 相册 / 评测手照）
+  → wx.cloud.uploadFile（手照 → 云存储）
+  → tryon-cloud-adapter：stylePrompt + shapePrompt + styleFileID（有则传参考图）
+  → 云函数 tryon（submitTryonJob，默认 wan2.7-image-pro，可切换 2.7 标准 / 2.1）
+      → Qwen-VL：手照指甲定位 → bbox_list（Pro / 0531-stable：≥3 甲 union 单紧框）
+      → 英文 stylePrompt（tryon-prompt.js，与列表 VLM 标签同源；目录款可跳过款式 VLM）
+      → 万相 2.7（主路径）：款式参考图 + 手照双图 + bbox_list → 异步生成
+      → （备选）万相 2.1：Jimp Mask → description_edit_with_mask
+  → 轮询 queryTryonJob → 结果页展示 composedUrl
+  → 试戴效果 / 美甲品质双维度评分；支持高清出图保存相册
 ```
 
-详见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+默认出图策略见 [`TRYON_0531稳定出图策略.md`](./TRYON_0531稳定出图策略.md)；完整时序见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+
+### 款式来源与 B 端（摘要）
+
+- **平台款** `styleSource: platform`：本地 `styles.real.js` + CDN 封面
+- **商家款**：`ops.uploadMerchantStyles` 入库；同商家 MD5/pHash 去重 + VLM 非美甲图门禁
+- **小红书热款** `styleSource: xhs-hot`：`ops.importXhsHotTop10` 日更导入；热款榜 `scope=rank` 仅最新 TOP10，款式库 `scope=library` 按 `note_id` 去重保留历史
+- **C 端试戴参考图**：须 `ops.validateStyleRef` 通过，不入库
+- B 端选图前须完成微信隐私授权（页面挂载 `privacy-popup`）
 
 ## 核心文件
 
@@ -96,7 +120,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 | `cloudfunctions/tryon/wan-backends.js` | 万相 2.1 Mask / 2.7 双图+bbox 双后端 |
 | `services/style.service.js` | 款式列表 / 详情 / 筛选 |
 | `services/merchant-style.service.js` | 商家上传款式的图片上传、云端打标入库调用、本地缓存与 C 端款式对象映射 |
-| `services/rating.service.js` | 款式评分读取、虚拟评分注入、试戴后本地评分保存 |
+| `services/rating.service.js` | 双维度评分读取（试戴效果 / 美甲品质）、云端聚合与试戴后提交 |
 | `services/hot-data.service.js` | 热款榜（真实数据时按 heat 排序） |
 
 ## 数据更新

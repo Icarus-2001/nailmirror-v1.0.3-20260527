@@ -15,6 +15,8 @@ Pages → Services → Adapters → 云函数 / Mock
 
 ## 2. 试戴数据流
 
+> 生产默认 **`wan2.7-image-pro`**（`0531-stable` 双图+bbox）；`wanx2.1-imageedit` 仅调试对比。
+
 ```mermaid
 sequenceDiagram
   participant P as try-on-static
@@ -74,11 +76,11 @@ Handler 标识：`handler-v7-wan27-dual`
 
 ## 5. 款式数据
 
-- 源：`data/美甲款式数据（初稿版）.xlsx`
-- 生成：`mock/styles.real.js`（25 条）
+- **平台款**：`data/美甲款式数据（初稿版）.xlsx` → `mock/styles.real.js`（本地基础库）
+- **扩展来源**：商家上传（`ops`）、小红书热款（`ops.importXhsHotTop10`）；C 端款式库合计 **50+**，热款 **每日更新**
 - 消费：`style.service.js` → 款式库、详情、首页、热榜
-- 评分：`rating.service.js` 读取本地 `np_style_ratings`，优先展示用户试戴后评分；无本地评分时按款式 ID/热度生成稳定虚拟评分（4.1-4.9，一位小数）
-- 展示：`style-card` 在热度右侧显示 `ratingText`；目录款试戴生成后可在预览页保存 1-5 星评分
+- 评分：云端 `style_ratings`；`tryon_effect`（试戴效果）与 `nail_quality`（美甲品质）半星 1.0–5.0；试戴预览页提交后锁定
+- 展示：列表/首页卡片展示品质星标；商详与款式库展示双分
 
 字段映射见 [DATA_SCHEMA.md](./DATA_SCHEMA.md)。
 
