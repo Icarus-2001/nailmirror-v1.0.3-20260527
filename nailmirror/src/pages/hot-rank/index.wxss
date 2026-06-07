@@ -23,8 +23,74 @@
 .hr__head {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
+  gap: 16rpx;
   margin-bottom: 12rpx;
+}
+.hr__head-main {
+  flex: 1;
+  min-width: 0;
+}
+.hr__rule-link {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #7c3aed;
+  line-height: 1.4;
+  padding-top: 6rpx;
+}
+.hr__rule-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hr__rule-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.hr__rule-box {
+  position: relative;
+  width: 620rpx;
+  max-height: 78vh;
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.hr__rule-title {
+  padding: 36rpx 32rpx 20rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  color: var(--np-text);
+}
+.hr__rule-scroll {
+  flex: 1;
+  max-height: 52vh;
+}
+.hr__rule-body {
+  padding: 0 32rpx 12rpx;
+}
+.hr__rule-p {
+  font-size: 28rpx;
+  line-height: 1.65;
+  color: var(--np-text-weak);
+  margin-bottom: 20rpx;
+}
+.hr__rule-p:last-child {
+  margin-bottom: 0;
+}
+.hr__rule-btn {
+  border-top: 1rpx solid var(--np-border);
+  padding: 28rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--np-primary);
 }
 .hr__notice {
   font-size: 22rpx;

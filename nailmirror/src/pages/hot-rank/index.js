@@ -1,4 +1,5 @@
 const hotDataService = require('../../services/hot-data.service');
+const { getRankRules } = require('../../config/hot-rank-rules');
 
 const SITE_NOTICE = '每日 10 点更新，主要按【平台特供】和【来自商家】两类美甲款式的热度 Top10 排序';
 
@@ -10,6 +11,9 @@ Page({
     pageTitle: '全网热款 TOP10',
     notice: '',
     loading: false,
+    ruleVisible: false,
+    ruleTitle: '',
+    ruleParagraphs: [],
     _externalCache: null,
     _siteCache: null,
   },
@@ -52,5 +56,16 @@ Page({
       notice: isSite ? SITE_NOTICE : '',
       loading: false,
     });
+  },
+  onShowRules() {
+    const rules = getRankRules(this.data.activeTab);
+    this.setData({
+      ruleVisible: true,
+      ruleTitle: rules.title,
+      ruleParagraphs: rules.paragraphs
+    });
+  },
+  onCloseRules() {
+    this.setData({ ruleVisible: false });
   },
 });
