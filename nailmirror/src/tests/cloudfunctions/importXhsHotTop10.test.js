@@ -142,8 +142,21 @@ describe('listXhsHotStyles cloud handler', () => {
     ]);
     const result = await listXhsHotStyles();
     expect(result.ok).toBe(true);
+    expect(result.scope).toBe('rank');
     expect(result.scrapeDate).toBe('2026-06-06');
     expect(result.styles.map((s) => s._id)).toEqual(['c', 'b']);
+  });
+
+  test('library scope returns all batches including inactive', async () => {
+    const getAllFn = require('../../cloudfunctions/ops/utils/db').getAll;
+    getAllFn.mockResolvedValueOnce([
+      { _id: 'old', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 1, is_active: false, image_file_id: '' },
+      { _id: 'new', source: 'xhs-hot', scrape_date: '2026-06-07', xhs_rank: 1, is_active: true, image_file_id: '' }
+    ]);
+    const result = await listXhsHotStyles({ scope: 'library' });
+    expect(result.ok).toBe(true);
+    expect(result.scope).toBe('library');
+    expect(result.styles.map((s) => s._id)).toEqual(['new', 'old']);
   });
 });
 
@@ -175,6 +188,25 @@ describe('xhs-hot.service', () => {
     expect(mapped.coverUrl).toBe('https://temp.test/1.webp');
   });
 
+  test('library cache keeps inactive styles for style library', () => {
+    const svc = require('../../services/xhs-hot.service');
+    svc.mergeCachedXhsHotLibraryStyles([
+      {
+        _id: 'xhs-hot-2026-06-06-01',
+        name: '昨日热款',
+        is_active: false,
+        source: 'xhs-hot',
+        scrape_date: '2026-06-06',
+        xhs_rank: 1,
+        interaction_score: 1000
+      }
+    ]);
+    const styles = svc.getCachedXhsHotLibraryStyles();
+    expect(styles).toHaveLength(1);
+    expect(styles[0].isActive).toBe(false);
+    expect(styles[0].id).toBe('xhs-hot-2026-06-06-01');
+  });
+
   test('mapCloudStyleToClientStyle prefers cloud fileID over HTTPS temp URL', () => {
     const svc = require('../../services/xhs-hot.service');
     const mapped = svc.mapCloudStyleToClientStyle({
@@ -193,6 +225,37 @@ describe('xhs-hot.service', () => {
 });
 
 describe('hot-data xhs ranking', () => {
+  test('buildXhsHotRanking excludes inactive xhs styles', () => {
+    jest.resetModules();
+    wx.setStorageSync('np_xhs_hot_styles', {
+      scrapeDate: '2026-06-07',
+      styles: [
+        {
+          id: 'xhs-hot-2026-06-07-01',
+          title: '今日热款',
+          heat: 100,
+          xhsRank: 1,
+          scrapeDate: '2026-06-07',
+          styleSource: 'xhs-hot',
+          isActive: true
+        },
+        {
+          id: 'xhs-hot-2026-06-06-01',
+          title: '昨日热款',
+          heat: 99999,
+          xhsRank: 1,
+          scrapeDate: '2026-06-06',
+          styleSource: 'xhs-hot',
+          isActive: false
+        }
+      ]
+    });
+    const hotData = require('../../services/hot-data.service');
+    const rank = hotData.buildXhsHotRanking();
+    expect(rank.items).toHaveLength(1);
+    expect(rank.items[0].styleId).toBe('xhs-hot-2026-06-07-01');
+  });
+
   test('buildXhsHotRanking uses cached xhs styles', async () => {
     jest.resetModules();
     wx.setStorageSync('np_xhs_hot_styles', {

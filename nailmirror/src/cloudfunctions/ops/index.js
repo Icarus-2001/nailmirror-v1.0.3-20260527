@@ -17,7 +17,7 @@
  *   getQualityScores C端：读取各款式云端品质分
  *   listMerchantStyles C端：读取所有商家上传款式（全局可见）
  *   importXhsHotTop10  管理员：小红书 Top10 导入 styles（VLM 打标）
- *   listXhsHotStyles   C端：读取最新一批全网热款 TOP10
+ *   listXhsHotStyles   C端：全网热款（scope=rank 热款榜 / library 款式库全量）
  *   verifyMerchant  商家身份验证（内测口令 + 表单信息）
  *   getMerchantContact C端：商详联系商家（按款式查 merchants 真实档案）
  *   backfillMerchantStyleOwners 一次性：历史商家款归属回填
@@ -123,7 +123,7 @@ exports.main = async (event, context) => {
         return await importXhsHotTop10({ ...event, callerOpenid })
 
       case 'listXhsHotStyles':
-        return await listXhsHotStyles()
+        return await listXhsHotStyles(event)
 
       case 'verifyMerchant':
         return await verifyMerchant(event)

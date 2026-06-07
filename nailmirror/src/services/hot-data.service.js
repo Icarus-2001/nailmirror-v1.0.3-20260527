@@ -119,6 +119,7 @@ function buildSiteHotRanking(snapshot) {
 
 function buildXhsHotRanking() {
   const styles = xhsHotService.getCachedXhsHotStyles()
+    .filter((s) => s && s.isActive !== false)
     .slice()
     .sort((a, b) => (Number(a.xhsRank) || 0) - (Number(b.xhsRank) || 0))
     .slice(0, 10);

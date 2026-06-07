@@ -1,0 +1,6 @@
+{
+  "secretId": "腾讯云 API SecretId（云开发控制台 → 设置 → 云 API 密钥）",
+  "secretKey": "腾讯云 API SecretKey",
+  "dashscopeApiKey": "与 ops 云函数环境变量 DASHSCOPE_API_KEY 相同",
+  "callerOpenid": "管理员 openid（ops 配置了 ADMIN_OPENIDS 时必填）"
+}

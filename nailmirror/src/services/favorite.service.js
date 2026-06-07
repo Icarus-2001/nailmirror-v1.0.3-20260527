@@ -73,6 +73,7 @@ async function _ensureStyleCatalogFresh() {
   await Promise.all([
     merchantStyleService.ensureMerchantStyles(),
     xhsHotService.ensureXhsHotStyles(),
+    xhsHotService.ensureXhsHotLibraryStyles(),
   ]);
 }
 
