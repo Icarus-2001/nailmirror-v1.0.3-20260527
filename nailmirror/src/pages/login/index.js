@@ -50,7 +50,7 @@ Page({
     }
   },
 
-  onShow() {
+  async onShow() {
     if (this._redirecting || this.data.loading) return;
     userStore.init();
     if (!userStore.openid) return;
@@ -61,6 +61,10 @@ Page({
       app.globalData.skipLoginAutoRedirect = false;
       return;
     }
+    if (!this._privacyReady) {
+      await this._preparePrivacy();
+    }
+    if (!this._privacyReady) return;
     this._goHome();
   },
 

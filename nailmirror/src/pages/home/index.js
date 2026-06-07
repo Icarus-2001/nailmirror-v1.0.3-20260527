@@ -1,6 +1,7 @@
 // V1.6 主页 — 自包含兜底数据 + 异步服务可选
 const featureFlags = require('../../config/feature-flags');
 const { EVT_USER_LOGIN, BRAND_LOGO } = require('../../config/constants');
+const { ensurePrivacyAuthorized } = require('../../utils/privacy');
 
 function getInitialHotKeywords() {
   if (featureFlags.USE_REAL_STYLES) {
@@ -47,6 +48,10 @@ Page({
     hotKeywords: getInitialHotKeywords(),
     loaded: true
   },
+  onReady() {
+    ensurePrivacyAuthorized().catch(() => {});
+  },
+
   onLoad() {
     this._syncUserName();
     try {

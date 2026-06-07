@@ -31,4 +31,6 @@
       <text class="me__menu-arrow">›</text>
     </view>
   </view>
+
+  <privacy-popup />
 </view>

@@ -28,4 +28,6 @@
       <text class="be__arrow">›</text>
     </view>
   </view>
+
+  <privacy-popup />
 </view>

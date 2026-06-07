@@ -1,19 +1,36 @@
 const merchantService = require('../../services/merchant.service');
+const { ensurePrivacyAuthorized } = require('../../utils/privacy');
 
 Page({
   data: {
     cfg: { name: '', phone: '', wecomQrUrl: '', businessHours: '' },
     saving: false
   },
+  onReady() {
+    this._preparePrivacy();
+  },
   async onLoad() {
     const cfg = await merchantService.getConfig();
     if (cfg) this.setData({ cfg });
+  },
+  async _preparePrivacy() {
+    try {
+      await ensurePrivacyAuthorized();
+      this._privacyReady = true;
+    } catch (e) {
+      this._privacyReady = false;
+    }
   },
   onInput(e) {
     const field = e.currentTarget.dataset.field;
     this.setData({ ['cfg.' + field]: e.detail.value });
   },
-  onUploadQr() {
+  async onUploadQr() {
+    if (!this._privacyReady) await this._preparePrivacy();
+    if (!this._privacyReady) {
+      wx.showToast({ title: '需同意隐私协议后才能选图', icon: 'none' });
+      return;
+    }
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],

@@ -7,7 +7,9 @@ Component({
     },
     detached() {
       const app = getApp();
-      if (app && app.registerPrivacyPopup) app.registerPrivacyPopup(null);
+      if (app && app.registerPrivacyPopup && app._privacyPopup === this) {
+        app.registerPrivacyPopup(null);
+      }
     }
   },
   methods: {

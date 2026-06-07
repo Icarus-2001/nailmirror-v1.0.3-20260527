@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "店铺信息",
-  "usingComponents": {}
+  "usingComponents": {
+    "privacy-popup": "/components/privacy-popup/index"
+  }
 }

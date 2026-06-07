@@ -6,7 +6,7 @@
 
 ### 一句话（版本说明可用）
 
-**款式库筛选新增「来源」三标签与「热度/上传时间」排序；修复商家经营入口编译报错与登录跳转；优化商家款封面 URL 归一化。**
+**款式库筛选新增「来源」三标签与「热度/上传时间」排序；修复商家经营入口编译报错与登录跳转；体验版真机 B 端选图隐私授权；优化商家款封面 URL 归一化。**
 
 ### 款式库来源筛选与排序
 
@@ -27,13 +27,24 @@
 
 - **`merchant-style.service`**：`pickCoverUrl` / `normalizeClientStyle` 与热款策略对齐，过滤 `cloud://` 误入 HTTPS 字段，减少真机封面空白。
 
+### 体验版真机隐私授权与 B 端选图
+
+- **问题**：体验版冷启动若本地已有 `openid` 会直跳首页，跳过登录页；B 端 `style-upload` / `contact-config` 等未挂 `privacy-popup`，`wx.chooseMedia` 前未 `ensurePrivacyAuthorized`，真机选图静默失败。
+- **`privacy-popup`**：`detached` 时仅当当前实例仍为 `app._privacyPopup` 才 unregister，避免页面切换清掉弹窗注册。
+- **`pages/login`**：自动跳首页前等待 `_preparePrivacy()` 完成。
+- **`pages/home`**：冷启动直进首页时在 `onReady` 预拉隐私授权（页面已挂 `privacy-popup`）。
+- **`pages/me`、`pages-b/entry`**：挂载 `privacy-popup` + `onReady` 预授权（商家入口必经路径）。
+- **`pages-b/style-upload`、`pages-b/contact-config`**：挂载 `privacy-popup`；选图 / 上传二维码前校验隐私授权。
+
 ### 涉及文件
 
 - `components/filter-drawer/index.{js,wxml,wxss}`
 - `services/style.service.js`
 - `pages/style-library/index.js`
-- `pages/me/index.{js,wxml}`、`pages/login/index.js`
-- `pages-b/entry/index.js`、`pages-b/stock-advice/*`、`pages-b/hot-rank/*`
+- `components/privacy-popup/index.js`
+- `pages/me/index.{js,wxml,json}`、`pages/login/index.js`、`pages/home/index.js`
+- `pages-b/entry/index.{js,wxml,json}`、`pages-b/style-upload/*`、`pages-b/contact-config/*`
+- `pages-b/stock-advice/*`、`pages-b/hot-rank/*`
 - `services/merchant-style.service.js`
 - `app.json`、`app.js`、`package.json`
 - `__tests__/unit/service-style.test.js`
@@ -43,6 +54,7 @@
 1. **本轮无云函数改动**，无需重新部署 `ops` / `login` / `tryon`。
 2. 微信开发者工具 → 打开 `nailmirror/src/` → **清缓存（文件 + 编译）** → 重新编译。
 3. 若仍报 `stock-advice` 相关错误，确认 `app.json` B 端分包无多余旧路由后再次编译。
+4. **体验版真机**：上传代码并设为体验版后，建议先清除小程序数据再测；冷启动直进首页时应弹出隐私协议（或设置里已授权则跳过）；商家上传选图应能打开相册。
 
 ### 验证
 
@@ -50,7 +62,8 @@
 - 选「最新上传」→ 商家新上传款排在平台款之前。
 - 「我的」→ 商家经营入口 → 进入商家中心（不再 WXML ENOENT）。
 - 未登录点商家入口 → 登录后进入商家中心。
-- `npm test -- --testPathPattern=service-style.test` 通过。
+- 体验版真机：首页或商家上传页同意隐私后，`上传款式` → 选图可打开相册。
+- `npm test -- --testPathPattern=service-style.test` 通过；`npm test -- --testPathPattern=privacy.test` 通过。
 
 ---
 

@@ -1,5 +1,6 @@
 const { userStore } = require('../../stores/user.store');
 const merchantStyleService = require('../../services/merchant-style.service');
+const { ensurePrivacyAuthorized } = require('../../utils/privacy');
 
 const MAX_COUNT = 9;
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -34,6 +35,10 @@ Page({
     cachedCount: 0
   },
 
+  onReady() {
+    this._preparePrivacy();
+  },
+
   onShow() {
     userStore.init();
     const cached = merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid);
@@ -43,8 +48,22 @@ Page({
     });
   },
 
-  onChooseImages() {
+  async _preparePrivacy() {
+    try {
+      await ensurePrivacyAuthorized();
+      this._privacyReady = true;
+    } catch (e) {
+      this._privacyReady = false;
+    }
+  },
+
+  async onChooseImages() {
     if (this.data.uploading) return;
+    if (!this._privacyReady) await this._preparePrivacy();
+    if (!this._privacyReady) {
+      wx.showToast({ title: '需同意隐私协议后才能选图', icon: 'none' });
+      return;
+    }
     wx.chooseMedia({
       count: MAX_COUNT,
       mediaType: ['image'],
