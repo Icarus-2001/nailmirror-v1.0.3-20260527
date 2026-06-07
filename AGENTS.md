@@ -54,7 +54,7 @@ gh pr create ...                             # 或关闭旧 PR、开新 PR
 ## 已学习的工作区事实
 
 - **NailMirror**：美甲 AI 试戴 + 商家运营微信小程序；应用根目录为 `nailmirror/src/`（微信开发者工具打开此目录）。
-- **GitHub 仓库（唯一）**：`Icarus-2001/nailmirror-v1.0.3-20260527`；`git remote` 的 `origin` 须指向该 URL；历史 `nailmirror-v1.6-*` 为旧仓名/本地目录代号，勿再向旧仓 push。`main` 已含 `ops`/`seed`；B 端 `pages-b/` 接入进度以 main 为准。
+- **GitHub 仓库（唯一）**：[`Icarus-2001/NailMirror`](https://github.com/Icarus-2001/NailMirror)；`git remote` 的 `origin` 须指向 `https://github.com/Icarus-2001/NailMirror.git`。旧仓名 `nailmirror-v1.0.3-20260527` 已重命名；本地目录 `nailmirror-v1.6-*` 仅为里程碑代号，不影响 push。`main` 已含 `ops`/`seed`；B 端 `pages-b/` 接入进度以 main 为准。
 - **同步 main**：协作者 PR 合入 `main` 后先 `git fetch origin` → `git checkout main` → `git pull origin main`；若在功能分支继续开发再 `merge`/`rebase origin/main`；在功能分支上 `git pull` 只更新该分支，**不会**自动带入 `main` 新提交。
 - 共享云环境 ID：`cloud1-d2g3df4y16873034b`（见 `nailmirror/src/config/cloud-env.js`）；队友部署到同一环境即可共享云函数、数据库与环境变量，无需本地同步文件。
 - 款式与标签：25 款在 `nailmirror/src/mock/styles.real.js`（`scripts/import-styles.js`）；封闭词表 `docs/美甲标签与标准词表.md`（8 色系、设计、甲型、风格），VLM 打标经 `config/tag-vocabulary.js` + `--vlm --retag`；未 retag 时默认标签可能轮换。

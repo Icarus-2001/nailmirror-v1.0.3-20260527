@@ -10,7 +10,7 @@
 
 <br/>
 
-[![Version](https://img.shields.io/badge/version-1.2.21-7c3aed?style=for-the-badge)](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527)
+[![Version](https://img.shields.io/badge/version-1.2.21-7c3aed?style=for-the-badge)](https://github.com/Icarus-2001/NailMirror)
 [![Platform](https://img.shields.io/badge/Platform-WeChat_Mini_Program-07c160?style=for-the-badge&logo=wechat&logoColor=white)](https://developers.weixin.qq.com/miniprogram/dev/framework/)
 [![Cloud](https://img.shields.io/badge/Backend-WeChat_Cloud-1677ff?style=for-the-badge)](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html)
 [![AI](https://img.shields.io/badge/AI-DashScope_Wan_2.7-ff6a00?style=for-the-badge)](https://help.aliyun.com/zh/model-studio/)
@@ -18,7 +18,7 @@
 
 <br/>
 
-[**Repository**](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [**Try-On Results**](#try-on-results) · [**Product Demo**](#product-demo) · [**中文 README**](./README.md)
+[**Repository**](https://github.com/Icarus-2001/NailMirror) · [**Try-On Results**](#try-on-results) · [**Product Demo**](#product-demo) · [**中文 README**](./README.md)
 
 </div>
 
@@ -154,6 +154,6 @@ Daily dashboard: core metrics, trends, tag aggregates, and AI operational recomm
 
 <br/>
 
-[GitHub](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [中文 README](./README.md) · [License](./LICENSE)
+[GitHub](https://github.com/Icarus-2001/NailMirror) · [中文 README](./README.md) · [License](./LICENSE)
 
 </div>

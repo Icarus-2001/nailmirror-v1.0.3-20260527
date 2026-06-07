@@ -1,6 +1,6 @@
 # GitHub 协作与回滚指南
 
-> 仓库地址：`https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527`  
+> 仓库地址：`https://github.com/Icarus-2001/NailMirror`  
 > 默认分支：`main` · 小程序代码根：`nailmirror/src/`
 
 本文说明队友如何获得上传权限、日常协作流程，以及合并后出问题时如何安全回滚。
@@ -39,8 +39,8 @@ feature ───●──●──●  →  PR  →  review → merge
 ### 队友首次克隆
 
 ```bash
-git clone https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527.git
-cd nailmirror-v1.0.3-20260527
+git clone https://github.com/Icarus-2001/NailMirror.git
+cd NailMirror
 ```
 
 ### 日常开发（每次改功能）

@@ -27,7 +27,7 @@
 
 ### 2.2 协作者
 
-1. `git clone https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527.git`（团队唯一 canonical 仓库）  
+1. `git clone https://github.com/Icarus-2001/NailMirror.git`（团队唯一 canonical 仓库）  
 2. 微信开发者工具打开 **`nailmirror/src/`**（不是仓库根目录）  
 3. 按 [SETUP_USER.md](./SETUP_USER.md)、[TEAMMATE_ONBOARDING.md](./TEAMMATE_ONBOARDING.md) 配置环境  
 4. 本地跑通验收：编译 → 选手照 → 云试戴 → 查看结果图  

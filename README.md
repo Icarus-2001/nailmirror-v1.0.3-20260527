@@ -10,7 +10,7 @@
 
 <br/>
 
-[![Version](https://img.shields.io/badge/version-1.2.21-7c3aed?style=for-the-badge)](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527)
+[![Version](https://img.shields.io/badge/version-1.2.21-7c3aed?style=for-the-badge)](https://github.com/Icarus-2001/NailMirror)
 [![Platform](https://img.shields.io/badge/平台-微信小程序-07c160?style=for-the-badge&logo=wechat&logoColor=white)](https://developers.weixin.qq.com/miniprogram/dev/framework/)
 [![Cloud](https://img.shields.io/badge/后端-微信云开发-1677ff?style=for-the-badge)](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html)
 [![AI](https://img.shields.io/badge/AI-DashScope_万相_2.7-ff6a00?style=for-the-badge)](https://help.aliyun.com/zh/model-studio/)
@@ -18,7 +18,7 @@
 
 <br/>
 
-[**GitHub 仓库**](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**文档**](#文档) · [**English**](./README.en.md)
+[**GitHub 仓库**](https://github.com/Icarus-2001/NailMirror) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**文档**](#文档) · [**English**](./README.en.md)
 
 </div>
 
@@ -154,6 +154,6 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 
 <br/>
 
-[GitHub](https://github.com/Icarus-2001/nailmirror-v1.0.3-20260527) · [English](./README.en.md) · [License](./LICENSE)
+[GitHub](https://github.com/Icarus-2001/NailMirror) · [English](./README.en.md) · [License](./LICENSE)
 
 </div>

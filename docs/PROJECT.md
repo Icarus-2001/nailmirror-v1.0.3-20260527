@@ -17,7 +17,7 @@
 ## 目录结构
 
 ```
-nailmirror-v1.6-20260519-r3/
+NailMirror/
 ├── docs/                          ← 文档（本目录）
 ├── data/                          ← 原始 Excel（款式、评测手照）
 └── nailmirror/src/                ← 小程序根目录（微信开发者工具打开此目录）
