@@ -1,0 +1,10 @@
+<view class="so np-container">
+  <view class="so__card">
+    <view class="so__icon">!</view>
+    <view class="so__title">款式已下架</view>
+    <view class="so__desc">该款式已下架，暂不可查看或试戴。</view>
+    <view class="so__hint">若该款式仍在热度榜单中，将于次日榜单更新后移除。</view>
+    <view class="np-btn np-btn--block so__btn" bindtap="onBack">返回上一页</view>
+    <view class="so__link" bindtap="onGoHome">去首页</view>
+  </view>
+</view>

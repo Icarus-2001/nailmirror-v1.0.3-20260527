@@ -40,7 +40,7 @@
       </view>
       <view class="be__item" bindtap="onGoStyleUpload">
         <text class="be__icon">⬆️</text>
-        <text class="be__label">上传款式</text>
+        <text class="be__label">款式库管理</text>
         <text class="be__arrow">›</text>
       </view>
       <view class="be__item" bindtap="onGoContact">

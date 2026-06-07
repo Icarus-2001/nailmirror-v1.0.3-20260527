@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "上传款式",
+  "navigationBarTitleText": "款式库管理",
   "usingComponents": {
     "empty-state": "/components/empty-state/index",
     "privacy-popup": "/components/privacy-popup/index"

@@ -1,0 +1,41 @@
+.so__card {
+  margin-top: 120rpx;
+  padding: 48rpx 36rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 28rpx rgba(31, 31, 41, 0.06);
+}
+.so__icon {
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0 auto 24rpx;
+  line-height: 88rpx;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 44rpx;
+  font-weight: 700;
+}
+.so__title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+.so__desc,
+.so__hint {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--np-text-weak);
+}
+.so__hint {
+  margin-top: 16rpx;
+}
+.so__btn {
+  margin-top: 40rpx;
+}
+.so__link {
+  margin-top: 28rpx;
+  font-size: 28rpx;
+  color: var(--np-text-weak);
+}

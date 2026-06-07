@@ -43,6 +43,48 @@ describe('checkStyleAvailability cloud handler', () => {
     expect(res.reason).toBe('merchant_revoked');
   });
 
+  test('returns style_inactive for deactivated merchant style', async () => {
+    cloud.__mock.get
+      .mockResolvedValueOnce({
+        data: {
+          source: 'merchant-upload',
+          merchant_id: 'oid-1',
+          is_active: false,
+        },
+      })
+      .mockResolvedValueOnce({
+        data: [{ openid: 'oid-1', status: 'approved' }],
+      });
+
+    const res = await checkStyleAvailability({ styleId: 'merchant-style-1' });
+    expect(res.available).toBe(false);
+    expect(res.reason).toBe('style_inactive');
+  });
+
+  test('returns style_inactive when doc missing but still in hot rank snapshot', async () => {
+    cloud.__mock.get
+      .mockRejectedValueOnce(new Error('not found'))
+      .mockResolvedValueOnce({
+        data: {
+          items: [{ styleId: 'deleted-style' }, { styleId: 'other' }],
+        },
+      });
+
+    const res = await checkStyleAvailability({ styleId: 'deleted-style' });
+    expect(res.available).toBe(false);
+    expect(res.reason).toBe('style_inactive');
+  });
+
+  test('returns not_found when doc missing and not in hot rank', async () => {
+    cloud.__mock.get
+      .mockRejectedValueOnce(new Error('not found'))
+      .mockResolvedValueOnce({ data: { items: [] } });
+
+    const res = await checkStyleAvailability({ styleId: 'missing-style' });
+    expect(res.available).toBe(false);
+    expect(res.reason).toBe('not_found');
+  });
+
   test('returns available for active style', async () => {
     cloud.__mock.get.mockResolvedValueOnce({
       data: { source: 'merchant-upload', is_active: true },
