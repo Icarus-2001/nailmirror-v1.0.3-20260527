@@ -4,6 +4,9 @@ const featureFlags = require('../config/feature-flags');
 const mockStyles = require('../mock/styles');
 const realStyles = require('../mock/styles.real');
 const xhsHotService = require('./xhs-hot.service');
+const cloudUtil = require('../utils/cloud');
+const merchantStyleService = require('./merchant-style.service');
+const styleService = require('./style.service');
 
 const PLATFORMS = ['xhs', 'douyin', 'weibo'];
 
@@ -61,6 +64,57 @@ function buildRealHotKeywords() {
       fetchedAt: fetchedAt,
       relatedStyleIds: item.relatedStyleIds
     }));
+}
+
+function parseCloudTimestamp(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  if (typeof val === 'object' && val.$date) return new Date(val.$date);
+  const t = new Date(val).getTime();
+  return Number.isFinite(t) ? new Date(t) : null;
+}
+
+function formatSiteRankUpdatedAt(rankDate, updatedAt) {
+  const parsed = parseCloudTimestamp(updatedAt);
+  if (parsed) return formatFetchedAt(parsed) + ' 站内热度 TOP10';
+  if (rankDate) return rankDate + ' 10:00 站内热度 TOP10';
+  return formatFetchedAt(new Date()) + ' 站内热度 TOP10';
+}
+
+/** 将云端站内榜单快照与本地款式目录合并为展示结构 */
+function buildSiteHotRanking(snapshot) {
+  const rows = (snapshot && snapshot.items) || [];
+  if (!rows.length) return null;
+  const allStyles = styleService.getAllStyles();
+  const styleMap = {};
+  allStyles.forEach((s) => { if (s && s.id) styleMap[s.id] = s; });
+
+  const items = rows.map((row) => {
+    const style = styleMap[row.styleId] || null;
+    const styleSource = style && style.styleSource
+      ? style.styleSource
+      : (String(row.styleId).indexOf('real-') === 0 ? 'platform' : 'merchant-upload');
+    return {
+      styleId: row.styleId,
+      rank: row.rank,
+      heat: row.heat || 0,
+      title: (style && style.title) || row.styleId,
+      coverUrl: style && style.coverUrl,
+      color: style && style.color,
+      design: style && style.design,
+      styleLabel: style && style.styleLabel,
+      styleSource,
+      styleTags: (style && style.styleTags) || [],
+    };
+  });
+
+  return {
+    updatedAt: formatSiteRankUpdatedAt(snapshot.rank_date, snapshot.updated_at),
+    city: '站内',
+    rankType: 'site',
+    rankDate: snapshot.rank_date || '',
+    items,
+  };
 }
 
 function buildXhsHotRanking() {
@@ -169,6 +223,19 @@ async function fetchRanking(city) {
   return { updatedAt: r.updatedAt, city: r.city, items };
 }
 
+async function fetchSiteRanking() {
+  const { mockDelay } = require('../utils/request');
+  return mockDelay(async () => {
+    if (!cloudUtil.isCloudReady()) return { updatedAt: '', rankType: 'site', items: [] };
+    await merchantStyleService.ensureMerchantStyles();
+    const r = await cloudUtil.callFunction('ops', { action: 'listSiteHotRank' });
+    if (!r || !r.ok) return { updatedAt: '', rankType: 'site', items: [] };
+    const built = buildSiteHotRanking(r);
+    if (built) return built;
+    return { updatedAt: '', rankType: 'site', items: [] };
+  }, 120, 180);
+}
+
 async function fetchTrend(keyword) {
   if (featureFlags.USE_REAL_STYLES) {
     const { mockDelay } = require('../utils/request');
@@ -180,6 +247,9 @@ async function fetchTrend(keyword) {
 module.exports = {
   fetchTop20,
   fetchRanking,
+  fetchSiteRanking,
   fetchTrend,
-  buildRealHotKeywords
+  buildRealHotKeywords,
+  buildSiteHotRanking,
+  buildXhsHotRanking,
 };

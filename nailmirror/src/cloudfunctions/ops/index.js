@@ -26,6 +26,8 @@
  *   removeFavorite  C端：用户取消收藏从 user_favorites 删除
  *   listFavorites   C端：读取用户收藏款式 ID 列表
  *   getStyleHeatScores C端：聚合 UV/试戴完成/收藏量，按公式计算站内热度
+ *   refreshSiteHotRank  计算站内热度 Top10 并写入 site_hot_rank（定时/手动）
+ *   listSiteHotRank     C端：读取站内热度 Top10 快照
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -55,10 +57,22 @@ const { addFavorite }              = require('./handlers/addFavorite')
 const { removeFavorite }           = require('./handlers/removeFavorite')
 const { listFavorites }            = require('./handlers/listFavorites')
 const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
+const { refreshSiteHotRank }       = require('./handlers/refreshSiteHotRank')
+const { listSiteHotRank }          = require('./handlers/listSiteHotRank')
 
 exports.main = async (event, context) => {
   const { action } = event
   const callerOpenid = context.FROM_OPENID || event.callerOpenid || ''
+
+  // 定时触发器：每日 10:00 刷新站内榜单
+  if (event.TriggerName === 'refreshSiteHotRank') {
+    try {
+      return await refreshSiteHotRank()
+    } catch (err) {
+      console.error('[ops] timer refreshSiteHotRank failed:', err)
+      return { error: err.message || String(err) }
+    }
+  }
 
   try {
     switch (action) {
@@ -133,6 +147,12 @@ exports.main = async (event, context) => {
       // ── 站内热度计算 ───────────────────────────────────────────────
       case 'getStyleHeatScores':
         return await getStyleHeatScores()
+
+      case 'refreshSiteHotRank':
+        return await refreshSiteHotRank()
+
+      case 'listSiteHotRank':
+        return await listSiteHotRank()
 
       default:
         return { error: `未知 action: ${action}` }
