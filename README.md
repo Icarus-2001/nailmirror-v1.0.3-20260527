@@ -33,14 +33,6 @@
 | **商家** | 身份认证 · 款式库管理（查看 / 上传 / 下架）· 店铺信息配置 |
 | **团队** | 微信云开发统一后端 · 封闭标签词表 · 可测可部署的 MVP 架构 |
 
-<div align="center">
-
-<strong>体验 NailMirror</strong><br/><br/>
-<img src="docs/assets/readme/miniprogram-qr.svg" alt="微信小程序体验版二维码（待补充）" width="200"/><br/>
-<sub>扫码体验 · 二维码待补充</sub>
-
-</div>
-
 ---
 
 ## 试戴效果
@@ -125,6 +117,14 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 
 <div align="center">
 <img src="docs/assets/readme/gifs/merchant-style-library.gif" alt="商家款式库管理" width="280"/>
+</div>
+
+### 商家看板
+
+商家经营数据一览：核心指标、款式表现与运营概览。
+
+<div align="center">
+<img src="docs/assets/readme/gifs/merchant-dashboard.gif" alt="商家看板" width="280"/>
 </div>
 
 ---
