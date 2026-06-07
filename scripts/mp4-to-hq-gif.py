@@ -10,18 +10,20 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def extract_frames(src: Path, width: int, fps: int, max_seconds: float) -> list[Image.Image]:
+def extract_frames(
+    src: Path, width: int, fps: int, max_seconds: float | None = None
+) -> list[Image.Image]:
     cap = cv2.VideoCapture(str(src))
     if not cap.isOpened():
         raise RuntimeError(f"cannot open {src}")
 
     src_fps = cap.get(cv2.CAP_PROP_FPS) or 30
     step = max(1, int(round(src_fps / fps)))
-    max_frames = int(max_seconds * fps)
+    max_frames = int(max_seconds * fps) if max_seconds and max_seconds > 0 else None
     frames: list[Image.Image] = []
     idx = 0
 
-    while len(frames) < max_frames:
+    while max_frames is None or len(frames) < max_frames:
         ok, frame = cap.read()
         if not ok:
             break
@@ -82,6 +84,8 @@ def main() -> int:
     width = int(sys.argv[3]) if len(sys.argv) > 3 else 480
     fps = int(sys.argv[4]) if len(sys.argv) > 4 else 10
     max_seconds = float(sys.argv[5]) if len(sys.argv) > 5 else 21
+    if max_seconds <= 0:
+        max_seconds = None
 
     frames = extract_frames(src, width=width, fps=fps, max_seconds=max_seconds)
     save_hq_gif(frames, out, fps=fps)

@@ -13,7 +13,8 @@ OUT_DIR = ROOT / "docs" / "assets" / "readme" / "gifs"
 
 CONFIG = {
     "style-library.mp4": {"max_seconds": 12, "width": 280, "fps": 6},
-    "tryon-flow.mp4": {"max_seconds": 14, "width": 280, "fps": 6},
+    # Full-length try-on demo: regenerate with mp4-to-hq-gif.py (max_seconds=0).
+    "tryon-flow.mp4": {"max_seconds": 0, "width": 280, "fps": 8},
     "hot-rank.mp4": {"max_seconds": 12, "width": 280, "fps": 6},
     "merchant-style-library.mp4": {"max_seconds": 14, "width": 280, "fps": 6},
     "merchant-dashboard.mp4": {"start_seconds": 8, "max_seconds": 14, "width": 280, "fps": 6},
@@ -60,7 +61,10 @@ def convert(name: str, cfg: dict) -> None:
     src_fps = cap.get(cv2.CAP_PROP_FPS) or 30
     width = cfg["width"]
     start_seconds = cfg.get("start_seconds", 0)
-    max_frames = int(cfg["max_seconds"] * cfg["fps"])
+    max_seconds = cfg.get("max_seconds", 0)
+    max_frames = (
+        None if not max_seconds or max_seconds <= 0 else int(max_seconds * cfg["fps"])
+    )
     step = max(1, int(round(src_fps / cfg["fps"])))
 
     if start_seconds > 0:
@@ -68,7 +72,7 @@ def convert(name: str, cfg: dict) -> None:
 
     frames = []
     idx = 0
-    while len(frames) < max_frames:
+    while max_frames is None or len(frames) < max_frames:
         ok, frame = cap.read()
         if not ok:
             break
