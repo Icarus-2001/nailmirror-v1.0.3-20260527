@@ -14,11 +14,11 @@
 - **CHANGELOG 写入时机**：只有用户**明确要求**写 CHANGELOG 时才能写；功能未验收前不主动写 CHANGELOG/docs，用户验证通过且明确说要写时再补。
 - **PR 与版本号**：**一个 PR 对应一个 CHANGELOG 版本**；功能未验收、用户未确认前**不要主动提 PR**；**禁止 Agent 自动合并 PR 到 main**（须用户/协作者 review 后手动合并）。
 - **PR 串行发布（强制）**：**必须等上一版 PR 合入 `main` 后**，再从最新 `main` 切下一版分支开发/提 PR；**禁止并行**维护两个都会改 `CHANGELOG.md` / `app.js` / `package.json` 的开放 PR。
-- **版本三件套冲突处理**：GitHub 报上述三文件冲突时 → 在功能分支 `git rebase origin/main`，CHANGELOG **顶部追加本版、保留 main 已有版本段**，版本号取本 PR 目标版，`git push --force-with-lease`；**勿**在网页盲目 Resolve 或带冲突强行合并。
-- **当前版本规划（2026-06-07）**：**1.2.14** = 已合 main（#38）；**1.2.15** = PR #39 商家注销资质（`feature/merchant-revoke-qualification`，须先合入）；**1.2.16** = PR 款式库管理三 Tab（`feature/merchant-style-library-manage`，依赖 #39 合入后再审）。
+- **版本三件套冲突处理**：GitHub 报上述三文件冲突时 → 在功能分支 `git reset --hard origin/main` 后 **仅 cherry-pick 本版提交**（或 `rebase --onto origin/main <上一版末提交>`），CHANGELOG **顶部追加本版、保留 main 已有版本段**；优先 **推新分支 + 开/改 PR**，避免 `force push`；若必须更新原分支，仅用 `git push --force-with-lease`（rebase 后改写历史时），**勿**在网页盲目 Resolve 或带冲突强行合并。
+- **当前版本规划（2026-06-07）**：**1.2.14** = 已合 main（#38）；**1.2.15** = 已合 main（#39）；**1.2.16** = PR #41 款式库管理三 Tab（`feature/release-1.2.16`）。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
-- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合 main（1.2.14）**；② 商家【注销资质】— **PR #39（1.2.15）待合入**；③【款式库管理】三 Tab — **PR（1.2.16）待 #39 合入后审**。
+- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合 main（1.2.14）**；② 商家【注销资质】— **已合 main（1.2.15）**；③【款式库管理】三 Tab — **PR #41（1.2.16）待审**。
 - **商家手机号核验**：不用短信；**1.2.14 起**为手动输入认证手机号 + 云端比对（已摆脱 `getPhoneNumber`）。
 - **注销资质部署**：除小程序编译外，**必须**在共享环境 `cloud1-d2g3df4y16873034b` 重新部署 `ops`（含 `revokeMerchantQualification`）；仅上传小程序代码而未部署云函数会报「未知 action」。
 
