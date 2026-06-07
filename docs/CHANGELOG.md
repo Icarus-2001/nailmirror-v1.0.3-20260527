@@ -1,5 +1,59 @@
 # 变更记录
 
+## 1.2.8 · 2026-06-07 · 款式库来源筛选排序与商家入口修复
+
+**小程序版本：`1.2.8`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**款式库筛选新增「来源」三标签与「热度/上传时间」排序；修复商家经营入口编译报错与登录跳转；优化商家款封面 URL 归一化。**
+
+### 款式库来源筛选与排序
+
+- **`filter-drawer`**：真实款式模式下新增「来源」（平台特供 / 来自商家 / 全网热款，多选 OR）与「排序」（热度优先 / 最新上传 / 最早上传，三选一）。
+- **`style.service`**：`matchFilters` 支持 `styleSources`；新增 `sortStyles()`，`list` / `search` 在过滤后按 `sortBy` + `sortOrder` 排序（默认热度降序，与改前一致）。
+- **`pages/style-library`**：`drawerFilters` 扩展 `styleSources`、`sortBy`、`sortOrder` 初始字段。
+
+### 商家经营入口与 B 端路由兼容
+
+- **问题**：开发者工具缓存旧分包路由时，编译报 `pages-b/stock-advice/index.wxml` ENOENT，无法进入商家中心。
+- **`pages-b/stock-advice`**：补全兼容桩页面，打开后跳转商家看板（1.2.4 已下线功能，不重新注册到 `app.json`）。
+- **`pages-b/hot-rank`**：补全跳转桩，重定向至 C 端 `pages/hot-rank`；`app.json` 分包保留路由以免旧缓存缺页。
+- **`pages/me`**：未登录点「商家经营入口」→ 登录页 `from=merchant`；已登录直达 `pages-b/entry`；头像 `binderror` 降级 `BRAND_LOGO`。
+- **`pages/login`**：`from=merchant` 登录成功后 `redirectTo` 商家中心，不自动跳首页。
+- **`pages-b/entry`**：未登录先跳登录；已设 `role=b` 时跳过云端校验；校验失败留在入口页提示而非误跳验证页。
+
+### 商家款封面 URL
+
+- **`merchant-style.service`**：`pickCoverUrl` / `normalizeClientStyle` 与热款策略对齐，过滤 `cloud://` 误入 HTTPS 字段，减少真机封面空白。
+
+### 涉及文件
+
+- `components/filter-drawer/index.{js,wxml,wxss}`
+- `services/style.service.js`
+- `pages/style-library/index.js`
+- `pages/me/index.{js,wxml}`、`pages/login/index.js`
+- `pages-b/entry/index.js`、`pages-b/stock-advice/*`、`pages-b/hot-rank/*`
+- `services/merchant-style.service.js`
+- `app.json`、`app.js`、`package.json`
+- `__tests__/unit/service-style.test.js`
+
+### 部署注意
+
+1. **本轮无云函数改动**，无需重新部署 `ops` / `login` / `tryon`。
+2. 微信开发者工具 → 打开 `nailmirror/src/` → **清缓存（文件 + 编译）** → 重新编译。
+3. 若仍报 `stock-advice` 相关错误，确认 `app.json` B 端分包无多余旧路由后再次编译。
+
+### 验证
+
+- 款式库 → 筛选 → 仅选「来自商家」→ 卡片均为「来自商家」徽章。
+- 选「最新上传」→ 商家新上传款排在平台款之前。
+- 「我的」→ 商家经营入口 → 进入商家中心（不再 WXML ENOENT）。
+- 未登录点商家入口 → 登录后进入商家中心。
+- `npm test -- --testPathPattern=service-style.test` 通过。
+
+---
+
 ## 1.2.7 · 2026-06-07 · B 端商家上传身份修复与本地款式隔离
 
 **小程序版本：`1.2.7`**（`app.globalData.version`）

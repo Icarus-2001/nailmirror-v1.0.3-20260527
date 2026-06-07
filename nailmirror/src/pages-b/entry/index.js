@@ -11,8 +11,12 @@ Page({
     this.setData({ checking: true });
 
     if (!userStore.openid) {
-      userStore.setRole('c');
-      wx.redirectTo({ url: '/pages-b/merchant-verify/index' });
+      wx.redirectTo({ url: '/pages/login/index?from=merchant' });
+      return;
+    }
+
+    if (userStore.role === 'b') {
+      this.setData({ role: 'b', checking: false });
       return;
     }
 
@@ -26,9 +30,8 @@ Page({
       userStore.setRole('b');
       this.setData({ role: 'b', checking: false });
     } catch (e) {
-      userStore.setRole('c');
-      wx.showToast({ title: '验证状态获取失败', icon: 'none' });
-      wx.redirectTo({ url: '/pages-b/merchant-verify/index' });
+      wx.showToast({ title: '商家身份校验失败，请稍后重试', icon: 'none' });
+      this.setData({ role: userStore.role || 'c', checking: false });
     }
   },
   onSwitchToC() {

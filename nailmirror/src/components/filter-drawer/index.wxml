@@ -16,6 +16,33 @@ module.exports.includes = includes;
 
     <block wx:if="{{useReal}}">
       <view class="fdrawer__section">
+        <view class="fdrawer__label">来源</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{sourceOptions}}"
+            wx:key="id"
+            class="fdrawer__tag {{f.includes(selSources, item.id) ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onSourceTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="fdrawer__section">
+        <view class="fdrawer__label">排序</view>
+        <view class="fdrawer__hint">默认按热度</view>
+        <view class="fdrawer__tags">
+          <view
+            wx:for="{{sortOptions}}"
+            wx:key="id"
+            class="fdrawer__tag {{sortKey === item.id ? 'fdrawer__tag--on' : ''}}"
+            data-v="{{item.id}}"
+            bindtap="onSortTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <view class="fdrawer__section">
         <view class="fdrawer__label">颜色（色系）</view>
         <view class="fdrawer__tags">
           <view

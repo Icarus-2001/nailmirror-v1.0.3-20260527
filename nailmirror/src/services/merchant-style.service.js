@@ -30,24 +30,29 @@ function uniqueList(items) {
   });
 }
 
+function isCloudFileID(value) {
+  return String(value || '').indexOf('cloud://') === 0;
+}
+
 function pickCoverUrl(fileID, httpsUrl) {
   // 真机优先 cloud:// fileID，避免 HTTPS 临时链过期 403
-  if (fileID && String(fileID).indexOf('cloud://') === 0) return fileID;
-  return httpsUrl || '';
+  if (httpsUrl && !isCloudFileID(httpsUrl)) return httpsUrl;
+  return fileID && !isCloudFileID(fileID) ? fileID : '';
 }
 
 function normalizeClientStyle(style) {
   if (!style) return style;
   const fileID = style.styleImageFileID || '';
-  const https = style.coverUrl || style.imageUrl || style.sourceUrl || '';
+  const https = [style.coverUrl, style.imageUrl, style.sourceUrl]
+    .find((url) => url && !isCloudFileID(url)) || '';
   const coverUrl = pickCoverUrl(fileID, https);
   const previewUrls = style.previewUrls && style.previewUrls.length
-    ? style.previewUrls
-    : uniqueList([coverUrl, style.sourceUrl, style.imageUrl, fileID]);
+    ? style.previewUrls.filter((url) => !isCloudFileID(url))
+    : uniqueList([coverUrl, style.sourceUrl, style.imageUrl].filter((url) => !isCloudFileID(url)));
   return Object.assign({}, style, {
     coverUrl,
-    sourceUrl: coverUrl || style.sourceUrl,
-    imageUrl: coverUrl || style.imageUrl,
+    sourceUrl: coverUrl || (isCloudFileID(style.sourceUrl) ? '' : style.sourceUrl),
+    imageUrl: coverUrl || (isCloudFileID(style.imageUrl) ? '' : style.imageUrl),
     previewUrls,
   });
 }

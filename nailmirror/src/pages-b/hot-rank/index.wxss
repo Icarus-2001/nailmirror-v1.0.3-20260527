@@ -1,0 +1,5 @@
+.bhr {
+  min-height: 100vh;
+  padding: 48rpx 32rpx;
+  background: var(--np-bg);
+}

@@ -88,4 +88,36 @@ describe('services/style', () => {
       expect(r.items[i - 1].heat).toBeGreaterThanOrEqual(r.items[i].heat);
     }
   });
+
+  test('styleSources platform filter returns only platform styles', async () => {
+    const all = styleService.getAllStyles();
+    const r = await styleService.list({ styleSources: ['platform'], pageSize: 100 });
+    const expected = all.filter((it) => it.styleSource === 'platform');
+    expect(r.total).toBe(expected.length);
+    expect(r.items.every((it) => it.styleSource === 'platform')).toBe(true);
+  });
+
+  test('styleSources union filter matches merchant or xhs-hot', async () => {
+    const all = styleService.getAllStyles();
+    const sources = ['merchant-upload', 'xhs-hot'];
+    const r = await styleService.list({ styleSources: sources, pageSize: 100 });
+    const expected = all.filter((it) => sources.indexOf(it.styleSource) > -1);
+    expect(r.total).toBe(expected.length);
+    expect(r.items.every((it) => sources.indexOf(it.styleSource) > -1)).toBe(true);
+  });
+
+  test('sortBy createdAt desc orders newest first', async () => {
+    const r = await styleService.list({ sortBy: 'createdAt', sortOrder: 'desc', pageSize: 100 });
+    for (let i = 1; i < r.items.length; i += 1) {
+      const prev = Date.parse(r.items[i - 1].createdAt || 0) || 0;
+      const cur = Date.parse(r.items[i].createdAt || 0) || 0;
+      expect(prev).toBeGreaterThanOrEqual(cur);
+    }
+  });
+
+  test('default list order matches heat desc', async () => {
+    const explicit = await styleService.list({ sortBy: 'heat', sortOrder: 'desc', pageSize: 100 });
+    const implicit = await styleService.list({ pageSize: 100 });
+    expect(implicit.items.map((x) => x.id)).toEqual(explicit.items.map((x) => x.id));
+  });
 });
