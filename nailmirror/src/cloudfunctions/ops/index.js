@@ -63,6 +63,8 @@ const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
 const { refreshSiteHotRank }       = require('./handlers/refreshSiteHotRank')
 const { listSiteHotRank }          = require('./handlers/listSiteHotRank')
 const { validateStyleRef }         = require('./handlers/validateStyleRef')
+const { revokeMerchantQualification } = require('./handlers/revokeMerchantQualification')
+const { checkStyleAvailability } = require('./handlers/checkStyleAvailability')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -146,6 +148,12 @@ exports.main = async (event, context) => {
 
       case 'verifyMerchantPhone':
         return await verifyMerchantPhone({ openid: callerOpenid || event.openid, phone: event.phone })
+
+      case 'revokeMerchantQualification':
+        return await revokeMerchantQualification({ openid: callerOpenid || event.openid, phone: event.phone })
+
+      case 'checkStyleAvailability':
+        return await checkStyleAvailability({ styleId: event.styleId })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':

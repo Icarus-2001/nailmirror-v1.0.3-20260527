@@ -1,5 +1,45 @@
 # 变更记录
 
+## 1.2.15 · 2026-06-07 · 商家注销资质
+
+**小程序版本：`1.2.15`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家中心新增「注销资质」：手机号验证后注销身份，名下款式立即从款式库下架；热款榜 T+1 移除， interim 显示「商家已注销」页。**
+
+### 商家注销资质
+
+- **`pages-b/entry`**：商家中心底部「注销资质」→ 确认弹窗 → 复用手动输入认证手机号验证 → 确认注销。
+- **`ops.revokeMerchantQualification`**：`merchants.status=revoked`，名下 `merchant-upload` 款式 `is_active=false`（款式库立即不可见），`users.role=c`。
+- **`ops.checkStyleAvailability`**：商详兜底——榜单快照中仍可点击的已注销商家款 → 跳转 `pages/merchant-revoked`（「商家已注销」提示页）。
+- **热款榜 T+1**：`refreshSiteHotRank` 仅候选 `is_active=true` 商家款，次日 10:00 更新后自动移除。
+- **重新入驻**：`verifyMerchant` 对已 `revoked` 记录恢复 `status=approved`；`uploadMerchantStyles` 拦截已注销商家上传。
+- **`utils/ops-error.js`**：云端 `未知 action` 时提示须部署 `ops`（避免仅上传小程序未部署云函数）。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{revokeMerchantQualification,checkStyleAvailability}.js`、`verifyMerchant.js`、`uploadMerchantStyles.js`、`index.js`
+- `pages-b/entry/index.{js,wxml,wxss}`、`pages/merchant-revoked/*`、`pages/style-detail/index.js`
+- `services/merchant-style.service.js`、`utils/ops-error.js`、`app.js`、`app.json`
+- `tests/cloudfunctions/{revokeMerchantQualification,checkStyleAvailability}.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含 `revokeMerchantQualification`、`checkStyleAvailability`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`；部署后可用云端测试 `{ "action": "revokeMerchantQualification", "openid": "...", "phone": "..." }` 验证。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.15`**。
+
+### 验证
+
+- 商家中心 → 注销资质 → 正确手机号 → 注销成功 → 回到普通用户。
+- 款式库不再显示该商家款式。
+- 站内热款榜若仍可见该款，点击 →「商家已注销」页。
+- 再次「商家经营入口」→ 走资质验证；重新认证后可入驻。
+- `npm test -- --testPathPattern="revokeMerchantQualification|checkStyleAvailability"` 通过。
+
+---
+
 ## 1.2.14 · 2026-06-07 · 商家手机号手动核验与主包修复
 
 **小程序版本：`1.2.14`**（`app.globalData.version`）

@@ -9,6 +9,7 @@ const { userStore } = require('./stores/user.store');
 require('./config/tag-vocabulary');
 require('./config/hot-rank-rules');
 require('./utils/upload-validation');
+require('./utils/ops-error');
 require('./utils/star-display');
 require('./services/xhs-hot.service');
 
@@ -20,7 +21,7 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.2.14',
+    version: '1.2.15',
     pendingHdUrl: '',
     /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
     skipLoginAutoRedirect: false
