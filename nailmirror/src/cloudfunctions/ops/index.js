@@ -69,6 +69,11 @@ const { listMerchantOwnStyles }  = require('./handlers/listMerchantOwnStyles')
 const { updateMerchantStyleStatus } = require('./handlers/updateMerchantStyleStatus')
 const { deleteMerchantStyle }    = require('./handlers/deleteMerchantStyle')
 const { getMerchantDashboard }   = require('./handlers/getMerchantDashboard')
+const { refreshMerchantDashboardSnapshots } = require('./handlers/refreshMerchantDashboardSnapshots')
+const { mockMerchantDashboardData } = require('./handlers/mockMerchantDashboardData')
+const { getMerchantDashboardAdvice } = require('./handlers/getMerchantDashboardAdvice')
+const { getMerchantStoreProfile } = require('./handlers/getMerchantStoreProfile')
+const { updateMerchantStoreProfile } = require('./handlers/updateMerchantStoreProfile')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -77,12 +82,20 @@ exports.main = async (event, context) => {
     event.callerOpenid || event.openid || event.merchantId || ''
   )
 
-  // 定时触发器：每日 10:00 刷新站内榜单
+  // 定时触发器：每日 10:00 刷新站内榜单 / 商家看板快照
   if (event.TriggerName === 'refreshSiteHotRank') {
     try {
       return await refreshSiteHotRank()
     } catch (err) {
       console.error('[ops] timer refreshSiteHotRank failed:', err)
+      return { error: err.message || String(err) }
+    }
+  }
+  if (event.TriggerName === 'refreshMerchantDashboardSnapshots') {
+    try {
+      return await refreshMerchantDashboardSnapshots()
+    } catch (err) {
+      console.error('[ops] timer refreshMerchantDashboardSnapshots failed:', err)
       return { error: err.message || String(err) }
     }
   }
@@ -177,6 +190,29 @@ exports.main = async (event, context) => {
 
       case 'getMerchantDashboard':
         return await getMerchantDashboard({ openid: callerOpenid || event.openid })
+
+      case 'getMerchantDashboardAdvice':
+        return await getMerchantDashboardAdvice({ openid: callerOpenid || event.openid })
+
+      case 'getMerchantStoreProfile':
+        return await getMerchantStoreProfile({ openid: callerOpenid || event.openid })
+
+      case 'updateMerchantStoreProfile':
+        return await updateMerchantStoreProfile({
+          openid: callerOpenid || event.openid,
+          storeName: event.storeName,
+          phone: event.phone,
+          businessHours: event.businessHours,
+        })
+
+      case 'refreshMerchantDashboardSnapshots':
+        return await refreshMerchantDashboardSnapshots()
+
+      case 'mockMerchantDashboardData':
+        return await mockMerchantDashboardData({
+          phone: event.phone,
+          clearFirst: event.clearFirst,
+        })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':

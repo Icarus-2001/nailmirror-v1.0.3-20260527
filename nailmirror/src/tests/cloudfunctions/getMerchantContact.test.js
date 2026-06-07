@@ -58,6 +58,7 @@ describe('getMerchantContact cloud handler', () => {
           phone: '17312270775',
           province: '江苏省',
           city: '南京市',
+          business_hours: '10:00-22:00',
         }],
       });
 
@@ -68,6 +69,7 @@ describe('getMerchantContact cloud handler', () => {
       phone: '17312270775',
       province: '江苏省',
       city: '南京市',
+      businessHours: '10:00-22:00',
     });
   });
 });

@@ -1,26 +1,57 @@
-// MerchantService: getConfig / saveConfig（B 端店铺信息，本地缓存）
-const { mockDelay } = require('../utils/request');
-const { safeGet, safeSet } = require('../utils/storage');
-const { STORAGE_MERCHANT } = require('../config/constants');
-const seed = require('../mock/merchants');
+/**
+ * MerchantService — B 端店铺信息（云端 merchants 集合）
+ */
+const cloudUtil = require('../utils/cloud');
+const { userStore } = require('../stores/user.store');
 
-async function getConfig(merchantId) {
-  return mockDelay(() => {
-    const cached = safeGet(STORAGE_MERCHANT, null);
-    if (cached) return cached;
-    const m = merchantId ? seed.find((x) => x.id === merchantId) : seed[0];
-    if (m) safeSet(STORAGE_MERCHANT, m);
-    return m || null;
-  }, 100, 150);
+function mapProfileToCfg(profile, editPolicy) {
+  const p = profile || {};
+  const policy = editPolicy || { canEdit: true, nextEditableAt: null };
+  return {
+    name: p.storeName || '',
+    phone: p.phone || '',
+    businessHours: p.businessHours || '',
+    province: p.province || '',
+    city: p.city || '',
+    canEdit: policy.canEdit !== false,
+    nextEditableAt: policy.nextEditableAt || '',
+  };
+}
+
+async function getConfig() {
+  if (!cloudUtil.isCloudReady()) {
+    throw new Error('云开发未就绪');
+  }
+  const res = await cloudUtil.callFunction('ops', {
+    action: 'getMerchantStoreProfile',
+    role: 'b',
+    openid: userStore.openid || '',
+  });
+  if (!res || !res.ok) {
+    throw new Error((res && res.error) || '加载店铺信息失败');
+  }
+  return mapProfileToCfg(res.profile, res.editPolicy);
 }
 
 async function saveConfig(cfg) {
-  return mockDelay(() => {
-    const cur = safeGet(STORAGE_MERCHANT, seed[0]);
-    const next = Object.assign({}, cur, cfg);
-    safeSet(STORAGE_MERCHANT, next);
-    return { ok: true, merchant: next };
-  }, 120, 180);
+  if (!cloudUtil.isCloudReady()) {
+    throw new Error('云开发未就绪');
+  }
+  const res = await cloudUtil.callFunction('ops', {
+    action: 'updateMerchantStoreProfile',
+    role: 'b',
+    openid: userStore.openid || '',
+    storeName: (cfg && cfg.name) || '',
+    phone: (cfg && cfg.phone) || '',
+    businessHours: (cfg && cfg.businessHours) || '',
+  });
+  if (!res || !res.ok) {
+    throw new Error((res && res.error) || '保存失败');
+  }
+  return {
+    ok: true,
+    merchant: mapProfileToCfg(res.profile, res.editPolicy),
+  };
 }
 
 module.exports = { getConfig, saveConfig };

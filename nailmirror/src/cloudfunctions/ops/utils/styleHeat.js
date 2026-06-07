@@ -5,11 +5,39 @@ const MS_PER_DAY = 86400000
 const THIRTY_DAYS_MS = 30 * MS_PER_DAY
 
 function toMs(val) {
-  if (!val) return 0
+  if (val == null || val === '') return 0
+  if (typeof val === 'number' && Number.isFinite(val)) {
+    return val > 1e12 ? val : val * 1000
+  }
   if (val instanceof Date) return val.getTime()
-  if (typeof val === 'object' && val.$date) return new Date(val.$date).getTime()
+  if (typeof val === 'object') {
+    if (val.$date != null) {
+      const d = new Date(val.$date).getTime()
+      return Number.isFinite(d) ? d : 0
+    }
+    if (typeof val.getTime === 'function') {
+      const d = val.getTime()
+      return Number.isFinite(d) ? d : 0
+    }
+    if (val.date != null) {
+      const d = new Date(val.date).getTime()
+      return Number.isFinite(d) ? d : 0
+    }
+  }
   const t = new Date(val).getTime()
   return Number.isFinite(t) ? t : 0
+}
+
+const TREND_RULES = {
+  hotTitle: '爆款筛选规则',
+  hotBody: '满足以下任一条件，且不与冷门冲突：\n'
+    + '1. 近7日热度曲线上升：后3日均值 ≥ 前4日均值 × 1.1\n'
+    + '2. 近7日热度环比 ≥ 30%，且当前热度不低于本店款式中位数',
+  coldTitle: '冷门筛选规则',
+  coldBody: '满足以下任一条件，且不与爆款冲突：\n'
+    + '1. 近7日零试戴\n'
+    + '2. 热度下降：后3日均值 ≤ 前4日均值 × 0.9\n'
+    + '3. 本店款式数 ≥ 3 时，热度排名处于后 20%',
 }
 
 function daysSince(ts, nowMs) {
@@ -170,6 +198,32 @@ function buildLast7DayEnds(nowMs) {
   return ends
 }
 
+/** T-1 截止：昨日 23:59:59.999 */
+function getDashboardAsOfMs(nowMs) {
+  const d = new Date(nowMs || Date.now())
+  d.setDate(d.getDate() - 1)
+  d.setHours(23, 59, 59, 999)
+  return d.getTime()
+}
+
+/** 以 asOfMs 所在日为末日，向前 7 个自然日（不含今天） */
+function buildLast7DayEndsAsOf(asOfMs) {
+  const ends = []
+  for (let i = 6; i >= 0; i -= 1) {
+    const d = new Date(asOfMs)
+    d.setDate(d.getDate() - i)
+    ends.push(endOfDayMs(d.getTime()))
+  }
+  return ends
+}
+
+function formatSnapshotDate(asOfMs) {
+  const d = new Date(asOfMs)
+  return d.getFullYear() + '-'
+    + String(d.getMonth() + 1).padStart(2, '0') + '-'
+    + String(d.getDate()).padStart(2, '0')
+}
+
 function buildDailySeries(store, styleId, createdAtMs, dayEnds) {
   const uv = []
   const tryon = []
@@ -244,6 +298,23 @@ function aggregateTagHeat(styles, field) {
     .sort((a, b) => b.heatSum - a.heatSum)
 }
 
+function aggregateTagStats(styles, field) {
+  const map = {}
+  styles.forEach((s) => {
+    const tag = (s[field] && String(s[field]).trim()) || '未分类'
+    if (!map[tag]) map[tag] = { styleCount: 0, heatSum: 0 }
+    map[tag].styleCount += 1
+    map[tag].heatSum += (s.heatNow || 0)
+  })
+  return Object.keys(map)
+    .map((tag) => ({
+      tag,
+      styleCount: map[tag].styleCount,
+      heatSum: map[tag].heatSum,
+    }))
+    .sort((a, b) => b.styleCount - a.styleCount || b.heatSum - a.heatSum)
+}
+
 function computeHeatScoresFromData(styles, events, tryLogs, favDocs, nowMs) {
   const xhsHotIds = new Set()
   const createdAtMap = {}
@@ -299,8 +370,13 @@ module.exports = {
   aggregateWindow,
   computeHeatAsOf,
   buildLast7DayEnds,
+  getDashboardAsOfMs,
+  buildLast7DayEndsAsOf,
+  formatSnapshotDate,
   buildDailySeries,
   classifyTrends,
   aggregateTagHeat,
+  aggregateTagStats,
   computeHeatScoresFromData,
+  TREND_RULES,
 }

@@ -1,32 +1,60 @@
 <view class="bc np-container">
   <view class="np-title">店铺信息</view>
+  <view class="bc__hint">修改后将同步至 C 端商详「联系商家」展示</view>
 
-  <view class="bc__field">
-    <view class="bc__label">门店名称</view>
-    <input class="bc__input" placeholder="例：星辰美甲·国贸店" value="{{cfg.name}}" data-field="name" bindinput="onInput"/>
-  </view>
+  <view class="bc__loading" wx:if="{{loading}}">加载中…</view>
 
-  <view class="bc__field">
-    <view class="bc__label">联系电话</view>
-    <input class="bc__input" type="number" placeholder="11 位手机号" value="{{cfg.phone}}" data-field="phone" bindinput="onInput"/>
-  </view>
+  <block wx:if="{{!loading}}">
+    <view class="bc__cooldown" wx:if="{{cooldownHint}}">{{cooldownHint}}</view>
 
-  <view class="bc__field">
-    <view class="bc__label">营业时间</view>
-    <input class="bc__input" placeholder="例：10:00-22:00" value="{{cfg.businessHours}}" data-field="businessHours" bindinput="onInput"/>
-  </view>
-
-  <view class="bc__field">
-    <view class="bc__label">企微二维码</view>
-    <view class="bc__qr" bindtap="onUploadQr">
-      <image src="{{cfg.wecomQrUrl}}" mode="aspectFill" wx:if="{{cfg.wecomQrUrl}}" class="bc__qr-img"/>
-      <view class="bc__qr-empty" wx:else>📷 点击上传二维码</view>
+    <view class="bc__field">
+      <view class="bc__label">门店名称</view>
+      <input
+        class="bc__input {{canEdit ? '' : 'bc__input--off'}}"
+        placeholder="例：星辰美甲·国贸店"
+        value="{{cfg.name}}"
+        data-field="name"
+        bindinput="onInput"
+        disabled="{{!canEdit}}"
+      />
     </view>
-  </view>
 
-  <view class="bc__bottom">
-    <button class="np-btn np-btn--block" bindtap="onSave" loading="{{saving}}">保存配置</button>
-  </view>
+    <view class="bc__field">
+      <view class="bc__label">联系电话</view>
+      <input
+        class="bc__input {{canEdit ? '' : 'bc__input--off'}}"
+        type="number"
+        placeholder="11 位手机号"
+        value="{{cfg.phone}}"
+        data-field="phone"
+        bindinput="onInput"
+        disabled="{{!canEdit}}"
+      />
+    </view>
 
-  <privacy-popup />
+    <view class="bc__field">
+      <view class="bc__label">营业时间</view>
+      <input
+        class="bc__input {{canEdit ? '' : 'bc__input--off'}}"
+        placeholder="例：10:00-22:00"
+        value="{{cfg.businessHours}}"
+        data-field="businessHours"
+        bindinput="onInput"
+        disabled="{{!canEdit}}"
+      />
+    </view>
+
+    <view class="bc__readonly" wx:if="{{cfg.province || cfg.city}}">
+      所在城市：{{cfg.province}} {{cfg.city}}（资质认证时填写，本页不可修改）
+    </view>
+
+    <view class="bc__bottom">
+      <button
+        class="np-btn np-btn--block {{canEdit ? '' : 'np-btn--disabled'}}"
+        bindtap="onSave"
+        loading="{{saving}}"
+        disabled="{{saving || !canEdit}}"
+      >保存配置</button>
+    </view>
+  </block>
 </view>

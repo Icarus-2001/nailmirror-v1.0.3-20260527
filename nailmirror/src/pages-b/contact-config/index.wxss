@@ -1,7 +1,32 @@
+.bc__hint {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--np-text-weak);
+  line-height: 1.5;
+}
+.bc__loading {
+  text-align: center;
+  padding: 60rpx 0;
+  color: var(--np-text-weak);
+  font-size: 26rpx;
+}
+.bc__cooldown {
+  margin: 20rpx 0;
+  padding: 16rpx 20rpx;
+  background: #fff8e6;
+  border-radius: 12rpx;
+  color: #92400e;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
 .bc__field { margin: 24rpx 0; }
 .bc__label { font-size: 26rpx; color: var(--np-text-weak); margin-bottom: 12rpx; }
 .bc__input { background: var(--np-card); padding: 22rpx 24rpx; border-radius: 12rpx; font-size: 28rpx; }
-.bc__qr { width: 280rpx; height: 280rpx; background: var(--np-card); border-radius: 16rpx; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.bc__qr-img { width: 280rpx; height: 280rpx; }
-.bc__qr-empty { color: var(--np-text-weak); font-size: 26rpx; }
+.bc__input--off { color: var(--np-text-weak); }
+.bc__readonly {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--np-text-weak);
+  line-height: 1.5;
+}
 .bc__bottom { padding: 30rpx 0 40rpx; }

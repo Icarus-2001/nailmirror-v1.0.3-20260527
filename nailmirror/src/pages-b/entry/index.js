@@ -1,4 +1,5 @@
 const { userStore } = require('../../stores/user.store');
+const { getExitMerchantNavAction } = require('../../utils/merchant-exit');
 const merchantAuthService = require('../../services/merchant-auth.service');
 const merchantStyleService = require('../../services/merchant-style.service');
 const cloudUtil = require('../../utils/cloud');
@@ -202,7 +203,13 @@ Page({
 
   onSwitchToC() {
     userStore.setRole('c');
-    wx.navigateBack();
+    const action = getExitMerchantNavAction(getCurrentPages().length);
+    if (action === 'navigateBack') {
+      wx.navigateBack();
+    } else {
+      wx.switchTab({ url: '/pages/me/index' });
+    }
+    wx.showToast({ title: '已退出商家模式', icon: 'none' });
   },
 
   onGoDashboard() { wx.navigateTo({ url: '/pages-b/dashboard/index' }); },

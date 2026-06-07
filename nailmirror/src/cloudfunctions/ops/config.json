@@ -12,6 +12,11 @@
       "name": "refreshSiteHotRank",
       "type": "timer",
       "config": "0 0 10 * * * *"
+    },
+    {
+      "name": "refreshMerchantDashboardSnapshots",
+      "type": "timer",
+      "config": "0 0 10 * * * *"
     }
   ]
 }
