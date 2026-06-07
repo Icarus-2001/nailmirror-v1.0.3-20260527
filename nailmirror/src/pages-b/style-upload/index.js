@@ -36,7 +36,7 @@ Page({
 
   onShow() {
     userStore.init();
-    const cached = merchantStyleService.getCachedMerchantStyles();
+    const cached = merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid);
     this.setData({
       role: userStore.role || 'c',
       cachedCount: cached.length
@@ -119,7 +119,7 @@ Page({
         files,
         successCount,
         failedCount,
-        cachedCount: merchantStyleService.getCachedMerchantStyles().length
+        cachedCount: merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid).length
       });
       wx.showToast({ title: successCount ? '款式已入库' : '上传未成功', icon: successCount ? 'success' : 'none' });
     } catch (e) {

@@ -12,6 +12,15 @@ function getCachedMerchantStyles() {
   return Array.isArray(cached) ? cached.filter((s) => s && s.id).map(remapCachedStyle) : [];
 }
 
+/** B 端统计用：仅返回指定商家 openid 名下的本地缓存款式 */
+function getCachedMerchantStylesForMerchant(merchantId) {
+  const owner = String(merchantId || '').trim();
+  if (!owner) return [];
+  return getCachedMerchantStyles().filter(
+    (style) => style && String(style.merchantId || '').trim() === owner
+  );
+}
+
 function uniqueList(items) {
   const seen = {};
   return (items || []).filter((item) => {
@@ -208,6 +217,7 @@ async function ensureMerchantStyles(force) {
 
 module.exports = {
   getCachedMerchantStyles,
+  getCachedMerchantStylesForMerchant,
   mergeCachedMerchantStyles,
   mapCloudStyleToClientStyle,
   uploadMerchantStyles,
