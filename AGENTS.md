@@ -44,7 +44,7 @@ gh pr create ...                             # 或关闭旧 PR、开新 PR
 - CHANGELOG 冲突决议：**保留 `main` 已有各版本段**，仅在**最顶部**追加本版 `## x.y.z`。
 - `app.js` / `package.json`：取**本 PR 目标版本号**。
 - **避免 `git push --force`**：优先推新分支；仅当必须覆盖自己刚 rebase 过的同名分支时，才用 `git push --force-with-lease`，且须确认无他人基于该分支开发。
-- **当前版本规划（2026-06-07）**：**1.2.14** = 已合 main（#38）；**1.2.15** = 已合 main（#39）；**1.2.16** = 已合 main（#41）；**1.2.17** = 全网热款款式库 `note_id` 去重（`scope=library`）。**下一版**须从最新 `main` 切 `feature/release-1.2.x`，走上方 SOP。
+- **当前版本规划（2026-06-07）**：**1.2.17** = 已合 main（全网热款 `note_id` 去重）；**1.2.18** = PR 商家看板重构（`getMerchantDashboard`）。**下一版**须从最新 `main` 切分支，走上方 SOP。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
 - **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合 main（1.2.14）**；② 商家【注销资质】— **已合 main（1.2.15）**；③【款式库管理】三 Tab — **已合 main（1.2.16）**。

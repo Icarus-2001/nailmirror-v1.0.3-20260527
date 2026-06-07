@@ -1,0 +1,9 @@
+.lc {
+  width: 100%;
+  position: relative;
+}
+.lc__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

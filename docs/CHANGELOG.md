@@ -1,5 +1,50 @@
 # 变更记录
 
+## 1.2.18 · 2026-06-07 · B 端商家看板重构
+
+**小程序版本：`1.2.18`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家看板改为仅统计本店已上线款式：整体洞察折线图、爆款/冷门趋势、标签聚合柱状图；复用站内综合热度公式。**
+
+### 商家看板（B 端）
+
+- **删除**原平台热词/本城热款展示，**重写** [`pages-b/dashboard`](nailmirror/src/pages-b/dashboard/index.js)。
+- **整体洞察**：近 7 日折线图，指标可切换（商详 UV / 试戴完成 / 收藏 / 综合热度 / 试戴转化率）；默认热度 Top3 款式，最多勾选 3 款对比。
+- **趋势洞察**：爆款趋势与冷门预警互斥分区；展示热度与环比。
+- **标签聚合**：颜色 / 风格 / 图案三 Tab 柱状图（按标签热度总和排序）。
+- **`dataHealth`**：近 7 日行为数据计数与空数据提示。
+
+### 云端 ops
+
+- **`getMerchantDashboard`**：仅 `merchant-upload` + `is_active=true` + 当前商家 openid。
+- **`utils/styleHeat.js`**：抽取站内热度算法；`getStyleHeatScores` 复用同一公式。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/getMerchantDashboard.js`、`utils/styleHeat.js`、`handlers/getStyleHeatScores.js`、`index.js`
+- `pages-b/dashboard/*`、`services/merchant-dashboard.service.js`
+- `components/{line-chart,bar-chart}/*`
+- `tests/cloudfunctions/{getMerchantDashboard,styleHeat}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含 `getMerchantDashboard`、`styleHeat`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`；云端测试 `{ "action": "getMerchantDashboard" }`（商家登录上下文）。
+3. 若无近 7 日 UV/试戴/收藏，看板会提示空态；可用真实商详浏览与试戴产生数据。
+4. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.18`**。
+
+### 验证
+
+- 商家 A 看板仅含 A 的已上线款，不含平台款/他商家/已下架款。
+- 折线图 7 日横轴、指标切换、第 4 款勾选被拦截。
+- 爆款/冷门互斥；标签聚合三 Tab 正确。
+- `npm test -- --testPathPattern="getMerchantDashboard|styleHeat"` 通过。
+
+---
+
 ## 1.2.17 · 2026-06-07 · 全网热款款式库 note_id 去重
 
 **小程序版本：`1.2.17`**（`app.globalData.version`）

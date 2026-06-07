@@ -1,0 +1,3 @@
+<view class="lc" style="height: {{height}}rpx;">
+  <canvas type="2d" id="lcCanvas" class="lc__canvas"></canvas>
+</view>
