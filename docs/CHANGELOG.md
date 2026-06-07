@@ -1,5 +1,63 @@
 # 变更记录
 
+## 1.2.19 · 2026-06-07 · 商家看板数据链路修复与趋势区优化
+
+**小程序版本：`1.2.19`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**修复 Mock/快照不同步导致看板全 0；爆款/冷门分页展示与筛选规则说明；T-1 快照定时刷新与演示数据一键注入。**
+
+### 看板数据链路（核心修复）
+
+- **根因**：快照 `hasRecentData=true` 但 7 日计数为 0 时仍直接返回；mock 写入后未刷新快照；云库时间字段解析失败；openid 与 `merchant_id` 不一致。
+- **`getMerchantDashboard`**：仅当 `hasRecentData` 且 `events7d + tryOn7d > 0` 才读快照，否则 live 重算并回写；快照 docId 统一 `normalizeMerchantOpenid`。
+- **`styleHeat.toMs`**：支持毫秒数、`$date`、`getTime()` 对象、ISO 字符串，避免 7 日窗口计数为 0。
+- **`mockMerchantDashboardData`**（新）：按手机号查 `merchants.openid`；时间戳写毫秒数；注入后自动写 `merchant_dashboard_snapshots`。
+- **`refreshMerchantDashboardSnapshots`**（新）：每日 10:00 定时刷新各商家 T-1 快照；`merchantId` 统一 normalize。
+
+### 商家看板 UI
+
+- **删除**折线图下方「近7日暂无行为数据…」黄字提示。
+- **趋势洞察**：爆款/冷门每页 **3** 条，支持上一页/下一页；标题下「筛选规则」可点击查看（对齐 `classifyTrends`）。
+- **折线图**：Y 轴刻度、`metricKey` 联动；Canvas 绑定 `.in(this)` 与重绘重试。
+- **柱状图**：展示各标签下**款式数量**（`styleCount`），非热度总和误读。
+
+### 登录隐私（附带修复）
+
+- 登录页 `onReady` 改为 `checkPrivacyNeeded` 探测，不在页面加载时阻塞 `requirePrivacyAuthorize`；用户点击登录/选头像时再 `ensurePrivacyAuthorized`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{getMerchantDashboard,mockMerchantDashboardData,refreshMerchantDashboardSnapshots}.js`
+- `cloudfunctions/ops/utils/styleHeat.js`、`ops/config.json`、`ops/index.js`
+- `pages-b/dashboard/*`、`config/dashboard-trend-rules.js`
+- `components/{line-chart,bar-chart}/*`
+- `pages/login/index.js`、`utils/privacy.js`
+- `scripts/mock-merchant-dashboard.js`
+- `tests/cloudfunctions/{getMerchantDashboard,mockMerchantDashboardData,refreshMerchantDashboardSnapshots,styleHeat}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含新 action 与 10:00 定时器）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. **演示数据**（可选）：云端测试
+   ```json
+   { "action": "mockMerchantDashboardData", "phone": "17312270775", "clearFirst": true }
+   ```
+   预期返回 `snapshot.ok: true` 且 `dataHealth.events7d > 0`；再测 `getMerchantDashboard` 应有非 0 折线与 2 爆款 + 花漾冷门。
+4. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.19`**。
+
+### 验证
+
+- Mock 后看板 `events7d > 0`，折线图有上升曲线；无黄字空数据提示。
+- 爆款/冷门每页 3 条可翻页；筛选规则弹窗文案正确。
+- 登录页可正常进入（隐私在用户点击时授权）。
+- `npm test -- --testPathPattern="getMerchantDashboard|mockMerchantDashboardData|refreshMerchantDashboardSnapshots|styleHeat"` 通过。
+
+---
+
 ## 1.2.18 · 2026-06-07 · B 端商家看板重构
 
 **小程序版本：`1.2.18`**（`app.globalData.version`）

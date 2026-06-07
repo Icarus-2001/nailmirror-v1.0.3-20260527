@@ -23,20 +23,28 @@
           bindtap="onMetricTap"
         >{{item.label}}</view>
       </view>
-      <line-chart dates="{{dates}}" lines="{{chartLines}}" height="360"></line-chart>
+      <line-chart id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
       <view class="bd__picker-title">款式对比（最多3个）</view>
-      <view class="bd__style-picks">
-        <view
-          class="bd__pick {{item.checked ? 'bd__pick--on' : ''}}"
-          wx:for="{{styleOptions}}"
-          wx:key="id"
-          data-id="{{item.id}}"
-          bindtap="onToggleStyle"
-        >
-          <text class="bd__pick-check">{{item.checked ? '✓' : ''}}</text>
-          <text class="bd__pick-name">{{item.title}}</text>
-          <text class="bd__pick-heat">{{item.heatNow}}</text>
-        </view>
+      <view class="bd__picker-hint">右侧为综合热度分，非款式数量</view>
+      <view class="bd__picker-trigger" bindtap="onToggleStylePicker">
+        <text class="bd__picker-summary">{{selectedSummary}}</text>
+        <text class="bd__picker-arrow">{{stylePickerOpen ? '▲' : '▼'}}</text>
+      </view>
+      <view class="bd__picker-panel" wx:if="{{stylePickerOpen}}">
+        <scroll-view scroll-y class="bd__picker-scroll">
+          <view
+            class="bd__pick {{item.checked ? 'bd__pick--on' : ''}}"
+            wx:for="{{styleOptions}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onToggleStyle"
+          >
+            <text class="bd__pick-check">{{item.checked ? '✓' : ''}}</text>
+            <text class="bd__pick-name">{{item.title}}</text>
+            <text class="bd__pick-heat">热度 {{item.heatNow}}</text>
+          </view>
+        </scroll-view>
+        <view class="bd__picker-done" bindtap="onCloseStylePicker">完成</view>
       </view>
       <empty-state wx:if="{{!styleOptions.length}}" text="暂无已上线款式" hint="请先在款式库管理中上传并上架"></empty-state>
     </view>
@@ -46,6 +54,7 @@
       <view class="bd__trend-grid">
         <view class="bd__trend-col">
           <view class="bd__trend-head bd__trend-head--hot">爆款趋势</view>
+          <view class="bd__rule-link" bindtap="onShowHotRules">筛选规则</view>
           <view class="bd__trend-card" wx:for="{{trendsHot}}" wx:key="styleId">
             <image class="bd__cover" src="{{item.coverUrl}}" mode="aspectFill"></image>
             <view class="bd__trend-meta">
@@ -54,9 +63,15 @@
             </view>
           </view>
           <view class="bd__trend-empty" wx:if="{{!trendsHot.length}}">暂无爆款款式</view>
+          <view class="bd__pager" wx:if="{{hotPageText}}">
+            <view class="bd__pager-btn {{hotCanPrev ? '' : 'bd__pager-btn--off'}}" bindtap="onHotPrev">上一页</view>
+            <text class="bd__pager-text">{{hotPageText}}</text>
+            <view class="bd__pager-btn {{hotCanNext ? '' : 'bd__pager-btn--off'}}" bindtap="onHotNext">下一页</view>
+          </view>
         </view>
         <view class="bd__trend-col">
           <view class="bd__trend-head bd__trend-head--cold">冷门预警</view>
+          <view class="bd__rule-link" bindtap="onShowColdRules">筛选规则</view>
           <view class="bd__trend-card" wx:for="{{trendsCold}}" wx:key="styleId">
             <image class="bd__cover" src="{{item.coverUrl}}" mode="aspectFill"></image>
             <view class="bd__trend-meta">
@@ -68,12 +83,18 @@
             </view>
           </view>
           <view class="bd__trend-empty" wx:if="{{!trendsCold.length}}">暂无冷门款式</view>
+          <view class="bd__pager" wx:if="{{coldPageText}}">
+            <view class="bd__pager-btn {{coldCanPrev ? '' : 'bd__pager-btn--off'}}" bindtap="onColdPrev">上一页</view>
+            <text class="bd__pager-text">{{coldPageText}}</text>
+            <view class="bd__pager-btn {{coldCanNext ? '' : 'bd__pager-btn--off'}}" bindtap="onColdNext">下一页</view>
+          </view>
         </view>
       </view>
     </view>
 
     <view class="bd__section">
       <view class="bd__section-title">标签聚合分析</view>
+      <view class="bd__picker-hint">柱图数字为各标签下的款式数量</view>
       <view class="bd__tabs">
         <view
           class="bd__tab {{activeTagTab === item.key ? 'bd__tab--on' : ''}}"
@@ -83,7 +104,9 @@
           bindtap="onTagTabTap"
         >{{item.label}}</view>
       </view>
-      <bar-chart items="{{tagItems}}"></bar-chart>
+      <bar-chart wx:if="{{activeTagTab === 'color'}}" items="{{tagItemsColor}}"></bar-chart>
+      <bar-chart wx:if="{{activeTagTab === 'style'}}" items="{{tagItemsStyle}}"></bar-chart>
+      <bar-chart wx:if="{{activeTagTab === 'design'}}" items="{{tagItemsDesign}}"></bar-chart>
     </view>
   </block>
 </view>

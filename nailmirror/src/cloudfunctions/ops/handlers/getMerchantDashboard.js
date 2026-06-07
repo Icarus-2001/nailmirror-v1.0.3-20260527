@@ -1,26 +1,44 @@
 /**
- * getMerchantDashboard — B 端商家看板（仅当前商家已上线款式）
+ * getMerchantDashboard — B 端商家看板（仅当前商家已上线款式，T-1 数据）
  */
+const cloud = require('wx-server-sdk');
 const { getAll } = require('../utils/db');
 const { listMerchantOwnStyles } = require('./listMerchantOwnStyles');
+const { refreshImageUrls } = require('../utils/imageRefresh');
+const { normalizeMerchantOpenid } = require('../utils/merchant');
 const {
   toMs,
-  MS_PER_DAY,
   formatMMDD,
   buildBehaviorStore,
-  aggregateWindow,
   computeHeatAsOf,
-  buildLast7DayEnds,
+  buildLast7DayEndsAsOf,
   buildDailySeries,
   classifyTrends,
-  aggregateTagHeat,
+  aggregateTagStats,
   wowPercent,
+  getDashboardAsOfMs,
+  formatSnapshotDate,
+  startOfDayMs,
 } = require('../utils/styleHeat');
 
-function emptyDashboard(message) {
+const SNAPSHOT_COLLECTION = 'merchant_dashboard_snapshots';
+
+function snapshotDocId(openid) {
+  return `${normalizeMerchantOpenid(openid)}_latest`;
+}
+
+function snapPayloadLooksValid(snapPayload) {
+  if (!snapPayload || !snapPayload.dataHealth) return false;
+  const dh = snapPayload.dataHealth;
+  if (!dh.hasRecentData) return false;
+  return (Number(dh.events7d) || 0) + (Number(dh.tryOn7d) || 0) > 0;
+}
+
+function emptyDashboard(message, snapshotDate) {
   return {
     ok: true,
     updatedAt: new Date().toISOString(),
+    snapshotDate: snapshotDate || '',
     dataHealth: {
       merchantStyleCount: 0,
       events7d: 0,
@@ -41,40 +59,32 @@ function emptyDashboard(message) {
   };
 }
 
-async function getMerchantDashboard({ openid }) {
-  if (!openid) return { ok: false, error: '请先登录' };
-
-  const ownRes = await listMerchantOwnStyles({ openid });
-  if (!ownRes || !ownRes.ok) {
-    return { ok: false, error: (ownRes && ownRes.error) || '加载款式失败' };
-  }
-
-  const activeStyles = (ownRes.styles || []).filter((s) => s.is_active !== false);
-  if (!activeStyles.length) {
-    return emptyDashboard('暂无已上线款式，请先上传并上架款式');
-  }
-
+function buildMerchantDashboardPayload({
+  activeStyles,
+  events,
+  tryLogs,
+  favDocs,
+  asOfMs,
+  snapshotDate,
+}) {
   const styleIdSet = new Set(activeStyles.map((s) => String(s._id)));
-  const nowMs = Date.now();
-  const sevenDaysAgo = nowMs - 7 * MS_PER_DAY;
-  const fourteenDaysAgo = nowMs - 14 * MS_PER_DAY;
-
-  const [events, tryLogs, favDocs] = await Promise.all([
-    getAll('user_events', {}),
-    getAll('try_on_logs', {}),
-    getAll('user_favorites', {}),
-  ]);
-
   const store = buildBehaviorStore(events, tryLogs, favDocs, styleIdSet);
-  const dayEnds = buildLast7DayEnds(nowMs);
+  const dayEnds = buildLast7DayEndsAsOf(asOfMs);
   const dates = dayEnds.map((end) => formatMMDD(end));
+  const weekStart = startOfDayMs(dayEnds[0]);
 
   let events7d = 0;
   let tryOn7d = 0;
   let favorites7d = 0;
-  store.events.forEach((e) => { if (e.ts >= sevenDaysAgo) events7d += 1; });
-  store.tryLogs.forEach((t) => { if (t.ts >= sevenDaysAgo) tryOn7d += 1; });
-  store.favDocs.forEach((f) => { if (f.ts >= sevenDaysAgo) favorites7d += 1; });
+  store.events.forEach((e) => {
+    if (e.ts >= weekStart && e.ts <= asOfMs) events7d += 1;
+  });
+  store.tryLogs.forEach((t) => {
+    if (t.ts >= weekStart && t.ts <= asOfMs) tryOn7d += 1;
+  });
+  store.favDocs.forEach((f) => {
+    if (f.ts >= weekStart && f.ts <= asOfMs) favorites7d += 1;
+  });
 
   const seriesByStyle = {};
   const styleMetrics = [];
@@ -85,12 +95,12 @@ async function getMerchantDashboard({ openid }) {
     const daily = buildDailySeries(store, id, createdAtMs, dayEnds);
     seriesByStyle[id] = daily;
 
-    const heatNow = computeHeatAsOf(store, id, createdAtMs, nowMs);
+    const heatNow = computeHeatAsOf(store, id, createdAtMs, asOfMs);
     const heatRecent7 = daily.heat.reduce((a, b) => a + b, 0);
 
     const prev7Ends = [];
     for (let i = 13; i >= 7; i -= 1) {
-      const d = new Date(nowMs);
+      const d = new Date(asOfMs);
       d.setDate(d.getDate() - i);
       const end = new Date(d);
       end.setHours(23, 59, 59, 999);
@@ -148,6 +158,7 @@ async function getMerchantDashboard({ openid }) {
   return {
     ok: true,
     updatedAt: new Date().toISOString(),
+    snapshotDate,
     dataHealth: {
       merchantStyleCount: activeStyles.length,
       events7d,
@@ -170,11 +181,156 @@ async function getMerchantDashboard({ openid }) {
       cold: cold.map(mapTrendItem),
     },
     tagAnalysis: {
-      color: aggregateTagHeat(styleMetrics, 'color'),
-      style: aggregateTagHeat(styleMetrics, 'style'),
-      design: aggregateTagHeat(styleMetrics, 'design'),
+      color: aggregateTagStats(styleMetrics, 'color'),
+      style: aggregateTagStats(styleMetrics, 'style'),
+      design: aggregateTagStats(styleMetrics, 'design'),
     },
   };
 }
 
-module.exports = { getMerchantDashboard, emptyDashboard };
+function enrichPayloadWithStyles(payload, activeStyles) {
+  if (!payload || !activeStyles || !activeStyles.length) return payload;
+  const coverById = {};
+  activeStyles.forEach((row) => {
+    const id = String(row._id);
+    coverById[id] = row.image_url || '';
+    if (!coverById[id] && row.image_file_id && String(row.image_file_id).indexOf('http') === 0) {
+      coverById[id] = row.image_file_id;
+    }
+  });
+
+  const patchCover = (item, idKey) => {
+    const id = item && (item[idKey] || item.id);
+    const fresh = id && coverById[String(id)];
+    if (!fresh) return item;
+    return Object.assign({}, item, { coverUrl: fresh });
+  };
+
+  return Object.assign({}, payload, {
+    styles: (payload.styles || []).map((s) => patchCover(s, 'id')),
+    trends: {
+      hot: (payload.trends && payload.trends.hot || []).map((t) => patchCover(t, 'styleId')),
+      cold: (payload.trends && payload.trends.cold || []).map((t) => patchCover(t, 'styleId')),
+    },
+  });
+}
+
+async function computeMerchantDashboard(activeStyles) {
+  const nowMs = Date.now();
+  const asOfMs = getDashboardAsOfMs(nowMs);
+  const snapshotDate = formatSnapshotDate(asOfMs);
+
+  const [events, tryLogs, favDocs] = await Promise.all([
+    getAll('user_events', {}),
+    getAll('try_on_logs', {}),
+    getAll('user_favorites', {}),
+  ]);
+
+  return buildMerchantDashboardPayload({
+    activeStyles,
+    events,
+    tryLogs,
+    favDocs,
+    asOfMs,
+    snapshotDate,
+  });
+}
+
+async function writeMerchantDashboardSnapshot(merchantOpenid, activeStyles, events, tryLogs, favDocs) {
+  const db = cloud.database();
+  const normalizedId = normalizeMerchantOpenid(merchantOpenid);
+  const nowMs = Date.now();
+  const asOfMs = getDashboardAsOfMs(nowMs);
+  const snapshotDate = formatSnapshotDate(asOfMs);
+  const payload = buildMerchantDashboardPayload({
+    activeStyles,
+    events,
+    tryLogs,
+    favDocs,
+    asOfMs,
+    snapshotDate,
+  });
+
+  await db.collection(SNAPSHOT_COLLECTION).doc(snapshotDocId(normalizedId)).set({
+    data: {
+      merchant_id: normalizedId,
+      snapshot_date: snapshotDate,
+      updated_at: db.serverDate(),
+      payload,
+    },
+  });
+
+  return {
+    ok: true,
+    merchantOpenid: normalizedId,
+    snapshot_date: snapshotDate,
+    dataHealth: payload.dataHealth,
+  };
+}
+
+async function getMerchantDashboard({ openid }) {
+  if (!openid) return { ok: false, error: '请先登录' };
+
+  const normalizedOpenid = normalizeMerchantOpenid(openid);
+  const ownRes = await listMerchantOwnStyles({ openid: normalizedOpenid });
+  if (!ownRes || !ownRes.ok) {
+    return { ok: false, error: (ownRes && ownRes.error) || '加载款式失败' };
+  }
+
+  const rawStyles = (ownRes.styles || []).filter((s) => s.is_active !== false);
+  const activeStyles = await refreshImageUrls(cloud, rawStyles);
+  const expectedSnapshotDate = formatSnapshotDate(getDashboardAsOfMs(Date.now()));
+
+  if (!activeStyles.length) {
+    return emptyDashboard('暂无已上线款式，请先上传并上架款式', expectedSnapshotDate);
+  }
+
+  try {
+    const db = cloud.database();
+    const snapRes = await db.collection(SNAPSHOT_COLLECTION)
+      .doc(snapshotDocId(normalizedOpenid))
+      .get();
+    const snap = snapRes && snapRes.data;
+    const snapPayload = snap && snap.payload;
+    if (snap && snap.snapshot_date === expectedSnapshotDate && snapPayloadLooksValid(snapPayload)) {
+      return enrichPayloadWithStyles(Object.assign({}, snapPayload, {
+        fromSnapshot: true,
+        snapshotDate: snap.snapshot_date,
+      }), activeStyles);
+    }
+  } catch (err) {
+    // 无快照或读取失败，现场计算兜底
+  }
+
+  const payload = await computeMerchantDashboard(activeStyles);
+  const enriched = enrichPayloadWithStyles(Object.assign({}, payload, { fromSnapshot: false }), activeStyles);
+
+  if (snapPayloadLooksValid(enriched)) {
+    try {
+      const db = cloud.database();
+      await db.collection(SNAPSHOT_COLLECTION).doc(snapshotDocId(normalizedOpenid)).set({
+        data: {
+          merchant_id: normalizedOpenid,
+          snapshot_date: expectedSnapshotDate,
+          updated_at: db.serverDate(),
+          payload: enriched,
+        },
+      });
+    } catch (err) {
+      console.warn('[getMerchantDashboard] snapshot write failed:', err && err.message);
+    }
+  }
+
+  return enriched;
+}
+
+module.exports = {
+  getMerchantDashboard,
+  emptyDashboard,
+  buildMerchantDashboardPayload,
+  computeMerchantDashboard,
+  writeMerchantDashboardSnapshot,
+  snapPayloadLooksValid,
+  SNAPSHOT_COLLECTION,
+  snapshotDocId,
+};

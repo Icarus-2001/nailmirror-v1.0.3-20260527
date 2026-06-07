@@ -1,7 +1,7 @@
 const userService = require('../../services/user.service');
 const { userStore } = require('../../stores/user.store');
 const { BRAND_LOGO } = require('../../config/constants');
-const { ensurePrivacyAuthorized, isPrivacyDeclinedError } = require('../../utils/privacy');
+const { checkPrivacyNeeded, ensurePrivacyAuthorized, isPrivacyDeclinedError } = require('../../utils/privacy');
 
 Page({
   data: {
@@ -28,8 +28,8 @@ Page({
 
   async _preparePrivacy() {
     try {
-      await ensurePrivacyAuthorized();
-      this._privacyReady = true;
+      const needed = await checkPrivacyNeeded();
+      this._privacyReady = !needed;
     } catch (e) {
       this._privacyReady = false;
     }

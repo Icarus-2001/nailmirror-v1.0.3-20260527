@@ -1,5 +1,6 @@
 const { userStore } = require('../../stores/user.store');
 const merchantDashboardService = require('../../services/merchant-dashboard.service');
+const TREND_RULES = require('../../config/dashboard-trend-rules');
 
 const METRICS = [
   { key: 'uv', label: '商详UV' },
@@ -16,16 +17,11 @@ const TAG_TABS = [
   { key: 'design', label: '图案' },
 ];
 const MAX_SELECTED = 3;
+const TREND_PAGE_SIZE = 3;
 
-function formatUpdatedAt(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.getFullYear() + '-'
-    + String(d.getMonth() + 1).padStart(2, '0') + '-'
-    + String(d.getDate()).padStart(2, '0') + ' '
-    + String(d.getHours()).padStart(2, '0') + ':'
-    + String(d.getMinutes()).padStart(2, '0');
+function formatSnapshotText(snapshotDate) {
+  if (!snapshotDate) return '';
+  return snapshotDate + ' 24:00 · 每日 10:00 更新';
 }
 
 function formatWow(val) {
@@ -33,6 +29,37 @@ function formatWow(val) {
   if (!Number.isFinite(n)) return '0%';
   if (n > 0) return '+' + n + '%';
   return n + '%';
+}
+
+function buildSelectedSummary(styleOptions, selectedIds) {
+  const names = (selectedIds || []).map((id) => {
+    const hit = (styleOptions || []).find((s) => s.id === id);
+    return hit ? hit.title : '';
+  }).filter(Boolean);
+  const n = (selectedIds || []).length;
+  if (!names.length) return '请选择对比款式（0/' + MAX_SELECTED + '）';
+  return '已选 ' + n + '/' + MAX_SELECTED + '：' + names.join('、');
+}
+
+function mapTrendItems(list) {
+  return (list || []).map((item) => Object.assign({}, item, {
+    wowText: formatWow(item.wowHeat),
+  }));
+}
+
+function paginateTrends(list, page) {
+  const total = (list || []).length;
+  const pageCount = Math.max(1, Math.ceil(total / TREND_PAGE_SIZE));
+  const safePage = Math.min(Math.max(page || 0, 0), pageCount - 1);
+  const start = safePage * TREND_PAGE_SIZE;
+  return {
+    items: (list || []).slice(start, start + TREND_PAGE_SIZE),
+    page: safePage,
+    pageCount,
+    canPrev: safePage > 0,
+    canNext: safePage < pageCount - 1,
+    total,
+  };
 }
 
 Page({
@@ -46,15 +73,31 @@ Page({
     chartLines: [],
     styleOptions: [],
     selectedIds: [],
+    selectedSummary: '',
+    stylePickerOpen: false,
     dataHealth: {},
     updatedAtText: '',
     trendsHot: [],
     trendsCold: [],
-    tagItems: [],
+    hotPage: 0,
+    coldPage: 0,
+    hotPageCount: 1,
+    coldPageCount: 1,
+    hotCanPrev: false,
+    hotCanNext: false,
+    coldCanPrev: false,
+    coldCanNext: false,
+    hotPageText: '',
+    coldPageText: '',
+    tagItemsColor: [],
+    tagItemsStyle: [],
+    tagItemsDesign: [],
     emptyHint: '',
   },
 
   _raw: null,
+  _trendsHotAll: [],
+  _trendsColdAll: [],
 
   onShow() {
     userStore.init();
@@ -72,39 +115,66 @@ Page({
       const res = await merchantDashboardService.fetchDashboard();
       this._raw = res;
       const selectedIds = (res.overview && res.overview.defaultSelectedIds) || [];
+      const styleOptions = (res.styles || []).map((s) => ({
+        id: s.id,
+        title: s.title,
+        heatNow: s.heatNow,
+        checked: selectedIds.indexOf(s.id) >= 0,
+      }));
+
+      this._trendsHotAll = mapTrendItems((res.trends && res.trends.hot) || []);
+      this._trendsColdAll = mapTrendItems((res.trends && res.trends.cold) || []);
+
       this.setData({
         loading: false,
         dates: (res.overview && res.overview.dates) || [],
-        styleOptions: (res.styles || []).map((s) => ({
-          id: s.id,
-          title: s.title,
-          heatNow: s.heatNow,
-          checked: selectedIds.indexOf(s.id) >= 0,
-        })),
+        styleOptions,
         selectedIds: selectedIds.slice(0, MAX_SELECTED),
+        selectedSummary: buildSelectedSummary(styleOptions, selectedIds),
+        stylePickerOpen: false,
         dataHealth: res.dataHealth || {},
-        updatedAtText: formatUpdatedAt(res.updatedAt),
-        trendsHot: ((res.trends && res.trends.hot) || []).map((item) => Object.assign({}, item, {
-          wowText: formatWow(item.wowHeat),
-        })),
-        trendsCold: ((res.trends && res.trends.cold) || []).map((item) => Object.assign({}, item, {
-          wowText: formatWow(item.wowHeat),
-        })),
+        updatedAtText: formatSnapshotText(res.snapshotDate),
+        hotPage: 0,
+        coldPage: 0,
         emptyHint: (res.dataHealth && res.dataHealth.message) || '',
-        tagItems: this._tagItems(res, 'color'),
+        tagItemsColor: this._tagItems(res, 'color'),
+        tagItemsStyle: this._tagItems(res, 'style'),
+        tagItemsDesign: this._tagItems(res, 'design'),
       });
+      this._applyTrendPages();
       this._refreshChart();
+      this._redrawChart();
     } catch (e) {
       this.setData({ loading: false });
       wx.showToast({ title: (e.message || '加载失败').slice(0, 20), icon: 'none' });
     }
   },
 
+  _applyTrendPages() {
+    const hot = paginateTrends(this._trendsHotAll, this.data.hotPage);
+    const cold = paginateTrends(this._trendsColdAll, this.data.coldPage);
+    this.setData({
+      trendsHot: hot.items,
+      trendsCold: cold.items,
+      hotPage: hot.page,
+      coldPage: cold.page,
+      hotPageCount: hot.pageCount,
+      coldPageCount: cold.pageCount,
+      hotCanPrev: hot.canPrev,
+      hotCanNext: hot.canNext,
+      coldCanPrev: cold.canPrev,
+      coldCanNext: cold.canNext,
+      hotPageText: hot.total ? ('第 ' + (hot.page + 1) + '/' + hot.pageCount + ' 页') : '',
+      coldPageText: cold.total ? ('第 ' + (cold.page + 1) + '/' + cold.pageCount + ' 页') : '',
+    });
+  },
+
   _tagItems(res, tab) {
     const analysis = (res && res.tagAnalysis) || {};
     return (analysis[tab] || []).map((item) => ({
       label: item.tag,
-      value: item.heatSum,
+      value: item.styleCount != null ? item.styleCount : 0,
+      sub: item.heatSum != null ? item.heatSum : 0,
     }));
   },
 
@@ -128,6 +198,14 @@ Page({
       };
     });
     this.setData({ chartLines: lines });
+    this._redrawChart();
+  },
+
+  _redrawChart() {
+    wx.nextTick(() => {
+      const chart = this.selectComponent('#bdLineChart');
+      if (chart && chart.redraw) chart.redraw();
+    });
   },
 
   onMetricTap(e) {
@@ -140,10 +218,15 @@ Page({
   onTagTabTap(e) {
     const key = e.currentTarget.dataset.key;
     if (!key || key === this.data.activeTagTab) return;
-    this.setData({
-      activeTagTab: key,
-      tagItems: this._tagItems(this._raw, key),
-    });
+    this.setData({ activeTagTab: key });
+  },
+
+  onToggleStylePicker() {
+    this.setData({ stylePickerOpen: !this.data.stylePickerOpen });
+  },
+
+  onCloseStylePicker() {
+    this.setData({ stylePickerOpen: false });
   },
 
   onToggleStyle(e) {
@@ -163,8 +246,54 @@ Page({
     const styleOptions = this.data.styleOptions.map((s) => Object.assign({}, s, {
       checked: selected.indexOf(s.id) >= 0,
     }));
-    this.setData({ selectedIds: selected, styleOptions });
+    this.setData({
+      selectedIds: selected,
+      styleOptions,
+      selectedSummary: buildSelectedSummary(styleOptions, selected),
+    });
     this._refreshChart();
+  },
+
+  onHotPrev() {
+    if (!this.data.hotCanPrev) return;
+    this.setData({ hotPage: this.data.hotPage - 1 });
+    this._applyTrendPages();
+  },
+
+  onHotNext() {
+    if (!this.data.hotCanNext) return;
+    this.setData({ hotPage: this.data.hotPage + 1 });
+    this._applyTrendPages();
+  },
+
+  onColdPrev() {
+    if (!this.data.coldCanPrev) return;
+    this.setData({ coldPage: this.data.coldPage - 1 });
+    this._applyTrendPages();
+  },
+
+  onColdNext() {
+    if (!this.data.coldCanNext) return;
+    this.setData({ coldPage: this.data.coldPage + 1 });
+    this._applyTrendPages();
+  },
+
+  onShowHotRules() {
+    wx.showModal({
+      title: TREND_RULES.hotTitle,
+      content: TREND_RULES.hotBody,
+      showCancel: false,
+      confirmText: '知道了',
+    });
+  },
+
+  onShowColdRules() {
+    wx.showModal({
+      title: TREND_RULES.coldTitle,
+      content: TREND_RULES.coldBody,
+      showCancel: false,
+      confirmText: '知道了',
+    });
   },
 
 });
