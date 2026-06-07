@@ -1,5 +1,41 @@
 # 变更记录
 
+## 1.2.17 · 2026-06-07 · 全网热款款式库 note_id 去重
+
+**小程序版本：`1.2.17`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**同一小红书帖子跨天重复导入时，款式库只保留一条；热款榜仍展示最新批次 TOP10。**
+
+### 款式库热款去重
+
+- **问题**：`importXhsHotTop10` 按 `scrape_date + rank` 生成 `_id`，同一 `note_id` 跨天进榜会在 `scope=library` 出现两张相似卡片（如「十字黑银 / 暗夜十字」）。
+- **`ops.listXhsHotStyles` `scope=library`**：按 `note_id` 合并，保留 `is_active` → 较新 `scrape_date` → 较高 `interaction_score` → 较小 `xhs_rank`；无 `note_id` 的旧记录不去重。
+- **`scope=rank`**：逻辑不变，仍为最新活跃批次 TOP10。
+
+### 涉及文件
+
+- `cloudfunctions/ops/utils/xhsHotDedup.js`
+- `cloudfunctions/ops/handlers/listXhsHotStyles.js`
+- `tests/cloudfunctions/{xhsHotDedup,importXhsHotTop10}.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（`listXhsHotStyles` library 去重）：微信开发者工具 → `ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.17`**。
+
+### 验证
+
+- 款式库筛「全网热款」：同一帖子跨天导入只显示 **1** 张卡片。
+- 热款榜仍为 **`{最新 scrape_date} 全网热款 TOP10`** 共 **10** 条。
+- 云端测试：`{ "action": "listXhsHotStyles", "scope": "library" }`，有跨天重复时 `count` 小于去重前。
+- `npm test -- --testPathPattern="xhsHotDedup|listXhsHotStyles"` 通过。
+
+---
+
 ## 1.2.16 · 2026-06-07 · 款式库管理三 Tab
 
 **小程序版本：`1.2.16`**（`app.globalData.version`）

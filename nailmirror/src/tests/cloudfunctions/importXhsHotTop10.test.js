@@ -150,13 +150,50 @@ describe('listXhsHotStyles cloud handler', () => {
   test('library scope returns all batches including inactive', async () => {
     const getAllFn = require('../../cloudfunctions/ops/utils/db').getAll;
     getAllFn.mockResolvedValueOnce([
-      { _id: 'old', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 1, is_active: false, image_file_id: '' },
-      { _id: 'new', source: 'xhs-hot', scrape_date: '2026-06-07', xhs_rank: 1, is_active: true, image_file_id: '' }
+      { _id: 'old', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 1, is_active: false, note_id: 'note-a', image_file_id: '' },
+      { _id: 'new', source: 'xhs-hot', scrape_date: '2026-06-07', xhs_rank: 1, is_active: true, note_id: 'note-b', image_file_id: '' }
     ]);
     const result = await listXhsHotStyles({ scope: 'library' });
     expect(result.ok).toBe(true);
     expect(result.scope).toBe('library');
     expect(result.styles.map((s) => s._id)).toEqual(['new', 'old']);
+  });
+
+  test('library scope dedupes same note_id across batches', async () => {
+    const getAllFn = require('../../cloudfunctions/ops/utils/db').getAll;
+    getAllFn.mockResolvedValueOnce([
+      { _id: 'xhs-hot-2026-06-06-01', source: 'xhs-hot', scrape_date: '2026-06-06', xhs_rank: 1, is_active: false, note_id: '69100476000000000302215e', interaction_score: 146885, image_file_id: '' },
+      { _id: 'xhs-hot-2026-06-07-02', source: 'xhs-hot', scrape_date: '2026-06-07', xhs_rank: 2, is_active: true, note_id: '69100476000000000302215e', interaction_score: 147158, image_file_id: '' },
+      { _id: 'xhs-hot-2026-06-07-01', source: 'xhs-hot', scrape_date: '2026-06-07', xhs_rank: 1, is_active: true, note_id: '6780f224000000000b022b04', interaction_score: 358728, image_file_id: '' }
+    ]);
+    const result = await listXhsHotStyles({ scope: 'library' });
+    expect(result.ok).toBe(true);
+    expect(result.scope).toBe('library');
+    expect(result.count).toBe(2);
+    expect(result.styles.map((s) => s._id)).toEqual([
+      'xhs-hot-2026-06-07-01',
+      'xhs-hot-2026-06-07-02'
+    ]);
+  });
+
+  test('rank scope still returns 10 without dedupe', async () => {
+    const getAllFn = require('../../cloudfunctions/ops/utils/db').getAll;
+    const batch = [];
+    for (let i = 1; i <= 10; i += 1) {
+      batch.push({
+        _id: 'xhs-hot-2026-06-07-' + String(i).padStart(2, '0'),
+        source: 'xhs-hot',
+        scrape_date: '2026-06-07',
+        xhs_rank: i,
+        is_active: true,
+        note_id: 'note-' + i,
+        image_file_id: ''
+      });
+    }
+    getAllFn.mockResolvedValueOnce(batch);
+    const result = await listXhsHotStyles({ scope: 'rank' });
+    expect(result.count).toBe(10);
+    expect(result.scope).toBe('rank');
   });
 });
 

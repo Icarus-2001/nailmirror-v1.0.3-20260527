@@ -3,13 +3,14 @@
  *
  * scope:
  *   rank（默认）— 仅 is_active 的最新一批 TOP10，供热款榜
- *   library     — 全部历史批次（含已下架），供款式库展示
+ *   library     — 全部历史批次（含已下架），按 note_id 去重后供款式库展示
  *
  * 返回：{ ok: true, scrapeDate?, scope, styles: [...] }
  */
 const cloud = require('wx-server-sdk')
 const { getAll } = require('../utils/db')
 const { refreshImageUrls } = require('../utils/imageRefresh')
+const { dedupeXhsHotLibraryByNoteId } = require('../utils/xhsHotDedup')
 
 function latestScrapeDate(styles) {
   return (styles || [])
@@ -31,7 +32,8 @@ async function listXhsHotStyles(event) {
   if (scope === 'library') {
     const rows = await getAll('styles', { source: 'xhs-hot' })
     const sorted = rows.slice().sort(sortByScrapeDateDescThenRank)
-    const refreshed = await refreshImageUrls(cloud, sorted)
+    const deduped = dedupeXhsHotLibraryByNoteId(sorted).sort(sortByScrapeDateDescThenRank)
+    const refreshed = await refreshImageUrls(cloud, deduped)
     return {
       ok: true,
       scope: 'library',
