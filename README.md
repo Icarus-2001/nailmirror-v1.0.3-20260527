@@ -89,11 +89,6 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 <img src="docs/assets/readme/gifs/style-library.gif" alt="款式库展示" width="280"/>
 </div>
 
-<div align="center">
-<img src="docs/assets/readme/style-sample-1.jpg" width="32%" alt="款式样例1"/>
-<img src="docs/assets/readme/style-sample-2.jpg" width="32%" alt="款式样例2"/>
-</div>
-
 ### 试戴流程
 
 从首页进入试戴：选甲型 → 选款式（支持相册上传参考图）→ 选手照 → AI 合成 → 预览与评分。
