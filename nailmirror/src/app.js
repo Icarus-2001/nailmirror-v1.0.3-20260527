@@ -8,6 +8,7 @@ const { userStore } = require('./stores/user.store');
 // 纳入主包依赖图，避免子页面/组件 require 报 module is not defined
 require('./config/tag-vocabulary');
 require('./config/hot-rank-rules');
+require('./utils/upload-validation');
 require('./utils/star-display');
 require('./services/xhs-hot.service');
 
