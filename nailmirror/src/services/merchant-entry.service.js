@@ -31,7 +31,7 @@ function navigateByRoute(route) {
   const map = {
     login: '/pages/login/index?from=merchant',
     verify: '/pages-b/merchant-verify/index',
-    phone: '/pages-b/merchant-phone-verify/index',
+    phone: '/pages-b/entry/index',
     entry: '/pages-b/entry/index',
   };
   const url = map[route] || map.entry;

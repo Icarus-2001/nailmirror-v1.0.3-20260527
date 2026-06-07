@@ -1,33 +1,52 @@
 <view class="be np-container">
-  <view class="be__head" wx:if="{{!checking && role === 'b'}}">
-    <view class="be__title">商家中心 · 已验证商家身份</view>
-    <view class="be__verified">身份已通过平台验证，可使用全部商家功能</view>
+  <view class="be__phone" wx:if="{{needPhoneVerify}}">
+    <view class="be__phone-card">
+      <view class="be__phone-title">验证商家手机号</view>
+      <view class="be__phone-desc">为保障商家账号安全，进入商家中心前需验证认证时绑定的手机号。</view>
+      <view class="be__phone-num" wx:if="{{phoneMasked}}">认证手机号：{{phoneMasked}}</view>
+      <view class="be__phone-hint">请使用上方号码对应的微信账号授权验证（微信手机号快捷验证）。开发者工具模拟器无法完成此步骤，请点右上角「预览」用手机扫码测试。</view>
+      <button
+        class="be__phone-btn np-btn"
+        open-type="getPhoneNumber"
+        bindgetphonenumber="onGetPhoneNumber"
+        loading="{{verifying}}"
+        disabled="{{verifying}}"
+      >微信手机号快捷验证</button>
+    </view>
+    <view class="be__phone-back" bindtap="onPhoneVerifyBack">返回</view>
   </view>
 
-  <view wx:if="{{!checking && role === 'b'}}" class="np-btn np-btn--ghost np-btn--block be__switch" bindtap="onSwitchToC">退出商家模式</view>
+  <block wx:if="{{!checking && !needPhoneVerify && role === 'b'}}">
+    <view class="be__head">
+      <view class="be__title">商家中心 · 已验证商家身份</view>
+      <view class="be__verified">身份已通过平台验证，可使用全部商家功能</view>
+    </view>
 
-  <view class="be__menu" wx:if="{{!checking && role === 'b'}}">
-    <view class="be__item" bindtap="onGoDashboard">
-      <text class="be__icon">📊</text>
-      <text class="be__label">商家看板</text>
-      <text class="be__arrow">›</text>
+    <view class="np-btn np-btn--ghost np-btn--block be__switch" bindtap="onSwitchToC">退出商家模式</view>
+
+    <view class="be__menu">
+      <view class="be__item" bindtap="onGoDashboard">
+        <text class="be__icon">📊</text>
+        <text class="be__label">商家看板</text>
+        <text class="be__arrow">›</text>
+      </view>
+      <view class="be__item" bindtap="onGoStyleUpload">
+        <text class="be__icon">⬆️</text>
+        <text class="be__label">上传款式</text>
+        <text class="be__arrow">›</text>
+      </view>
+      <view class="be__item" bindtap="onGoContact">
+        <text class="be__icon">📞</text>
+        <text class="be__label">店铺信息</text>
+        <text class="be__arrow">›</text>
+      </view>
+      <view class="be__item" bindtap="onGoMembership">
+        <text class="be__icon">👑</text>
+        <text class="be__label">付费方案</text>
+        <text class="be__arrow">›</text>
+      </view>
     </view>
-    <view class="be__item" bindtap="onGoStyleUpload">
-      <text class="be__icon">⬆️</text>
-      <text class="be__label">上传款式</text>
-      <text class="be__arrow">›</text>
-    </view>
-    <view class="be__item" bindtap="onGoContact">
-      <text class="be__icon">📞</text>
-      <text class="be__label">店铺信息</text>
-      <text class="be__arrow">›</text>
-    </view>
-    <view class="be__item" bindtap="onGoMembership">
-      <text class="be__icon">👑</text>
-      <text class="be__label">付费方案</text>
-      <text class="be__arrow">›</text>
-    </view>
-  </view>
+  </block>
 
   <privacy-popup />
 </view>

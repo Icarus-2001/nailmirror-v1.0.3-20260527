@@ -1,3 +1,35 @@
+.be__phone-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 8rpx 28rpx rgba(31, 31, 41, 0.06);
+}
+.be__phone-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+.be__phone-desc,
+.be__phone-hint {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--np-text-weak);
+}
+.be__phone-num {
+  margin: 28rpx 0 12rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.be__phone-btn {
+  margin-top: 36rpx;
+  width: 100%;
+}
+.be__phone-back {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--np-text-weak);
+}
 .be__head { text-align: center; padding: 40rpx 0; }
 .be__title { font-size: 36rpx; font-weight: 700; }
 .be__hint { color: var(--np-text-weak); font-size: 24rpx; margin-top: 10rpx; }

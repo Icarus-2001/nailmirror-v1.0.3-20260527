@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "商家身份核验",
-  "usingComponents": {
-    "privacy-popup": "/components/privacy-popup/index"
-  }
-}
