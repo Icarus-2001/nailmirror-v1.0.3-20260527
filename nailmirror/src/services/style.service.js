@@ -73,8 +73,10 @@ function matchFilters(item, filters) {
   const {
     styleTags, materialTags, shapeTags,
     color, design, styleLabel, shapeLabel,
-    colors, designs, styleLabels, shapeLabels
+    colors, designs, styleLabels, shapeLabels,
+    styleSources
   } = filters;
+  if (styleSources && styleSources.length && styleSources.indexOf(item.styleSource) < 0) return false;
   if (styleTags && styleTags.length && !styleTags.some((t) => (item.styleTags || []).indexOf(t) > -1)) return false;
   if (materialTags && materialTags.length && !materialTags.some((t) => (item.materialTags || []).indexOf(t) > -1)) return false;
   if (shapeTags && shapeTags.length && !shapeTags.some((t) => (item.shapeTags || []).indexOf(t) > -1)) return false;
@@ -89,8 +91,30 @@ function matchFilters(item, filters) {
   return true;
 }
 
+function createdAtMs(item) {
+  const t = Date.parse(item && item.createdAt);
+  return Number.isFinite(t) ? t : 0;
+}
+
+function sortStyles(items, sortBy, sortOrder) {
+  const by = sortBy || 'heat';
+  const order = sortOrder || 'desc';
+  const dir = order === 'asc' ? 1 : -1;
+  return items.slice().sort((a, b) => {
+    let cmp = 0;
+    if (by === 'createdAt') {
+      cmp = createdAtMs(a) - createdAtMs(b);
+      if (cmp === 0) cmp = String(a.id || '').localeCompare(String(b.id || ''));
+    } else {
+      cmp = Number(a.heat || 0) - Number(b.heat || 0);
+      if (cmp === 0) cmp = String(a.id || '').localeCompare(String(b.id || ''));
+    }
+    return cmp * dir;
+  });
+}
+
 async function list(filters) {
-  const { page = 1, pageSize = PAGE_SIZE } = filters || {};
+  const { page = 1, pageSize = PAGE_SIZE, sortBy, sortOrder } = filters || {};
   return mockDelay(async () => {
     const [scoresCache, , , heatResult] = await Promise.all([
       ratingService.ensureStyleScores(),
@@ -100,7 +124,7 @@ async function list(filters) {
     ]);
     const withHeat = _applyHeatScores(getAllStyles(), heatResult);
     const filtered = withHeat.filter((s) => matchFilters(s, filters));
-    const sorted = filtered.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0));
+    const sorted = sortStyles(filtered, sortBy, sortOrder);
     const start = (page - 1) * pageSize;
     return {
       items: ratingService.withRatings(sorted.slice(start, start + pageSize), scoresCache),
@@ -127,6 +151,7 @@ async function get(id) {
 
 async function search(opts) {
   const { keyword = '', filters } = opts || {};
+  const { sortBy, sortOrder } = filters || {};
   return mockDelay(async () => {
     const [scoresCache, , , heatResult] = await Promise.all([
       ratingService.ensureStyleScores(),
@@ -149,10 +174,10 @@ async function search(opts) {
       );
     }
     if (items.length === 0) {
-      const fallbackItems = withHeat.slice().sort((a, b) => (b.heat || 0) - (a.heat || 0)).slice(0, 10);
+      const fallbackItems = sortStyles(withHeat, sortBy, sortOrder).slice(0, 10);
       return { items: ratingService.withRatings(fallbackItems, scoresCache), fallback: true };
     }
-    return { items: ratingService.withRatings(items, scoresCache), fallback: false };
+    return { items: ratingService.withRatings(sortStyles(items, sortBy, sortOrder), scoresCache), fallback: false };
   }, 150, 250);
 }
 
@@ -172,4 +197,4 @@ function getCategories() {
   return { styles, colors, designs, shapes };
 }
 
-module.exports = { list, get, search, getCategories, getAllStyles, ensureStyleHeatScores };
+module.exports = { list, get, search, getCategories, getAllStyles, ensureStyleHeatScores, sortStyles, matchFilters };

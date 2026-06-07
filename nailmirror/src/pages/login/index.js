@@ -55,6 +55,7 @@ Page({
     userStore.init();
     if (!userStore.openid) return;
     if (this._from === 'me') return;
+    if (this._from === 'merchant') return;
     const app = getApp();
     if (app.globalData.skipLoginAutoRedirect) {
       app.globalData.skipLoginAutoRedirect = false;
@@ -75,6 +76,16 @@ Page({
   },
 
   _afterLoginSuccess() {
+    if (this._from === 'merchant') {
+      this._redirecting = true;
+      wx.redirectTo({
+        url: '/pages-b/entry/index',
+        fail: () => {
+          this._redirecting = false;
+        }
+      });
+      return;
+    }
     if (this._from === 'me' && getCurrentPages().length > 1) {
       wx.navigateBack();
       return;

@@ -12,6 +12,27 @@ function toOptions(list) {
   return list.map((label) => ({ id: label, label: label }));
 }
 
+const SOURCE_OPTIONS = [
+  { id: 'platform', label: '平台特供' },
+  { id: 'merchant-upload', label: '来自商家' },
+  { id: 'xhs-hot', label: '全网热款' }
+];
+
+const SORT_OPTIONS = [
+  { id: 'heat-desc', sortBy: 'heat', sortOrder: 'desc', label: '热度优先' },
+  { id: 'createdAt-desc', sortBy: 'createdAt', sortOrder: 'desc', label: '最新上传' },
+  { id: 'createdAt-asc', sortBy: 'createdAt', sortOrder: 'asc', label: '最早上传' }
+];
+
+const DEFAULT_SORT_KEY = 'heat-desc';
+
+function sortKeyFromInitial(initial) {
+  if (!initial || !initial.sortBy) return DEFAULT_SORT_KEY;
+  const order = initial.sortOrder || 'desc';
+  const key = initial.sortBy + '-' + order;
+  return SORT_OPTIONS.some((o) => o.id === key) ? key : DEFAULT_SORT_KEY;
+}
+
 Component({
   properties: {
     visible: { type: Boolean, value: false },
@@ -26,13 +47,17 @@ Component({
     designs: toOptions(DESIGNS),
     shapeLabels: toOptions(NAIL_SHAPE_LABELS),
     styleLabels: toOptions(NAIL_STYLE_LABELS),
+    sourceOptions: SOURCE_OPTIONS,
+    sortOptions: SORT_OPTIONS,
     selStyles: [],
     selMaterials: [],
     selShapes: [],
     selColors: [],
     selDesigns: [],
     selStyleLabels: [],
-    selShapeLabels: []
+    selShapeLabels: [],
+    selSources: [],
+    sortKey: DEFAULT_SORT_KEY
   },
   observers: {
     'visible, initial, useReal': function (visible, initial) {
@@ -42,7 +67,9 @@ Component({
           selColors: (initial.colors || []).slice(),
           selDesigns: (initial.designs || []).slice(),
           selStyleLabels: (initial.styleLabels || []).slice(),
-          selShapeLabels: (initial.shapeLabels || []).slice()
+          selShapeLabels: (initial.shapeLabels || []).slice(),
+          selSources: (initial.styleSources || []).slice(),
+          sortKey: sortKeyFromInitial(initial)
         });
       } else {
         this.setData({
@@ -89,13 +116,23 @@ Component({
       const v = e.currentTarget.dataset.v;
       this.setData({ selShapeLabels: this._toggle(this.data.selShapeLabels, v) });
     },
+    onSourceTap(e) {
+      const v = e.currentTarget.dataset.v;
+      this.setData({ selSources: this._toggle(this.data.selSources, v) });
+    },
+    onSortTap(e) {
+      const v = e.currentTarget.dataset.v;
+      if (v) this.setData({ sortKey: v });
+    },
     onReset() {
       if (this.properties.useReal) {
         this.setData({
           selColors: [],
           selDesigns: [],
           selStyleLabels: [],
-          selShapeLabels: []
+          selShapeLabels: [],
+          selSources: [],
+          sortKey: DEFAULT_SORT_KEY
         });
       } else {
         this.setData({ selStyles: [], selMaterials: [], selShapes: [] });
@@ -103,11 +140,15 @@ Component({
     },
     onConfirm() {
       if (this.properties.useReal) {
+        const sortOpt = SORT_OPTIONS.find((o) => o.id === this.data.sortKey) || SORT_OPTIONS[0];
         this.triggerEvent('change', {
           colors: this.data.selColors,
           designs: this.data.selDesigns,
           styleLabels: this.data.selStyleLabels,
-          shapeLabels: this.data.selShapeLabels
+          shapeLabels: this.data.selShapeLabels,
+          styleSources: this.data.selSources,
+          sortBy: sortOpt.sortBy,
+          sortOrder: sortOpt.sortOrder
         });
       } else {
         this.triggerEvent('change', {

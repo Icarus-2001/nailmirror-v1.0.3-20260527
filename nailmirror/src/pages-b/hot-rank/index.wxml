@@ -1,0 +1,3 @@
+<view class="bhr">
+  <loading text="正在打开热度榜单"></loading>
+</view>

@@ -1,6 +1,6 @@
 <view class="me">
   <view class="me__header" bindtap="onGoLogin">
-    <image class="me__avatar" src="{{user.avatarUrl}}"/>
+    <image class="me__avatar" src="{{user.avatarUrl}}" mode="aspectFill" binderror="onAvatarError"/>
     <view class="me__info">
       <view class="me__name {{needLogin ? 'me__name--login' : ''}}">{{user.nickname}}</view>
       <view class="me__role" wx:if="{{needLogin}}">点击登录 · 同步试戴与收藏</view>

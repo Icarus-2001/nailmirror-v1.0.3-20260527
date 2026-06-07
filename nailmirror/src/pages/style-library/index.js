@@ -12,14 +12,20 @@ Page({
     fallback: false,
     drawerVisible: false,
     filters: { styleTags: [], materialTags: [], shapeTags: [] },
-    drawerFilters: { colors: [], designs: [], styleLabels: [], shapeLabels: [] },
+    drawerFilters: {
+      colors: [], designs: [], styleLabels: [], shapeLabels: [],
+      styleSources: [], sortBy: 'heat', sortOrder: 'desc'
+    },
     useReal: false
   },
   onLoad(query) {
     const keyword = query && query.keyword ? decodeURIComponent(query.keyword) : '';
     const useReal = featureFlags.USE_REAL_STYLES;
     const drawerFilters = useReal
-      ? { colors: [], designs: [], styleLabels: [], shapeLabels: [] }
+      ? {
+        colors: [], designs: [], styleLabels: [], shapeLabels: [],
+        styleSources: [], sortBy: 'heat', sortOrder: 'desc'
+      }
       : { styleTags: [], materialTags: [], shapeTags: [] };
     this.setData({ useReal, drawerFilters, filters: drawerFilters, keyword });
     this.loadList(true);

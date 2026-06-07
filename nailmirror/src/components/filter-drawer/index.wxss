@@ -4,6 +4,7 @@
 .fdrawer__title { font-size: 34rpx; font-weight: 600; margin-bottom: 30rpx; }
 .fdrawer__section { margin-bottom: 32rpx; }
 .fdrawer__label { font-size: 26rpx; color: var(--np-text-weak); margin-bottom: 16rpx; }
+.fdrawer__hint { font-size: 22rpx; color: var(--np-text-weak); margin: -8rpx 0 12rpx; opacity: 0.85; }
 .fdrawer__tags { display: flex; flex-wrap: wrap; }
 .fdrawer__tag { padding: 12rpx 24rpx; margin: 0 14rpx 14rpx 0; border-radius: 999rpx; background: var(--np-bg); color: var(--np-text); font-size: 26rpx; }
 .fdrawer__tag--on { background: var(--np-primary-soft); color: var(--np-primary); }
