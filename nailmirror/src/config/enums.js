@@ -1,11 +1,22 @@
 // 业务枚举：甲型 / 风格 / 材质
 const NAIL_SHAPES = [
-  { id: 'almond',      label: '杏仁形', desc: '优雅显手白，适合细长指' },
-  { id: 'square',      label: '方形',   desc: '利落干练，指甲修长款首选' },
-  { id: 'round',       label: '圆形',   desc: '温柔百搭，日常通勤' },
-  { id: 'trapezoid',   label: '梯形',   desc: '复古独特，个性表达' },
-  { id: 'short-round', label: '短圆形', desc: '短款自然，上班族友好' },
-  { id: 'tip',         label: '贴片形', desc: '延长指型，适合舞台感' }
+  // 短款
+  { id: 'short-square-round', label: '短方圆',   desc: '干净利落，百搭日常' },
+  { id: 'short-oval',         label: '短椭圆',   desc: '小巧温柔，上班首选' },
+  // 中长款
+  { id: 'mid-square',         label: '中长方',   desc: '修长干练，利落有型' },
+  { id: 'mid-round',          label: '中长圆',   desc: '温柔大方，通勤必备' },
+  { id: 'mid-almond',         label: '中长杏仁', desc: '显手纤细，优雅精致' },
+  // 加长款
+  { id: 'long-trapezoid',     label: '长梯形',   desc: '复古个性，个性表达' },
+  { id: 'long-tip',           label: '长尖形',   desc: '锋利前卫，舞台感十足' },
+  { id: 'long-almond',        label: '加长杏仁', desc: '奢华精致，引人注目' }
+];
+
+const NAIL_SHAPE_GROUPS = [
+  { groupLabel: '短款',   ids: ['short-square-round', 'short-oval'] },
+  { groupLabel: '中长款', ids: ['mid-square', 'mid-round', 'mid-almond'] },
+  { groupLabel: '长款',   ids: ['long-trapezoid', 'long-tip', 'long-almond'] }
 ];
 
 const NAIL_STYLES = [
@@ -46,6 +57,7 @@ const {
 
 module.exports = {
   NAIL_SHAPES,
+  NAIL_SHAPE_GROUPS,
   NAIL_STYLES,
   NAIL_MATERIALS,
   TRY_ON_MODES,

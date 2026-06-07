@@ -243,12 +243,22 @@ async function callQwenVLMulti(imageUrls, textPrompt) {
 }
 
 const SHAPE_EN = {
-  almond: 'almond shaped nail tips',
-  square: 'square shaped nail tips',
-  round: 'round shaped nail tips',
-  trapezoid: 'trapezoid shaped nail tips',
-  'short-round': 'short round nail tips',
-  tip: 'stiletto pointed nail tips'
+  // 新 id
+  'short-square-round': 'short square-round nail tips',
+  'short-oval':         'short oval nail tips',
+  'mid-square':         'medium square nail tips',
+  'mid-round':          'medium round nail tips',
+  'mid-almond':         'medium almond shaped nail tips',
+  'long-trapezoid':     'long trapezoid nail tips',
+  'long-tip':           'long stiletto pointed nail tips',
+  'long-almond':        'extra long almond shaped nail tips',
+  // 旧 id 保留（历史记录兼容）
+  almond:       'almond shaped nail tips',
+  square:       'square shaped nail tips',
+  round:        'round shaped nail tips',
+  trapezoid:    'trapezoid shaped nail tips',
+  'short-round':'short round nail tips',
+  tip:          'stiletto pointed nail tips'
 };
 
 function shapeEn(shapePrompt) {

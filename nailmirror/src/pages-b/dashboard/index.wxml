@@ -7,7 +7,7 @@
   <view class="bd__section">
     <view class="np-title">热门搜索词 TOP20</view>
     <block wx:for="{{keywords}}" wx:key="word" wx:for-index="idx">
-      <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}" data-word="{{item.word}}" bindtap="onGoTrend"></hot-item>
+      <hot-item rank="{{idx + 1}}" word="{{item.word}}" platform="{{item.platform}}" heat="{{item.heat}}"></hot-item>
     </block>
   </view>
 
@@ -18,7 +18,4 @@
     </block>
   </view>
 
-  <view class="bd__cta">
-    <view class="np-btn np-btn--block" bindtap="onGoStock">查看本周备货建议</view>
-  </view>
 </view>

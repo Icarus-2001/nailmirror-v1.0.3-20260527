@@ -1,9 +1,43 @@
 .ns__title { font-size: 40rpx; font-weight: 700; margin-top: 20rpx; }
-.ns__hint { color: var(--np-text-weak); font-size: 26rpx; margin: 12rpx 0 30rpx; }
-.ns__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
-.ns__card { background: var(--np-card); padding: 32rpx 24rpx; border-radius: 20rpx; border: 3rpx solid transparent; }
-.ns__card--on { border-color: var(--np-primary); background: var(--np-primary-soft); }
-.ns__icon { font-size: 56rpx; }
-.ns__label { font-size: 30rpx; font-weight: 600; margin-top: 12rpx; }
-.ns__desc { font-size: 24rpx; color: var(--np-text-weak); margin-top: 10rpx; line-height: 1.6; }
+.ns__hint { color: var(--np-text-weak); font-size: 26rpx; margin: 12rpx 0 36rpx; }
+
+/* 分组 */
+.ns__group { margin-bottom: 40rpx; }
+.ns__group-title {
+  display: inline-block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #7c3aed;
+  background: rgba(155,108,255,0.12);
+  border-radius: 999rpx;
+  padding: 6rpx 20rpx;
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
+}
+.ns__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+/* 卡片 */
+.ns__card {
+  flex: 1;
+  min-width: 180rpx;
+  background: var(--np-card);
+  padding: 28rpx 20rpx;
+  border-radius: 20rpx;
+  border: 3rpx solid transparent;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  transition: all .2s;
+}
+.ns__card--on {
+  border-color: var(--np-primary);
+  background: var(--np-primary-soft);
+  box-shadow: 0 8rpx 24rpx rgba(155,108,255,0.18);
+  transform: translateY(-4rpx);
+}
+.ns__label { font-size: 30rpx; font-weight: 600; margin-bottom: 10rpx; color: #1a1a1a; }
+.ns__desc { font-size: 22rpx; color: var(--np-text-weak); line-height: 1.6; }
+
 .ns__bottom { position: fixed; left: 24rpx; right: 24rpx; bottom: 40rpx; }

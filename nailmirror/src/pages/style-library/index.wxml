@@ -1,16 +1,11 @@
 <view class="lib">
   <view class="lib__search">
-    <input class="lib__input" placeholder="搜索款式 / 风格 / 材质" value="{{keyword}}" bindinput="onKeyword" bindconfirm="onSearch"/>
-    <view class="lib__filter" bindtap="onOpenFilter">🎛</view>
+    <view class="lib__input-wrap">
+      <input class="lib__input" placeholder="搜索款式 / 风格 / 材质" value="{{keyword}}" bindinput="onKeyword" bindconfirm="onSearch"/>
+      <view class="lib__search-btn" bindtap="onSearch">🔍</view>
+    </view>
+    <view class="lib__filter" bindtap="onOpenFilter">筛选</view>
   </view>
-
-  <scroll-view scroll-x class="lib__tabs">
-    <view wx:for="{{styleTabs}}" wx:key="id" class="lib__tab {{currentStyle === item.id ? 'lib__tab--on' : ''}}" data-id="{{item.id}}" bindtap="onTabTap">{{item.label}}</view>
-  </scroll-view>
-
-  <scroll-view scroll-x class="lib__tabs lib__tabs--sub" wx:if="{{useReal}}">
-    <view wx:for="{{colorTabs}}" wx:key="id" class="lib__tab lib__tab--sm {{currentColor === item.id ? 'lib__tab--on' : ''}}" data-id="{{item.id}}" bindtap="onColorTap">{{item.label}}</view>
-  </scroll-view>
 
   <view class="lib__fallback" wx:if="{{fallback}}">未找到匹配款式，为你推荐热度榜 TOP</view>
 

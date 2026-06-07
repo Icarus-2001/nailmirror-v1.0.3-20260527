@@ -18,20 +18,22 @@ const STYLE_CN_TO_ID = {
 };
 
 const SHAPE_CN_TO_ID = {
-  '短方圆': 'short-round',
-  '短椭圆': 'short-round',
-  '中长方': 'square',
-  '中长圆': 'round',
-  '中长杏仁': 'almond',
-  '长梯形': 'trapezoid',
-  '长尖形': 'tip',
-  '加长杏仁': 'almond',
-  '杏仁': 'almond', '杏仁形': 'almond',
-  '方形': 'square', '方': 'square',
-  '圆形': 'round', '圆': 'round',
-  '梯形': 'trapezoid',
-  '短圆': 'short-round', '短圆形': 'short-round',
-  '贴片': 'tip', '贴片形': 'tip', '延长': 'tip'
+  // 新 id
+  '短方圆': 'short-square-round',
+  '短椭圆': 'short-oval',
+  '中长方': 'mid-square',
+  '中长圆': 'mid-round',
+  '中长杏仁': 'mid-almond',
+  '长梯形': 'long-trapezoid',
+  '长尖形': 'long-tip',
+  '加长杏仁': 'long-almond',
+  // 旧中文标签兼容（映射到最近似新 id）
+  '杏仁': 'mid-almond', '杏仁形': 'mid-almond',
+  '方形': 'mid-square', '方': 'mid-square',
+  '圆形': 'mid-round', '圆': 'mid-round',
+  '梯形': 'long-trapezoid',
+  '短圆': 'short-square-round', '短圆形': 'short-square-round',
+  '贴片': 'long-tip', '贴片形': 'long-tip', '延长': 'long-tip'
 };
 
 const DESIGN_TO_MATERIAL = {
@@ -63,12 +65,22 @@ const STYLE_ID_TO_LABEL = {
 };
 
 const SHAPE_ID_TO_LABEL = {
-  almond: '中长杏仁',
-  square: '中长方',
-  round: '中长圆',
-  trapezoid: '长梯形',
-  'short-round': '短方圆',
-  tip: '长尖形'
+  // 新 id
+  'short-square-round': '短方圆',
+  'short-oval':         '短椭圆',
+  'mid-square':         '中长方',
+  'mid-round':          '中长圆',
+  'mid-almond':         '中长杏仁',
+  'long-trapezoid':     '长梯形',
+  'long-tip':           '长尖形',
+  'long-almond':        '加长杏仁',
+  // 旧 id 兼容（降级到最近似新中文标签）
+  almond:       '中长杏仁',
+  square:       '中长方',
+  round:        '中长圆',
+  trapezoid:    '长梯形',
+  'short-round':'短方圆',
+  tip:          '长尖形'
 };
 
 function mapStyleCn(cn) {
@@ -80,12 +92,12 @@ function mapStyleCn(cn) {
 }
 
 function mapShapeCn(cn) {
-  if (!cn) return 'almond';
+  if (!cn) return 'mid-almond';
   const keys = Object.keys(SHAPE_CN_TO_ID).sort((a, b) => b.length - a.length);
   for (const key of keys) {
     if (cn.indexOf(key) > -1) return SHAPE_CN_TO_ID[key];
   }
-  return 'almond';
+  return 'mid-almond';
 }
 
 function inferMaterialTags(color, design) {

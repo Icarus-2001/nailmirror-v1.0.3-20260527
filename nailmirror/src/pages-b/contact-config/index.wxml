@@ -1,5 +1,5 @@
 <view class="bc np-container">
-  <view class="np-title">门店信息</view>
+  <view class="np-title">店铺信息</view>
 
   <view class="bc__field">
     <view class="bc__label">门店名称</view>

@@ -15,14 +15,16 @@
     <view class="ts__title">选择你的甲型</view>
     <view class="ts__sub">不同甲型决定试戴效果，请先确认你的指甲形状</view>
 
-    <view class="ts__shapes">
-      <view
-        wx:for="{{shapes}}" wx:key="id"
-        class="ts__shape-card {{selectedShape === item.id ? 'on' : ''}}"
-        data-v="{{item.id}}" bindtap="onPickShape">
-        <view class="ts__shape-icon ts__shape-icon--{{item.id}}"></view>
-        <view class="ts__shape-name">{{item.label}}</view>
-        <view class="ts__shape-desc">{{item.desc}}</view>
+    <view wx:for="{{shapeGroups}}" wx:key="groupLabel" class="ts__shape-group">
+      <view class="ts__shape-group-title">{{item.groupLabel}}</view>
+      <view class="ts__shapes">
+        <view
+          wx:for="{{item.shapes}}" wx:for-item="shape" wx:key="id"
+          class="ts__shape-card {{selectedShape === shape.id ? 'on' : ''}}"
+          data-v="{{shape.id}}" bindtap="onPickShape">
+          <view class="ts__shape-name">{{shape.label}}</view>
+          <view class="ts__shape-desc">{{shape.desc}}</view>
+        </view>
       </view>
     </view>
 

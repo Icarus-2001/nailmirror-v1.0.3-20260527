@@ -1,9 +1,18 @@
-const { NAIL_SHAPES } = require('../../config/enums');
+const { NAIL_SHAPES, NAIL_SHAPE_GROUPS } = require('../../config/enums');
 const { tryOnStore } = require('../../stores/try-on.store');
+
+function buildGroups() {
+  const map = {};
+  NAIL_SHAPES.forEach(s => { map[s.id] = s; });
+  return NAIL_SHAPE_GROUPS.map(g => ({
+    groupLabel: g.groupLabel,
+    shapes: g.ids.map(id => map[id]).filter(Boolean)
+  }));
+}
 
 Page({
   data: {
-    shapes: NAIL_SHAPES,
+    shapeGroups: buildGroups(),
     selected: ''
   },
   onLoad() {

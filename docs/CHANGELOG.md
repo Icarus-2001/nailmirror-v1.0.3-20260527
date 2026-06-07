@@ -1,5 +1,81 @@
 # 变更记录
 
+## 1.2.4 · 2026-06-07 · 简约 UI 精修与甲型三分组重构
+
+**小程序版本：`1.2.4`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**C/B 端删繁就简、苹果风 UI 精修；甲型改为短款/中长款/长款九款三分组并贯通试戴生图；款式库搜索栏独立三段式布局；仅须部署 `tryon` 云函数。**
+
+### C 端 UI 精简（首页 / 我的 / 款式库）
+
+- **首页 slogan**：`既是魔镜，也是先知` → `魔镜魔镜，快快显灵~`。
+- **首页「立即试戴」大卡**：移除「选甲型 → 选款式 → ……」副文案；加入品牌 logo 底纹 + 淡紫渐变蒙版，提升品质感。
+- **首页「为你推荐」**：移除右侧「去款式库 ›」链接，标题区更简洁。
+- **我的页**：移除中部「试戴 / 收藏 / 卸甲倒计时」统计条；移除「卸甲倒计时」菜单项及 `pages/countdown` 页面注册。
+- **款式库搜索栏**：拆为独立三段式——白底搜索框 + 🔍 搜索按钮 + 淡紫「筛选」胶囊按钮（与搜索框分离，更易发现）。
+- **款式库 Tab**：移除搜索栏下方两行色系/风格 Tab（筛选抽屉已覆盖同等能力）。
+- **「全网热款」徽章**：`style-card` 改为琥珀金配色，与「平台特供」紫色区分。
+
+### 甲型选择三分组重构（C 端 + 试戴链路）
+
+- **`config/enums.js`**：`NAIL_SHAPES` 替换为 9 款新 id（短款 2 + 中长款 3 + 长款 3），新增 `NAIL_SHAPE_GROUPS` 分组导出。
+- **`pages/nail-shape`**：按「短款 / 中长款 / 长款」三组卡片展示，每组淡紫圆角标签 + 风格描述句。
+- **`pages/try-on-static`**：选甲型步同步分组 UI；`_labelOfShape` 兼容新 id 与历史旧 id。
+- **`config/label-maps.js`**：`SHAPE_CN_TO_ID` / `SHAPE_ID_TO_LABEL` 扩充新 id，旧 6 个 id 保留降级映射（试戴历史可读）。
+- **`cloudfunctions/tryon/handler.js`**：`SHAPE_EN` 扩充 8 个新英文 prompt，旧 id 保留（用户所选甲型正确传导至 AI 生图）。
+
+| 分组 | 甲型 |
+|---|---|
+| 短款 | 短方圆、短椭圆 |
+| 中长款 | 中长方、中长圆、中长杏仁 |
+| 长款 | 长梯形、长尖形、加长杏仁 |
+
+### B 端 UI 精简
+
+- **移除功能**：`pages-b/stock-advice`（备货建议）、`pages-b/hot-rank`（热度详情）页面及入口。
+- **重命名**：「轻预约配置」→「店铺信息」（entry 菜单、contact-config 页标题、membership 权益文案）。
+- **经营看板**：移除「查看本周备货建议」CTA；热款条目不再跳转已删除的热度详情页。
+- **`app.json`**：B 端分包注销 `stock-advice`、`hot-rank` 路由。
+
+### 涉及文件
+
+- `pages/home/index.{wxml,wxss,js}`
+- `pages/me/index.{js,wxml,wxss}`、`pages/countdown/*`（删）
+- `pages/style-library/index.{js,wxml,wxss}`
+- `pages/nail-shape/index.{js,wxml,wxss}`
+- `pages/try-on-static/index.{js,wxml,wxss}`
+- `components/style-card/index.wxss`
+- `pages-b/entry/index.{js,wxml,wxss}`、`pages-b/dashboard/index.{js,wxml}`
+- `pages-b/contact-config/index.{json,wxml}`、`pages-b/membership/index.{js,wxml}`
+- `pages-b/stock-advice/*`、`pages-b/hot-rank/*`（删）
+- `config/enums.js`、`config/label-maps.js`
+- `cloudfunctions/tryon/handler.js`
+- `app.json`、`app.js`、`package.json`
+- `services/merchant.service.js`、`tests/e2e-smoke.md`
+
+### 部署注意
+
+- **须重新部署 `tryon` 云函数**（`SHAPE_EN` 字典扩充；推 Git 不会自动更新云端）：
+  1. 微信开发者工具 → 打开 `nailmirror/src/` 项目
+  2. 左侧文件树找到 `cloudfunctions/tryon` 文件夹
+  3. 右键 → **上传并部署：云端安装依赖**
+  4. 等待控制台提示部署成功
+- **`ops` / `login` 云函数本轮无改动**，无需重新部署。
+- **云端测试面板**：非必须（字典扩充，无新 action）；建议部署后在小程序走一遍试戴，选一个新甲型（如「短方圆」）验证生图甲型效果。
+- **小程序侧**：工具 → 清除缓存 → 全部清除 → 重新编译；真机预览验收 UI 与甲型分组。
+
+### 验证
+
+- 首页 slogan、立即试戴底纹、为你推荐无「去款式库」链接。
+- 我的页无统计条与卸甲倒计时入口；B 端无备货建议/热度详情入口，「店铺信息」文案正确。
+- 款式库搜索栏为搜索框 + 🔍 + 淡紫筛选；无下方 Tab 行；全网热款徽章为金色系。
+- 试戴选甲型分三组九款；选「加长杏仁」等新款后合成，云端日志 `shapePrompt` 为新 id，生图甲型与选择一致。
+- 历史试戴记录中旧甲型 id（如 `almond`）仍可显示中文标签。
+
+---
+
 ## 1.2.3 · 2026-06-06 · 商家身份拦截、联系商家直拨与首页响应式
 
 **小程序版本：`1.2.3`**（`app.globalData.version`）
