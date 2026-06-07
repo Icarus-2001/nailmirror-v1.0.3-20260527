@@ -18,7 +18,7 @@
 
 <br/>
 
-[**GitHub 仓库**](https://github.com/Icarus-2001/NailMirror) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**文档**](#文档) · [**English**](./README.en.md)
+[**GitHub 仓库**](https://github.com/Icarus-2001/NailMirror) · [**试戴效果**](#试戴效果) · [**产品演示**](#产品演示) · [**English**](./README.en.md)
 
 </div>
 
@@ -121,30 +121,6 @@ C 端款式库：筛选抽屉、来源三标签（平台 / 商家 / 全网热款
 <div align="center">
 <img src="docs/assets/readme/gifs/merchant-dashboard.gif" alt="商家看板" width="280"/>
 </div>
-
----
-
-## 文档
-
-**评委 / 体验快速入口**
-
-| 文档 | 说明 |
-|------|------|
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 架构摘要：试戴链路、云函数、数据流 |
-| [docs/SETUP_USER.md](./docs/SETUP_USER.md) | 体验指南：DashScope、云开发、部署与试戴验证 |
-
-<details>
-<summary><strong>更多文档（协作者）</strong></summary>
-
-| 文档 | 说明 |
-|------|------|
-| [docs/PROJECT.md](./docs/PROJECT.md) | 项目概述、目录结构、当前能力 |
-| [docs/DATA_SCHEMA.md](./docs/DATA_SCHEMA.md) | 款式字段、VLM 打标、API |
-| [docs/CHANGELOG.md](./docs/CHANGELOG.md) | 迭代记录 |
-| [docs/美甲标签与标准词表.md](./docs/美甲标签与标准词表.md) | 封闭标签词表 |
-| [docs/README.md](./docs/README.md) | 完整文档索引 |
-
-</details>
 
 ---
 

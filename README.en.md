@@ -124,30 +124,6 @@ Daily dashboard: core metrics, trends, tag aggregates, and AI operational recomm
 
 ---
 
-## Documentation
-
-**Quick links for reviewers & evaluators**
-
-| Doc | Description |
-|-----|-------------|
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Architecture summary — try-on pipeline, cloud functions, data flow |
-| [docs/SETUP_USER.md](./docs/SETUP_USER.md) | Experience guide — DashScope, WeChat Cloud, deploy & try-on test |
-
-<details>
-<summary><strong>More docs (contributors)</strong></summary>
-
-| Doc | Description |
-|-----|-------------|
-| [docs/PROJECT.md](./docs/PROJECT.md) | Project overview, directory layout, current capabilities |
-| [docs/DATA_SCHEMA.md](./docs/DATA_SCHEMA.md) | Style fields, VLM tagging, APIs |
-| [docs/CHANGELOG.md](./docs/CHANGELOG.md) | Release history |
-| [docs/美甲标签与标准词表.md](./docs/美甲标签与标准词表.md) | Closed tag vocabulary (Chinese) |
-| [docs/README.md](./docs/README.md) | Full documentation index |
-
-</details>
-
----
-
 <div align="center">
 
 **NailMirror** — See every style on your hands before you decide.
