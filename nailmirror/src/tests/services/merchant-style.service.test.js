@@ -72,6 +72,21 @@ describe('MerchantStyleService', () => {
     expect(mapped.displayTags).toEqual(['red-family', 'solid', 'almond', 'daily']);
   });
 
+  test('getCachedMerchantStylesForMerchant only returns styles owned by merchant', () => {
+    merchantStyleService.mergeCachedMerchantStyles([
+      { id: 'merchant-style-a1', title: 'A1', merchantId: 'merchant-a' },
+      { id: 'merchant-style-a2', title: 'A2', merchantId: 'merchant-a' },
+      { id: 'merchant-style-b1', title: 'B1', merchantId: 'merchant-b' },
+      { id: 'merchant-style-legacy', title: 'Legacy' }
+    ]);
+
+    expect(merchantStyleService.getCachedMerchantStyles()).toHaveLength(4);
+    expect(merchantStyleService.getCachedMerchantStylesForMerchant('merchant-a')).toHaveLength(2);
+    expect(merchantStyleService.getCachedMerchantStylesForMerchant('merchant-b')).toHaveLength(1);
+    expect(merchantStyleService.getCachedMerchantStylesForMerchant('merchant-c')).toHaveLength(0);
+    expect(merchantStyleService.getCachedMerchantStylesForMerchant('')).toHaveLength(0);
+  });
+
   test('getCachedMerchantStyles backfills previewUrls for old cached uploads', () => {
     wx.setStorageSync('np_merchant_styles', [{
       id: 'merchant-style-old',
