@@ -54,7 +54,7 @@
 .bd__advice-modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 10000;
 }
 .bd__advice-mask {
   position: absolute;

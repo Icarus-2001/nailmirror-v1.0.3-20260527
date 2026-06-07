@@ -323,6 +323,7 @@ Page({
 
   onCloseAdvice() {
     this.setData({ adviceVisible: false });
+    wx.nextTick(() => this._redrawChart());
   },
 
 });

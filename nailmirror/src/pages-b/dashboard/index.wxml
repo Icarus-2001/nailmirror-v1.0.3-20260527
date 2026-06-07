@@ -34,7 +34,9 @@
           bindtap="onMetricTap"
         >{{item.label}}</view>
       </view>
-      <line-chart id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
+      <view class="bd__chart-wrap" hidden="{{adviceVisible}}">
+        <line-chart id="bdLineChart" dates="{{dates}}" lines="{{chartLines}}" metric-key="{{activeMetric}}" height="360"></line-chart>
+      </view>
       <view class="bd__picker-title">款式对比（最多3个）</view>
       <view class="bd__picker-hint">右侧为综合热度分，非款式数量</view>
       <view class="bd__picker-trigger" bindtap="onToggleStylePicker">
