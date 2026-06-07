@@ -11,20 +11,20 @@ async function resolveMerchantEntryRoute(openid) {
   if (!openid) return 'login';
   const verified = await merchantAuthService.isMerchantVerified(openid);
   if (!verified) return 'verify';
-  if (!cloudUtil.isCloudReady()) return 'entry';
+  if (!cloudUtil.isCloudReady()) return 'phone';
 
   try {
     const gate = await cloudUtil.callFunction('ops', {
       action: 'getMerchantPhoneGate',
       openid,
     });
-    if (gate && gate.ok && gate.merchantVerified && !gate.phoneVerified) {
-      return 'phone';
+    if (gate && gate.ok && gate.merchantVerified && gate.phoneVerified) {
+      return 'entry';
     }
+    return 'phone';
   } catch (e) {
-    // 云端不可用时降级放行，避免阻断 B 端
+    return 'phone';
   }
-  return 'entry';
 }
 
 function navigateByRoute(route) {

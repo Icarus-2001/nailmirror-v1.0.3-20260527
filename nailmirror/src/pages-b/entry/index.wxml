@@ -2,16 +2,23 @@
   <view class="be__phone" wx:if="{{needPhoneVerify}}">
     <view class="be__phone-card">
       <view class="be__phone-title">验证商家手机号</view>
-      <view class="be__phone-desc">为保障商家账号安全，进入商家中心前需验证认证时绑定的手机号。</view>
+      <view class="be__phone-desc">为保障商家账号安全，进入商家中心前需验证认证时绑定的手机号。24 小时内验证通过可免重复核验。</view>
       <view class="be__phone-num" wx:if="{{phoneMasked}}">认证手机号：{{phoneMasked}}</view>
-      <view class="be__phone-hint">请使用上方号码对应的微信账号授权验证（微信手机号快捷验证）。开发者工具模拟器无法完成此步骤，请点右上角「预览」用手机扫码测试。</view>
+      <view class="be__phone-hint">请输入上方认证手机号的完整 11 位号码进行验证。</view>
+      <input
+        class="be__phone-input"
+        type="number"
+        maxlength="11"
+        placeholder="请输入认证手机号"
+        value="{{phoneInput}}"
+        bindinput="onPhoneInput"
+      />
       <button
         class="be__phone-btn np-btn"
-        open-type="getPhoneNumber"
-        bindgetphonenumber="onGetPhoneNumber"
+        bindtap="onSubmitPhoneVerify"
         loading="{{verifying}}"
         disabled="{{verifying}}"
-      >微信手机号快捷验证</button>
+      >确认验证</button>
     </view>
     <view class="be__phone-back" bindtap="onPhoneVerifyBack">返回</view>
   </view>

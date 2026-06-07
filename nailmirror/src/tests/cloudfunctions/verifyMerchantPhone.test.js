@@ -11,11 +11,6 @@ jest.mock('wx-server-sdk', () => {
   const createCollection = jest.fn().mockResolvedValue({});
   return {
     database: jest.fn(() => ({ collection, createCollection })),
-    openapi: {
-      phonenumber: {
-        getPhoneNumber: jest.fn(),
-      },
-    },
     __mock: { get, update, doc, collection, createCollection },
   };
 }, { virtual: true });
@@ -29,19 +24,21 @@ describe('verifyMerchantPhone cloud handler', () => {
     cloud = require('wx-server-sdk');
     cloud.__mock.get.mockReset();
     cloud.__mock.update.mockReset();
-    cloud.openapi.phonenumber.getPhoneNumber.mockReset();
     verifyMerchantPhone = require('../../cloudfunctions/ops/handlers/verifyMerchantPhone').verifyMerchantPhone;
+  });
+
+  test('rejects invalid phone format', async () => {
+    const res = await verifyMerchantPhone({ openid: 'oid-1', phone: '123' });
+    expect(res.ok).toBe(false);
+    expect(res.error).toMatch(/11 位/);
   });
 
   test('rejects when phone mismatch', async () => {
     cloud.__mock.get.mockResolvedValueOnce({
       data: [{ _id: 'm1', phone: '13812345678', status: 'approved' }],
     });
-    cloud.openapi.phonenumber.getPhoneNumber.mockResolvedValueOnce({
-      phoneInfo: { purePhoneNumber: '13900001111' },
-    });
 
-    const res = await verifyMerchantPhone({ openid: 'oid-1', code: 'test-code' });
+    const res = await verifyMerchantPhone({ openid: 'oid-1', phone: '13900001111' });
     expect(res.ok).toBe(false);
     expect(res.error).toMatch(/不一致/);
   });
@@ -50,12 +47,9 @@ describe('verifyMerchantPhone cloud handler', () => {
     cloud.__mock.get.mockResolvedValueOnce({
       data: [{ _id: 'm1', phone: '13812345678', status: 'approved' }],
     });
-    cloud.openapi.phonenumber.getPhoneNumber.mockResolvedValueOnce({
-      phoneInfo: { purePhoneNumber: '13812345678' },
-    });
     cloud.__mock.update.mockResolvedValueOnce({});
 
-    const res = await verifyMerchantPhone({ openid: 'oid-1', code: 'test-code' });
+    const res = await verifyMerchantPhone({ openid: 'oid-1', phone: '13812345678' });
     expect(res.ok).toBe(true);
     expect(res.phoneVerified).toBe(true);
     expect(cloud.__mock.doc).toHaveBeenCalledWith('m1');

@@ -20,6 +20,13 @@
   font-size: 30rpx;
   font-weight: 500;
 }
+.be__phone-input {
+  margin-top: 28rpx;
+  padding: 24rpx 28rpx;
+  font-size: 32rpx;
+  background: #f7f7fb;
+  border-radius: 16rpx;
+}
 .be__phone-btn {
   margin-top: 36rpx;
   width: 100%;

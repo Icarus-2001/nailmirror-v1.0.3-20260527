@@ -1,7 +1,6 @@
 const { userStore } = require('../../stores/user.store');
 const merchantAuthService = require('../../services/merchant-auth.service');
 const cloudUtil = require('../../utils/cloud');
-const { ensurePrivacyAuthorized, isPrivacyDeclinedError } = require('../../utils/privacy');
 
 Page({
   data: {
@@ -9,27 +8,13 @@ Page({
     checking: true,
     needPhoneVerify: false,
     phoneMasked: '',
+    phoneInput: '',
     verifying: false,
-  },
-
-  _privacyReady: false,
-
-  onReady() {
-    this._preparePrivacy();
-  },
-
-  async _preparePrivacy() {
-    try {
-      await ensurePrivacyAuthorized();
-      this._privacyReady = true;
-    } catch (e) {
-      this._privacyReady = false;
-    }
   },
 
   async onShow() {
     userStore.init();
-    this.setData({ checking: true, needPhoneVerify: false });
+    this.setData({ checking: true, needPhoneVerify: false, phoneInput: '' });
 
     if (!userStore.openid) {
       wx.redirectTo({ url: '/pages/login/index?from=merchant' });
@@ -44,74 +29,46 @@ Page({
         return;
       }
 
-      if (cloudUtil.isCloudReady()) {
-        const gate = await cloudUtil.callFunction('ops', {
-          action: 'getMerchantPhoneGate',
-          openid: userStore.openid,
-        });
-        if (gate && gate.ok && gate.merchantVerified && !gate.phoneVerified) {
-          if (!this._privacyReady) await this._preparePrivacy();
-          wx.setNavigationBarTitle({ title: '商家身份核验' });
-          this.setData({
-            needPhoneVerify: true,
-            phoneMasked: gate.phoneMasked || '',
-            checking: false,
-          });
-          return;
-        }
+      if (!cloudUtil.isCloudReady()) {
+        wx.setNavigationBarTitle({ title: '商家身份核验' });
+        this.setData({ needPhoneVerify: true, checking: false });
+        return;
       }
 
-      wx.setNavigationBarTitle({ title: '商家中心' });
-      userStore.setRole('b');
-      this.setData({ role: 'b', checking: false, needPhoneVerify: false });
+      const gate = await cloudUtil.callFunction('ops', {
+        action: 'getMerchantPhoneGate',
+        openid: userStore.openid,
+      });
+
+      if (gate && gate.ok && gate.merchantVerified && gate.phoneVerified) {
+        wx.setNavigationBarTitle({ title: '商家中心' });
+        userStore.setRole('b');
+        this.setData({ role: 'b', checking: false, needPhoneVerify: false });
+        return;
+      }
+
+      wx.setNavigationBarTitle({ title: '商家身份核验' });
+      this.setData({
+        needPhoneVerify: true,
+        phoneMasked: (gate && gate.phoneMasked) || '',
+        checking: false,
+      });
     } catch (e) {
       wx.showToast({ title: '商家身份校验失败，请稍后重试', icon: 'none' });
       this.setData({ role: userStore.role || 'c', checking: false });
     }
   },
 
-  async onGetPhoneNumber(e) {
-    if (this.data.verifying) return;
-    if (!this._privacyReady) {
-      try {
-        await ensurePrivacyAuthorized();
-        this._privacyReady = true;
-      } catch (err) {
-        wx.showToast({
-          title: isPrivacyDeclinedError(err) ? '需同意隐私协议后才能验证手机号' : '请先完成隐私授权',
-          icon: 'none',
-        });
-        return;
-      }
-    }
-    const detail = e && e.detail;
-    const errMsg = (detail && detail.errMsg) || '';
-    if (errMsg.indexOf('getPhoneNumber:ok') < 0) {
-      if (errMsg.indexOf('cancel') >= 0 || errMsg.indexOf('deny') >= 0) return;
-      if (errMsg.indexOf('privacy') >= 0 || errMsg.indexOf('隐私') >= 0) {
-        wx.showToast({ title: '请先同意隐私协议后再试', icon: 'none' });
-        return;
-      }
-      if (errMsg.indexOf('fail') >= 0) {
-        wx.showToast({
-          title: '模拟器不支持手机号授权，请用真机预览',
-          icon: 'none',
-          duration: 3000,
-        });
-        return;
-      }
-      wx.showToast({ title: '需要授权手机号才能进入商家中心', icon: 'none' });
-      return;
-    }
-    const code = detail && detail.code;
-    if (!code) {
-      wx.showToast({ title: '未获取到手机号凭证', icon: 'none' });
-      return;
-    }
+  onPhoneInput(e) {
+    const val = (e && e.detail && e.detail.value) || '';
+    this.setData({ phoneInput: val.replace(/\D/g, '').slice(0, 11) });
+  },
 
-    const okPrivacy = await ensurePrivacyAuthorized().catch(() => false);
-    if (!okPrivacy) {
-      wx.showToast({ title: '请先同意隐私协议', icon: 'none' });
+  async onSubmitPhoneVerify() {
+    if (this.data.verifying) return;
+    const phone = (this.data.phoneInput || '').trim();
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的 11 位手机号', icon: 'none' });
       return;
     }
 
@@ -120,7 +77,7 @@ Page({
       const res = await cloudUtil.callFunction('ops', {
         action: 'verifyMerchantPhone',
         openid: userStore.openid,
-        code,
+        phone,
       });
       if (res && res.ok) {
         wx.setNavigationBarTitle({ title: '商家中心' });
@@ -129,6 +86,7 @@ Page({
         this.setData({
           role: 'b',
           needPhoneVerify: false,
+          phoneInput: '',
           verifying: false,
           checking: false,
         });
