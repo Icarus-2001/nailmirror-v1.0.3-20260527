@@ -145,7 +145,7 @@ exports.main = async (event, context) => {
         return await getMerchantPhoneGate({ openid: callerOpenid || event.openid })
 
       case 'verifyMerchantPhone':
-        return await verifyMerchantPhone({ openid: callerOpenid || event.openid, code: event.code })
+        return await verifyMerchantPhone({ openid: callerOpenid || event.openid, phone: event.phone })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':
