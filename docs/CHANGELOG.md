@@ -1,5 +1,50 @@
 # 变更记录
 
+## 1.2.21 · 2026-06-07 · 商家店铺信息云端化
+
+**小程序版本：`1.2.21`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**B 端店铺信息读写云库 merchants，保存后 C 端商详同步展示；移除企微二维码；每月仅可修改一次。**
+
+### 店铺信息（B 端）
+
+- **云端化**：`getMerchantStoreProfile` / `updateMerchantStoreProfile` 读写 `merchants`（门店名称、联系电话、营业时间）。
+- **删除**企微二维码上传区块。
+- **限频**：`store_profile_updated_at` 冷却 **30 天**，保存后提示下次可编辑日期；首次入驻后首次保存不受限。
+- 省市仍为资质认证字段，本页只读展示。
+
+### C 端联通
+
+- `getMerchantContact` 返回 `businessHours`；商详商家区块展示营业时间。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{getMerchantStoreProfile,updateMerchantStoreProfile}.js`
+- `cloudfunctions/ops/utils/{storeProfile,merchant}.js`、`ops/index.js`
+- `services/merchant.service.js`、`pages-b/contact-config/*`
+- `pages/style-detail/index.wxml`、`index.wxss`
+- `tests/cloudfunctions/{getMerchantStoreProfile,updateMerchantStoreProfile,getMerchantContact}.test.js`
+- `__tests__/smoke/merchant-config.smoke.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 部署 `cloudfunctions/ops`（云端安装依赖）到 `cloud1-d2g3df4y16873034b`。
+2. 云端测试读取：`{ "action": "getMerchantStoreProfile", "openid": "<商家openid>" }`
+3. 云端测试保存：`{ "action": "updateMerchantStoreProfile", "openid": "...", "storeName": "星辰美甲·国贸店", "phone": "13800138001", "businessHours": "10:00-22:00" }`
+4. 再次保存应返回冷却错误；C 端商家款商详应显示新信息与营业时间。
+5. 小程序清缓存 → 体验版 **`1.2.21`**。
+
+### 验证
+
+- 商家中心 → 店铺信息：无企微二维码，保存成功，冷却期内按钮禁用。
+- 商详「来自商家」款：门店名/电话/营业时间与云库一致。
+- `npm test -- --testPathPattern="getMerchantStoreProfile|updateMerchantStoreProfile|getMerchantContact|merchant-config.smoke"` 通过。
+
+---
+
 ## 1.2.20 · 2026-06-07 · 退出商家模式修复与看板 AI 智能建议
 
 **小程序版本：`1.2.20`**（`app.globalData.version`）

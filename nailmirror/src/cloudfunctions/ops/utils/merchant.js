@@ -29,6 +29,7 @@ function merchantContactFromDoc(merchant) {
     phone: merchant.phone || '',
     province: merchant.province || '',
     city: merchant.city || '',
+    businessHours: merchant.business_hours || '',
     reviewUrl: merchant.review_url || '',
     openid: merchant.openid || '',
   }

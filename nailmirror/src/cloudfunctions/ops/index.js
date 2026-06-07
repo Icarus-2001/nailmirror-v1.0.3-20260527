@@ -72,6 +72,8 @@ const { getMerchantDashboard }   = require('./handlers/getMerchantDashboard')
 const { refreshMerchantDashboardSnapshots } = require('./handlers/refreshMerchantDashboardSnapshots')
 const { mockMerchantDashboardData } = require('./handlers/mockMerchantDashboardData')
 const { getMerchantDashboardAdvice } = require('./handlers/getMerchantDashboardAdvice')
+const { getMerchantStoreProfile } = require('./handlers/getMerchantStoreProfile')
+const { updateMerchantStoreProfile } = require('./handlers/updateMerchantStoreProfile')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -191,6 +193,17 @@ exports.main = async (event, context) => {
 
       case 'getMerchantDashboardAdvice':
         return await getMerchantDashboardAdvice({ openid: callerOpenid || event.openid })
+
+      case 'getMerchantStoreProfile':
+        return await getMerchantStoreProfile({ openid: callerOpenid || event.openid })
+
+      case 'updateMerchantStoreProfile':
+        return await updateMerchantStoreProfile({
+          openid: callerOpenid || event.openid,
+          storeName: event.storeName,
+          phone: event.phone,
+          businessHours: event.businessHours,
+        })
 
       case 'refreshMerchantDashboardSnapshots':
         return await refreshMerchantDashboardSnapshots()
