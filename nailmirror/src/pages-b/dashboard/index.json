@@ -1,7 +1,8 @@
 {
   "navigationBarTitleText": "商家看板",
   "usingComponents": {
-    "hot-item": "/components/hot-item/index",
-    "hot-rank-card": "/components/hot-rank-card/index"
+    "line-chart": "/components/line-chart/index",
+    "bar-chart": "/components/bar-chart/index",
+    "empty-state": "/components/empty-state/index"
   }
 }

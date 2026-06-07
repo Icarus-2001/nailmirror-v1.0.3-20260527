@@ -1,0 +1,40 @@
+.bc__row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+.bc__label {
+  width: 140rpx;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--np-text-weak);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bc__track {
+  flex: 1;
+  height: 20rpx;
+  background: #f3f4f6;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+.bc__bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.55), #7c3aed);
+  border-radius: 999rpx;
+  min-width: 4rpx;
+}
+.bc__val {
+  width: 72rpx;
+  text-align: right;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.bc__empty {
+  text-align: center;
+  color: var(--np-text-weak);
+  font-size: 26rpx;
+  padding: 24rpx 0;
+}

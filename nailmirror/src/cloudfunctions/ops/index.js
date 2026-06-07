@@ -68,6 +68,7 @@ const { checkStyleAvailability } = require('./handlers/checkStyleAvailability')
 const { listMerchantOwnStyles }  = require('./handlers/listMerchantOwnStyles')
 const { updateMerchantStyleStatus } = require('./handlers/updateMerchantStyleStatus')
 const { deleteMerchantStyle }    = require('./handlers/deleteMerchantStyle')
+const { getMerchantDashboard }   = require('./handlers/getMerchantDashboard')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -173,6 +174,9 @@ exports.main = async (event, context) => {
           openid: callerOpenid || event.openid,
           styleId: event.styleId,
         })
+
+      case 'getMerchantDashboard':
+        return await getMerchantDashboard({ openid: callerOpenid || event.openid })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':
