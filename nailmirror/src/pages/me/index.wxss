@@ -2,7 +2,21 @@
 .me__header { background: rgba(255,255,255,0.94); border-radius: 28rpx; padding: 40rpx 28rpx; display: flex; align-items: center; box-shadow: 0 14rpx 36rpx rgba(31,31,41,0.06); margin-bottom: 24rpx; }
 .me__header-arrow { color: var(--np-primary); font-size: 40rpx; margin-left: 8rpx; }
 .me__name--login { color: var(--np-primary); }
-.me__avatar { display: block; width: 120rpx; height: 120rpx; border-radius: 50%; background: #eee; margin-right: 24rpx; overflow: hidden; }
+.me__avatar-wrap { position: relative; flex-shrink: 0; margin-right: 24rpx; }
+.me__avatar { display: block; width: 120rpx; height: 120rpx; border-radius: 50%; background: #eee; overflow: hidden; }
+.me__avatar-badge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 4rpx 0 6rpx;
+  border-radius: 0 0 60rpx 60rpx;
+  background: rgba(20, 12, 24, 0.52);
+  color: #fff;
+  font-size: 18rpx;
+  text-align: center;
+  line-height: 1.2;
+}
 .me__name { font-size: 36rpx; font-weight: 600; }
 .me__role { color: var(--np-text-weak); font-size: 24rpx; margin-top: 6rpx; }
 .me__menu { background: rgba(255,255,255,0.94); border-radius: 24rpx; padding: 0 24rpx; box-shadow: 0 10rpx 30rpx rgba(31,31,41,0.05); }
@@ -11,3 +25,111 @@
 .me__menu-icon { font-size: 32rpx; margin-right: 18rpx; }
 .me__menu-label { flex: 1; }
 .me__menu-arrow { color: var(--np-text-weak); font-size: 32rpx; }
+
+.profile-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+.profile-dialog__mask {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(22, 18, 24, 0.38);
+}
+.profile-dialog__panel {
+  position: absolute;
+  left: 40rpx;
+  right: 40rpx;
+  bottom: 56rpx;
+  z-index: 1;
+  padding: 44rpx 36rpx 32rpx;
+  border-radius: 36rpx;
+  background: #fff;
+  box-shadow: 0 24rpx 80rpx rgba(20, 12, 24, 0.18);
+}
+.profile-dialog__title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--np-text);
+}
+.profile-dialog__desc {
+  margin-top: 10rpx;
+  color: var(--np-text-weak);
+  font-size: 24rpx;
+}
+.profile-dialog__avatar-wrap {
+  width: 160rpx;
+  height: 160rpx;
+  margin: 36rpx auto 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.profile-dialog__avatar-wrap--hint {
+  border: 4rpx solid rgba(255, 94, 138, 0.45);
+  background: #fff5f7;
+}
+.profile-dialog__avatar-btn {
+  display: block;
+  width: 144rpx !important;
+  min-width: 144rpx;
+  max-width: 144rpx;
+  height: 144rpx !important;
+  min-height: 144rpx;
+  max-height: 144rpx;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+}
+.profile-dialog__avatar-btn::after {
+  display: none;
+  border: none;
+}
+.profile-dialog__avatar-tip {
+  margin-bottom: 20rpx;
+  color: var(--np-primary);
+  font-size: 24rpx;
+  text-align: center;
+}
+.profile-dialog__avatar {
+  display: block;
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.profile-dialog__album {
+  min-height: 80rpx;
+  margin-bottom: 20rpx;
+}
+.profile-dialog__nickname {
+  height: 88rpx;
+  margin-bottom: 12rpx;
+  padding: 0 28rpx;
+  border-radius: 999rpx;
+  background: #f7f7fb;
+  color: var(--np-text);
+  font-size: 30rpx;
+  text-align: center;
+}
+.profile-dialog__nickname-ok {
+  margin-bottom: 20rpx;
+  color: var(--np-success);
+  font-size: 24rpx;
+  text-align: center;
+}
+.profile-dialog__confirm {
+  min-height: 88rpx;
+}
+.profile-dialog__cancel {
+  padding-top: 26rpx;
+  color: var(--np-text-weak);
+  font-size: 26rpx;
+  text-align: center;
+}

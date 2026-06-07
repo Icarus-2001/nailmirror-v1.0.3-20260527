@@ -1,6 +1,9 @@
 <view class="me">
   <view class="me__header" bindtap="onGoLogin">
-    <image class="me__avatar" src="{{user.avatarUrl}}" mode="aspectFill" binderror="onAvatarError"/>
+    <view class="me__avatar-wrap" catchtap="onTapAvatar">
+      <image class="me__avatar" src="{{user.avatarUrl}}" mode="aspectFill" binderror="onAvatarError"/>
+      <view class="me__avatar-badge">换头像</view>
+    </view>
     <view class="me__info">
       <view class="me__name {{needLogin ? 'me__name--login' : ''}}">{{user.nickname}}</view>
       <view class="me__role" wx:if="{{needLogin}}">点击登录 · 同步试戴与收藏</view>
@@ -29,6 +32,59 @@
       <text class="me__menu-icon">🏪</text>
       <text class="me__menu-label">商家经营入口</text>
       <text class="me__menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view wx:if="{{showProfileDialog}}" class="profile-dialog">
+    <view class="profile-dialog__mask" bindtap="onCloseProfileDialog"></view>
+    <view class="profile-dialog__panel">
+      <view class="profile-dialog__title">{{needLogin ? '微信登录' : '更换头像'}}</view>
+      <view class="profile-dialog__desc">选择微信头像，或从相册上传一张图片</view>
+
+      <view class="profile-dialog__avatar-wrap {{avatarChosen ? '' : 'profile-dialog__avatar-wrap--hint'}}">
+        <button
+          class="profile-dialog__avatar-btn"
+          open-type="chooseAvatar"
+          bindchooseavatar="onChooseAvatar"
+          hover-class="none"
+          plain
+        >
+          <image
+            class="profile-dialog__avatar"
+            src="{{dialogAvatarUrl || brandLogo}}"
+            mode="aspectFill"
+          />
+        </button>
+      </view>
+      <view class="profile-dialog__avatar-tip" wx:if="{{!avatarChosen}}">点击圆形区域选微信头像</view>
+
+      <button
+        class="np-btn np-btn--ghost np-btn--block profile-dialog__album"
+        bindtap="onChooseAvatarFromAlbum"
+        disabled="{{profileLoading}}"
+        hover-class="none"
+      >从相册选择图片</button>
+
+      <input
+        id="meProfileNicknameInput"
+        class="profile-dialog__nickname"
+        type="nickname"
+        placeholder="点击此处选用微信昵称"
+        value="{{dialogNickname}}"
+        bindfocus="onNicknameFocus"
+        bindinput="onNicknameInput"
+        bindblur="onNicknameBlur"
+        bindnicknamereview="onNicknameReview"
+      />
+      <view class="profile-dialog__nickname-ok" wx:if="{{dialogNickname}}">已选用：{{dialogNickname}}</view>
+
+      <button
+        class="np-btn np-btn--block profile-dialog__confirm"
+        bindtap="onConfirmProfile"
+        disabled="{{profileLoading}}"
+        hover-class="none"
+      >{{profileLoading ? '保存中...' : (needLogin ? '确认并登录' : '保存')}}</button>
+      <view class="profile-dialog__cancel" bindtap="onCloseProfileDialog">取消</view>
     </view>
   </view>
 
