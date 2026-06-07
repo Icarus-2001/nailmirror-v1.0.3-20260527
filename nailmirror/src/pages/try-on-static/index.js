@@ -6,7 +6,16 @@ const cloudUtil = require('../../utils/cloud');
 const { userStore } = require('../../stores/user.store');
 const { pickHandPhoto, resolveBundledPhoto, downloadRemoteHand } = require('../../utils/image');
 const { tryOnStore } = require('../../stores/try-on.store');
-const { NAIL_SHAPES } = require('../../config/enums');
+const { NAIL_SHAPES, NAIL_SHAPE_GROUPS } = require('../../config/enums');
+
+function buildShapeGroups() {
+  const map = {};
+  NAIL_SHAPES.forEach(s => { map[s.id] = s; });
+  return NAIL_SHAPE_GROUPS.map(g => ({
+    groupLabel: g.groupLabel,
+    shapes: g.ids.map(id => map[id]).filter(Boolean)
+  }));
+}
 const featureFlags = require('../../config/feature-flags');
 const mockHand = require('../../config/mock-hand');
 const composeWaiting = require('../../utils/compose-waiting');
@@ -64,7 +73,7 @@ Page({
     stepLabels: [],
     needPickStyle: true,
 
-    shapes: NAIL_SHAPES,
+    shapeGroups: buildShapeGroups(),
     selectedShape: '',
     shapeLabel: '',
 
@@ -152,8 +161,12 @@ Page({
   },
 
   _labelOfShape(id) {
+    if (!id) return '';
     const found = NAIL_SHAPES.find(s => s.id === id);
-    return found ? found.label : '';
+    if (found) return found.label;
+    // 兼容旧 id：通过 SHAPE_ID_TO_LABEL 映射
+    const { SHAPE_ID_TO_LABEL } = require('../../config/label-maps');
+    return SHAPE_ID_TO_LABEL[id] || id;
   },
 
   _orderKeys() {

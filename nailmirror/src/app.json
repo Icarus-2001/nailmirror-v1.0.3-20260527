@@ -10,8 +10,7 @@
     "pages/me/index",
     "pages/me-history/index",
     "pages/me-favorite/index",
-    "pages/me-membership/index",
-    "pages/countdown/index"
+    "pages/me-membership/index"
   ],
   "subPackages": [
     {
@@ -22,9 +21,7 @@
         "merchant-verify/index",
         "dashboard/index",
         "style-upload/index",
-        "stock-advice/index",
         "contact-config/index",
-        "hot-rank/index",
         "membership/index"
       ]
     }

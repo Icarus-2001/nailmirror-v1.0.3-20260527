@@ -17,19 +17,9 @@
       <text class="be__label">上传款式</text>
       <text class="be__arrow">›</text>
     </view>
-    <view class="be__item" bindtap="onGoStock">
-      <text class="be__icon">📦</text>
-      <text class="be__label">备货建议</text>
-      <text class="be__arrow">›</text>
-    </view>
     <view class="be__item" bindtap="onGoContact">
       <text class="be__icon">📞</text>
-      <text class="be__label">轻预约配置</text>
-      <text class="be__arrow">›</text>
-    </view>
-    <view class="be__item" bindtap="onGoHotRank">
-      <text class="be__icon">🔥</text>
-      <text class="be__label">热度详情</text>
+      <text class="be__label">店铺信息</text>
       <text class="be__arrow">›</text>
     </view>
     <view class="be__item" bindtap="onGoMembership">

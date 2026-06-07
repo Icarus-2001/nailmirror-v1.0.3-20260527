@@ -37,8 +37,6 @@ Page({
   },
   onGoDashboard() { wx.navigateTo({ url: '/pages-b/dashboard/index' }); },
   onGoStyleUpload() { wx.navigateTo({ url: '/pages-b/style-upload/index' }); },
-  onGoStock() { wx.navigateTo({ url: '/pages-b/stock-advice/index' }); },
   onGoContact() { wx.navigateTo({ url: '/pages-b/contact-config/index' }); },
-  onGoHotRank() { wx.navigateTo({ url: '/pages-b/hot-rank/index' }); },
   onGoMembership() { wx.navigateTo({ url: '/pages-b/membership/index' }); }
 });

@@ -1,14 +1,9 @@
 const styleService = require('../../services/style.service');
 const featureFlags = require('../../config/feature-flags');
-const { NAIL_STYLES } = require('../../config/enums');
 const { PAGE_SIZE } = require('../../config/constants');
 
 Page({
   data: {
-    styleTabs: [{ id: '', label: '全部' }],
-    colorTabs: [{ id: '', label: '全部颜色' }],
-    currentStyle: '',
-    currentColor: '',
     keyword: '',
     items: [],
     page: 1,
@@ -23,21 +18,10 @@ Page({
   onLoad(query) {
     const keyword = query && query.keyword ? decodeURIComponent(query.keyword) : '';
     const useReal = featureFlags.USE_REAL_STYLES;
-    let styleTabs = [{ id: '', label: '全部' }].concat(NAIL_STYLES);
-    let colorTabs = [{ id: '', label: '全部颜色' }];
-    if (useReal) {
-      const cats = styleService.getCategories();
-      styleTabs = [{ id: '', label: '全部' }].concat(
-        cats.styles.map((s) => ({ id: s, label: s, type: 'styleLabel' }))
-      );
-      colorTabs = [{ id: '', label: '全部颜色' }].concat(
-        cats.colors.map((c) => ({ id: c, label: c, type: 'color' }))
-      );
-    }
     const drawerFilters = useReal
       ? { colors: [], designs: [], styleLabels: [], shapeLabels: [] }
       : { styleTags: [], materialTags: [], shapeTags: [] };
-    this.setData({ useReal, styleTabs, colorTabs, drawerFilters, filters: drawerFilters, keyword });
+    this.setData({ useReal, drawerFilters, filters: drawerFilters, keyword });
     this.loadList(true);
   },
   async loadList(reset) {
@@ -46,16 +30,6 @@ Page({
     try {
       const page = reset ? 1 : this.data.page + 1;
       const filters = Object.assign({}, this.data.drawerFilters);
-      if (this.data.useReal) {
-        if (this.data.currentStyle) {
-          filters.styleLabels = [this.data.currentStyle];
-        }
-        if (this.data.currentColor) {
-          filters.colors = [this.data.currentColor];
-        }
-      } else if (this.data.currentStyle) {
-        filters.styleTags = [this.data.currentStyle];
-      }
       let resp;
       if (this.data.keyword) {
         resp = await styleService.search({ keyword: this.data.keyword, filters });
@@ -80,14 +54,6 @@ Page({
     } finally {
       this.setData({ loading: false });
     }
-  },
-  onTabTap(e) {
-    this.setData({ currentStyle: e.currentTarget.dataset.id });
-    this.loadList(true);
-  },
-  onColorTap(e) {
-    this.setData({ currentColor: e.currentTarget.dataset.id });
-    this.loadList(true);
   },
   onKeyword(e) { this.setData({ keyword: e.detail.value }); },
   onSearch() { this.loadList(true); },

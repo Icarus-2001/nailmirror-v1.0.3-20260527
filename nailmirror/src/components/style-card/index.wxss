@@ -9,7 +9,7 @@
 .style-card__source-badge { position: absolute; top: 12rpx; right: 12rpx; padding: 4rpx 12rpx; border-radius: 999rpx; font-size: 18rpx; font-weight: 500; line-height: 1.4; }
 .style-card__source-badge--merchant { background: rgba(155,108,255,0.9); color: #fff; }
 .style-card__source-badge--platform { background: rgba(255,94,138,0.9); color: #fff; }
-.style-card__source-badge--xhs { background: rgba(255,94,138,0.9); color: #fff; }
+.style-card__source-badge--xhs { background: rgba(183,121,31,0.92); color: #fffaf0; }
 .style-card__body { padding: 16rpx 20rpx 20rpx; }
 .style-card__title { font-size: 28rpx; color: var(--np-text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .style-card__tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; }

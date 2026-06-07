@@ -21,10 +21,5 @@ Page({
     } catch (e) {
       wx.showToast({ title: '加载失败', icon: 'none' });
     }
-  },
-  onGoStock() { wx.navigateTo({ url: '/pages-b/stock-advice/index' }); },
-  onGoTrend(e) {
-    const word = e.currentTarget.dataset.word;
-    wx.navigateTo({ url: '/pages-b/hot-rank/index?word=' + encodeURIComponent(word) });
   }
 });
