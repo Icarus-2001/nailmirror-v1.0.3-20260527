@@ -1,5 +1,54 @@
 # 变更记录
 
+## 1.2.16 · 2026-06-07 · 款式库管理三 Tab
+
+**小程序版本：`1.2.16`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**B 端「上传款式」改为「款式库管理」三 Tab：查看/上传/下架删除；C 端下架款与热榜 interim 显示「款式已下架」页。**
+
+### 款式库管理（B 端）
+
+- **`pages-b/entry`**：菜单「上传款式」→ **「款式库管理」**。
+- **`pages-b/style-upload`** 三 Tab：**查看款式**（含已上线/已下架徽章、重新上架）、**上传款式**（原逻辑不变）、**下架与删除**（下架确认 / 彻底删除二次确认）。
+- **`merchant-style.service`**：`listOwnStyles`、`setOwnStyleActive`、`deleteOwnStyle`；操作后刷新 C 端商家款缓存。
+
+### 云端 ops
+
+- **`listMerchantOwnStyles`**：商家名下全部 `merchant-upload` 款（含 `is_active=false`）。
+- **`updateMerchantStyleStatus`**：`{ styleId, is_active }` 上下架，写 `deactivated_at`；不删评分/试戴/热度数据。
+- **`deleteMerchantStyle`**：不可逆删除 `styles` 并级联清理 `style_ratings` / `try_on_logs` / `user_favorites` / `user_events`。
+- **平台联动**：`listMerchantStyles` 仅 `is_active=true` → 款式库立即不可见；热款榜 T+1 自然掉榜。
+
+### C 端 interim
+
+- **`checkStyleAvailability`** 扩展 `style_inactive`（下架款、已删但仍在热榜快照）。
+- **`pages/style-offline`**：「款式已下架」提示页；`style-detail` 对 `style_inactive` 跳转。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{listMerchantOwnStyles,updateMerchantStyleStatus,deleteMerchantStyle,checkStyleAvailability}.js`、`utils/merchantStyleOwnership.js`、`index.js`
+- `pages-b/style-upload/*`、`pages-b/entry/index.wxml`、`pages/style-offline/*`、`pages/style-detail/index.js`
+- `services/merchant-style.service.js`、`app.js`、`app.json`、`package.json`
+- `tests/cloudfunctions/{listMerchantOwnStyles,updateMerchantStyleStatus,deleteMerchantStyle,checkStyleAvailability}.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含三个新 action + 扩展 `checkStyleAvailability`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.16`**。
+
+### 验证
+
+- 商家中心 → 款式库管理 → 三 Tab 可切换；Tab2 上传与改前一致。
+- Tab1 可见状态徽章；下架款可重新上架。
+- Tab3 下架 → C 端款式库立即不见；热榜点击 →「款式已下架」页。
+- Tab3 彻底删除 → 二次确认 → 数据清除。
+- `npm test -- --testPathPattern="listMerchantOwnStyles|updateMerchantStyleStatus|deleteMerchantStyle|checkStyleAvailability"` 通过。
+
+---
+
 ## 1.2.15 · 2026-06-07 · 商家注销资质
 
 **小程序版本：`1.2.15`**（`app.globalData.version`）
