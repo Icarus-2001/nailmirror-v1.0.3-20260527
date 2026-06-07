@@ -26,7 +26,7 @@ nailmirror-v1.6-20260519-r3/
     │   ├── tryon-prompt.js        ← 试戴英文 prompt（由 VLM 标签生成）
     │   └── mock-hand.js           ← 默认 Mock 手照
     ├── cloudfunctions/tryon/      ← 试戴云函数
-    ├── components/privacy-popup/  ← 隐私授权弹窗
+    ├── components/privacy-popup/  ← 隐私授权弹窗（登录/首页/试戴/我的/B 端上传等页面须挂载）
     ├── mock/
     │   ├── styles.real.js         ← 25 条真实款式
     │   └── eval-hands.js          ← 13 张评测手照 URL
@@ -67,7 +67,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
-**入口（v1.2.4）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。甲型按短款/中长款/长款九款三分组选择；选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 上传款式」批量上传图片；热款榜仅展示小红书全网热款 TOP10（`styleSource: xhs-hot`，徽章「全网热款」，封面走 `cloud://` fileID），由 `ops.importXhsHotTop10` 导入。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.2.4**。
+**入口（v1.2.8）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。甲型按短款/中长款/长款九款三分组选择；选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 上传款式」批量上传图片（**选图前须完成微信隐私授权**，B 端页挂载 `privacy-popup`）；热款榜仅展示小红书全网热款 TOP10（`styleSource: xhs-hot`，徽章「全网热款」，封面走 `cloud://` fileID），由 `ops.importXhsHotTop10` 导入。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.2.8**。
 
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）

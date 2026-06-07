@@ -1,11 +1,16 @@
 const { userStore } = require('../../stores/user.store');
 const merchantAuthService = require('../../services/merchant-auth.service');
+const { ensurePrivacyAuthorized } = require('../../utils/privacy');
 
 Page({
   data: {
     role: 'c',
     checking: true
   },
+  onReady() {
+    ensurePrivacyAuthorized().catch(() => {});
+  },
+
   async onShow() {
     userStore.init();
     this.setData({ checking: true });

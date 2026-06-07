@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "上传款式",
   "usingComponents": {
-    "empty-state": "/components/empty-state/index"
+    "empty-state": "/components/empty-state/index",
+    "privacy-popup": "/components/privacy-popup/index"
   }
 }

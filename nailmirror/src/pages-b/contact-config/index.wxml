@@ -27,4 +27,6 @@
   <view class="bc__bottom">
     <button class="np-btn np-btn--block" bindtap="onSave" loading="{{saving}}">保存配置</button>
   </view>
+
+  <privacy-popup />
 </view>

@@ -51,4 +51,6 @@
   <view class="su__footer" wx:if="{{files.length && !uploading}}">
     <view class="np-btn np-btn--ghost np-btn--block" bindtap="onClear">清空本次选择</view>
   </view>
+
+  <privacy-popup />
 </view>

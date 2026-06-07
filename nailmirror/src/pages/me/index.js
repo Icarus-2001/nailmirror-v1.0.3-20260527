@@ -1,11 +1,16 @@
 const { userStore } = require('../../stores/user.store');
 const { BRAND_LOGO } = require('../../config/constants');
+const { ensurePrivacyAuthorized } = require('../../utils/privacy');
 
 Page({
   data: {
     user: null,
     needLogin: true
   },
+  onReady() {
+    ensurePrivacyAuthorized().catch(() => {});
+  },
+
   async onShow() {
     userStore.init();
     const loggedIn = !!userStore.openid;
