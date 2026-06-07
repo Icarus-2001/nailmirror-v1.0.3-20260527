@@ -14,6 +14,8 @@
 - **CHANGELOG 写入时机**：只有用户**明确要求**写 CHANGELOG 时才能写；功能未验收前不主动写 CHANGELOG/docs，用户验证通过且明确说要写时再补。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
+- **B 端待办（分 PR 依次实现）**：① 已认证商家入口手机号二次核验（微信 `getPhoneNumber` 比对 `merchants.phone`，24h 有效）— 进行中/见 `feature/merchant-phone-verify-gate`；② 商家主页【注销资质】（复用手机核验 → `merchants.status=revoked`、款式立即 `is_active=false`、热款榜 T+1 移除、 interim 提示页）；③【上传款式】改名为【款式库管理】三 Tab（查看款式 / 上传款式 / 下架与删除，下架可重上架，删除不可逆，热款榜 T+1 与下架提示页）。
+- **商家手机号核验**：首期不用短信验证码（需企业主体+腾讯云模板审核）；用微信手机号快捷验证 + 云端比对认证手机号；`ops` 须开通 `phonenumber.getPhoneNumber` openapi 并重新部署。
 
 ## 已学习的工作区事实
 

@@ -13,8 +13,11 @@
   </view>
 
   <view class="hr__head">
-    <view class="np-title">{{pageTitle}}</view>
-    <view class="np-subtitle" wx:if="{{updatedAt}}">{{updatedAt}}</view>
+    <view class="hr__head-main">
+      <view class="np-title">{{pageTitle}}</view>
+      <view class="np-subtitle" wx:if="{{updatedAt}}">{{updatedAt}}</view>
+    </view>
+    <text class="hr__rule-link" bindtap="onShowRules">榜单规则 ›</text>
   </view>
 
   <view class="hr__notice" wx:if="{{notice}}">{{notice}}</view>
@@ -24,4 +27,17 @@
   </block>
 
   <empty-state wx:if="{{!loading && items.length === 0}}" text="暂无榜单数据" hint="{{activeTab === 'site' ? '每日 10 点自动更新' : '请稍后再试'}}"></empty-state>
+
+  <view class="hr__rule-modal" wx:if="{{ruleVisible}}">
+    <view class="hr__rule-mask" bindtap="onCloseRules"></view>
+    <view class="hr__rule-box">
+      <view class="hr__rule-title">{{ruleTitle}}</view>
+      <scroll-view class="hr__rule-scroll" scroll-y>
+        <view class="hr__rule-body">
+          <view class="hr__rule-p" wx:for="{{ruleParagraphs}}" wx:key="*this">{{item}}</view>
+        </view>
+      </scroll-view>
+      <view class="hr__rule-btn" bindtap="onCloseRules">知道了</view>
+    </view>
+  </view>
 </view>

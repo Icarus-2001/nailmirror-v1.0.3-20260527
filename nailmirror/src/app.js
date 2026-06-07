@@ -7,6 +7,7 @@ const { EVT_USER_LOGIN } = require('./config/constants');
 const { userStore } = require('./stores/user.store');
 // 纳入主包依赖图，避免子页面/组件 require 报 module is not defined
 require('./config/tag-vocabulary');
+require('./config/hot-rank-rules');
 require('./utils/star-display');
 require('./services/xhs-hot.service');
 
@@ -18,7 +19,7 @@ App({
     deviceLevel: 'mid',
     systemInfo: null,
     eventBus,
-    version: '1.2.11',
+    version: '1.2.12',
     pendingHdUrl: '',
     /** 冷启动已跳转首页时，登录页 onShow 不再重复 switchTab */
     skipLoginAutoRedirect: false

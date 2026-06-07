@@ -211,12 +211,13 @@ Page({
   onGoHistory() { wx.navigateTo({ url: '/pages/me-history/index' }); },
   onGoFavorite() { wx.navigateTo({ url: '/pages/me-favorite/index' }); },
   onGoMembership() { wx.navigateTo({ url: '/pages/me-membership/index' }); },
-  onGoMerchant() {
+  async onGoMerchant() {
     userStore.init();
     if (!userStore.openid) {
       wx.navigateTo({ url: '/pages/login/index?from=merchant' });
       return;
     }
-    wx.navigateTo({ url: '/pages-b/entry/index' });
+    const merchantEntryService = require('../../services/merchant-entry.service');
+    await merchantEntryService.goMerchantEntry(userStore.openid);
   }
 });
