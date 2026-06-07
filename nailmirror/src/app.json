@@ -20,7 +20,6 @@
         "entry/index",
         "merchant-verify/index",
         "dashboard/index",
-        "hot-rank/index",
         "style-upload/index",
         "contact-config/index",
         "membership/index"

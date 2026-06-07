@@ -1,6 +1,4 @@
 {
   "navigationBarTitleText": "热度榜单",
-  "usingComponents": {
-    "loading": "/components/loading/index"
-  }
+  "usingComponents": {}
 }
