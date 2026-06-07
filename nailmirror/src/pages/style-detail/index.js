@@ -83,6 +83,10 @@ Page({
             wx.redirectTo({ url: '/pages/merchant-revoked/index?id=' + id });
             return;
           }
+          if (chk && chk.reason === 'style_inactive') {
+            wx.redirectTo({ url: '/pages/style-offline/index?id=' + id });
+            return;
+          }
         } catch (err) {
           // fall through
         }

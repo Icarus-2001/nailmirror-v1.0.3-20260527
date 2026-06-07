@@ -232,6 +232,51 @@ function invalidateMerchantStylesCache() {
   safeSet(STORAGE_MERCHANT_STYLES, []);
 }
 
+/** B 端：拉取当前商家名下全部款式（含已下架） */
+async function listOwnStyles(force) {
+  const cloudUtil = require('../utils/cloud');
+  if (!cloudUtil.isCloudReady()) {
+    return getCachedMerchantStylesForMerchant(userStore.openid);
+  }
+  const res = await cloudUtil.callFunction('ops', {
+    action: 'listMerchantOwnStyles',
+    role: 'b',
+  });
+  if (res && res.ok && Array.isArray(res.styles)) {
+    return res.styles.map(mapCloudStyleToClientStyle).filter((s) => s && s.id);
+  }
+  throw new Error((res && res.error) || '加载款式失败');
+}
+
+/** B 端：上架/下架自有款式，并刷新 C 端可见列表缓存 */
+async function setOwnStyleActive(styleId, active) {
+  const cloudUtil = require('../utils/cloud');
+  const res = await cloudUtil.callFunction('ops', {
+    action: 'updateMerchantStyleStatus',
+    role: 'b',
+    styleId,
+    is_active: !!active,
+  });
+  if (!res || !res.ok) throw new Error((res && res.error) || '操作失败');
+  invalidateMerchantStylesCache();
+  await ensureMerchantStyles(true);
+  return res;
+}
+
+/** B 端：彻底删除自有款式（不可逆），并刷新 C 端可见列表缓存 */
+async function deleteOwnStyle(styleId) {
+  const cloudUtil = require('../utils/cloud');
+  const res = await cloudUtil.callFunction('ops', {
+    action: 'deleteMerchantStyle',
+    role: 'b',
+    styleId,
+  });
+  if (!res || !res.ok) throw new Error((res && res.error) || '删除失败');
+  invalidateMerchantStylesCache();
+  await ensureMerchantStyles(true);
+  return res;
+}
+
 module.exports = {
   getCachedMerchantStyles,
   getCachedMerchantStylesForMerchant,
@@ -240,4 +285,7 @@ module.exports = {
   uploadMerchantStyles,
   ensureMerchantStyles,
   invalidateMerchantStylesCache,
+  listOwnStyles,
+  setOwnStyleActive,
+  deleteOwnStyle,
 };

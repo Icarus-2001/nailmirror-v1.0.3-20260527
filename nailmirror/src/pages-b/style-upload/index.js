@@ -5,6 +5,11 @@ const { formatUploadFailure } = require('../../utils/upload-validation');
 
 const MAX_COUNT = 9;
 const MAX_SIZE = 10 * 1024 * 1024;
+const TABS = [
+  { key: 'view', label: '查看款式' },
+  { key: 'upload', label: '上传款式' },
+  { key: 'manage', label: '下架与删除' },
+];
 
 function fileName(path) {
   return String(path || '').split(/[\\/]/).filter(Boolean).pop() || '款式图片';
@@ -28,12 +33,17 @@ function normalizeFiles(tempFiles) {
 
 Page({
   data: {
+    tabs: TABS,
+    activeTab: 'view',
     role: 'c',
+    ownStyles: [],
+    ownLoading: false,
     files: [],
     uploading: false,
     successCount: 0,
     failedCount: 0,
-    cachedCount: 0
+    cachedCount: 0,
+    operatingId: '',
   },
 
   onReady() {
@@ -42,11 +52,37 @@ Page({
 
   onShow() {
     userStore.init();
-    const cached = merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid);
-    this.setData({
-      role: userStore.role || 'c',
-      cachedCount: cached.length
-    });
+    const role = userStore.role || 'c';
+    this.setData({ role });
+    if (role === 'b') {
+      this.loadOwnStyles();
+    } else {
+      const cached = merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid);
+      this.setData({ cachedCount: cached.length });
+    }
+  },
+
+  async loadOwnStyles() {
+    if (this.data.role !== 'b') return;
+    this.setData({ ownLoading: true });
+    try {
+      const styles = await merchantStyleService.listOwnStyles(true);
+      this.setData({
+        ownStyles: styles,
+        cachedCount: styles.filter((s) => s.isActive !== false).length,
+      });
+    } catch (e) {
+      const msg = e && e.message ? e.message : '加载失败';
+      wx.showToast({ title: msg.slice(0, 20), icon: 'none' });
+    } finally {
+      this.setData({ ownLoading: false });
+    }
+  },
+
+  onTabTap(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (!tab || tab === this.data.activeTab) return;
+    this.setData({ activeTab: tab });
   },
 
   async _preparePrivacy() {
@@ -135,13 +171,14 @@ Page({
       });
       const successCount = files.filter((file) => file.status === 'success').length;
       const failedCount = files.filter((file) => file.status === 'failed').length;
-      this.setData({
-        files,
-        successCount,
-        failedCount,
-        cachedCount: merchantStyleService.getCachedMerchantStylesForMerchant(userStore.openid).length
-      });
-      wx.showToast({ title: successCount ? '款式已入库' : '上传未成功', icon: successCount ? 'success' : 'none' });
+      this.setData({ files, successCount, failedCount });
+      if (successCount) {
+        merchantStyleService.invalidateMerchantStylesCache();
+        await this.loadOwnStyles();
+        wx.showToast({ title: '款式已入库', icon: 'success' });
+      } else {
+        wx.showToast({ title: '上传未成功', icon: 'none' });
+      }
     } catch (e) {
       const msg = e && e.message ? e.message : '上传失败';
       this.setData({
@@ -165,7 +202,71 @@ Page({
     wx.navigateTo({ url: '/pages/style-library/index' });
   },
 
-  onGoEntry() {
-    wx.navigateBack();
-  }
+  onGoViewTab() {
+    this.setData({ activeTab: 'view' });
+  },
+
+  async onReactivate(e) {
+    const id = e.currentTarget.dataset.id;
+    if (!id || this.data.operatingId) return;
+    this.setData({ operatingId: id });
+    try {
+      await merchantStyleService.setOwnStyleActive(id, true);
+      wx.showToast({ title: '已重新上架', icon: 'success' });
+      await this.loadOwnStyles();
+    } catch (err) {
+      wx.showToast({ title: (err.message || '操作失败').slice(0, 20), icon: 'none' });
+    } finally {
+      this.setData({ operatingId: '' });
+    }
+  },
+
+  onDeactivate(e) {
+    const id = e.currentTarget.dataset.id;
+    const title = e.currentTarget.dataset.title || '该款式';
+    if (!id || this.data.operatingId) return;
+    wx.showModal({
+      title: '确认下架',
+      content: '下架后 C 端款式库将立即不可见，热度榜将于次日更新后移除。确定下架「' + title + '」？',
+      confirmText: '下架',
+      success: async (res) => {
+        if (!res.confirm) return;
+        this.setData({ operatingId: id });
+        try {
+          await merchantStyleService.setOwnStyleActive(id, false);
+          wx.showToast({ title: '已下架', icon: 'success' });
+          await this.loadOwnStyles();
+        } catch (err) {
+          wx.showToast({ title: (err.message || '操作失败').slice(0, 20), icon: 'none' });
+        } finally {
+          this.setData({ operatingId: '' });
+        }
+      },
+    });
+  },
+
+  onDeleteStyle(e) {
+    const id = e.currentTarget.dataset.id;
+    const title = e.currentTarget.dataset.title || '该款式';
+    if (!id || this.data.operatingId) return;
+    wx.showModal({
+      title: '彻底删除',
+      content: '删除后不可恢复，评分、试戴记录等关联数据将一并清除。确定删除「' + title + '」？',
+      confirmText: '删除',
+      confirmColor: '#e11d48',
+      success: async (res) => {
+        if (!res.confirm) return;
+        this.setData({ operatingId: id });
+        try {
+          await merchantStyleService.deleteOwnStyle(id);
+          wx.showToast({ title: '已删除', icon: 'success' });
+          await this.loadOwnStyles();
+        } catch (err) {
+          wx.showToast({ title: (err.message || '删除失败').slice(0, 20), icon: 'none' });
+        } finally {
+          this.setData({ operatingId: '' });
+        }
+      },
+    });
+  },
 });
