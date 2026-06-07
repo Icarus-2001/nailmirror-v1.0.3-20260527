@@ -13,10 +13,10 @@
 - **云开发操作说明（强制）**：凡涉及微信云开发（云函数部署/更新、环境变量、云数据库、云存储、云端测试等），每次交付或答疑时须用中文给出**详细、可逐步照做**的操作步骤（在哪点哪个按钮、选哪个环境、预期看到什么结果、失败时怎么排查）；不要只说「上传部署就行」而不说明是否还需云端测试、小程序端验证、数据库核对等。
 - **CHANGELOG 写入时机**：只有用户**明确要求**写 CHANGELOG 时才能写；功能未验收前不主动写 CHANGELOG/docs，用户验证通过且明确说要写时再补。
 - **PR 与版本号**：**一个 PR 对应一个 CHANGELOG 版本**；功能未验收、用户未确认前**不要主动提 PR**；**禁止 Agent 自动合并 PR 到 main**（须用户/协作者 review 后手动合并）。
-- **当前版本规划（2026-06-07）**：**1.2.14** = PR #38 范围（`upload-validation` 主包修复 + #37 商家手机号手动核验，见 `feature/release-1.2.14`）；**PR #39** 注销资质待验收通过后再定版本号与 CHANGELOG。
+- **当前版本规划（2026-06-07）**：**1.2.14** = PR #38（`upload-validation` 主包修复 + #37 手动手机号，见 `feature/release-1.2.14`）；**1.2.15** = PR #39 商家注销资质（`feature/merchant-revoke-qualification`）。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
-- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合入 main（#37）**，改为手动输入 11 位号码比对 `merchants.phone`（1.2.14）；② 商家主页【注销资质】— **PR #39 待验收**（`revokeMerchantQualification` / `checkStyleAvailability`，**须部署 ops**）；③【上传款式】→【款式库管理】三 Tab。
+- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合入 main（#37，1.2.14）**；② 商家【注销资质】— **PR #39（1.2.15）待团队合并**；③【上传款式】→【款式库管理】三 Tab。
 - **商家手机号核验**：不用短信；**1.2.14 起**为手动输入认证手机号 + 云端比对（已摆脱 `getPhoneNumber`）。
 - **注销资质部署**：除小程序编译外，**必须**在共享环境 `cloud1-d2g3df4y16873034b` 重新部署 `ops`（含 `revokeMerchantQualification`）；仅上传小程序代码而未部署云函数会报「未知 action」。
 
