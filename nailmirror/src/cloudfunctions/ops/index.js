@@ -28,6 +28,7 @@
  *   getStyleHeatScores C端：聚合 UV/试戴完成/收藏量，按公式计算站内热度
  *   refreshSiteHotRank  计算站内热度 Top10 并写入 site_hot_rank（定时/手动）
  *   listSiteHotRank     C端：读取站内热度 Top10 快照
+ *   validateStyleRef    C端：试戴参考图非美甲图门禁
  *
  * 调用示例（小程序端）：
  *   wx.cloud.callFunction({ name: 'ops', data: { action: 'getSummary' } })
@@ -61,6 +62,7 @@ const { listFavorites }            = require('./handlers/listFavorites')
 const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
 const { refreshSiteHotRank }       = require('./handlers/refreshSiteHotRank')
 const { listSiteHotRank }          = require('./handlers/listSiteHotRank')
+const { validateStyleRef }         = require('./handlers/validateStyleRef')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -164,6 +166,9 @@ exports.main = async (event, context) => {
 
       case 'listSiteHotRank':
         return await listSiteHotRank()
+
+      case 'validateStyleRef':
+        return await validateStyleRef(event)
 
       default:
         return { error: `未知 action: ${action}` }

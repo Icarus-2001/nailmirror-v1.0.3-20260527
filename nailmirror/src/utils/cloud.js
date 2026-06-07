@@ -51,6 +51,20 @@ function uploadFile(cloudPath, filePath) {
   });
 }
 
+function deleteCloudFile(fileID) {
+  return new Promise((resolve, reject) => {
+    if (!initCloud()) {
+      reject(new Error('云开发未就绪'));
+      return;
+    }
+    wx.cloud.deleteFile({
+      fileList: [fileID],
+      success: (res) => resolve(res),
+      fail: (err) => reject(err || new Error('云文件删除失败'))
+    });
+  });
+}
+
 function downloadCloudFile(fileID) {
   return new Promise((resolve, reject) => {
     if (!initCloud()) {
@@ -68,4 +82,4 @@ function downloadCloudFile(fileID) {
   });
 }
 
-module.exports = { initCloud, isCloudReady, callFunction, uploadFile, downloadCloudFile };
+module.exports = { initCloud, isCloudReady, callFunction, uploadFile, downloadCloudFile, deleteCloudFile };

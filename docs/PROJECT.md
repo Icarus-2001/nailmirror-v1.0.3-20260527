@@ -67,7 +67,7 @@ module.exports = { ENV_ID: 'cloud1-d2g3df4y16873034b' };
 
 ## 试戴链路（概要）
 
-**入口（v1.2.11）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。甲型按短款/中长款/长款九款三分组选择；选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 上传款式」批量上传图片（**选图前须完成微信隐私授权**，B 端页挂载 `privacy-popup`）。小红书热款（`styleSource: xhs-hot`，徽章「全网热款」）由 `ops.importXhsHotTop10` 导入：**热款榜**仅最新一批 TOP10（`listXhsHotStyles` `scope=rank`）；**款式库**保留全部历史批次（`scope=library`）。封面 C 端优先 `cloud://` fileID。本地可用 `node scripts/push-xhs-hot.js --latest --dry-run` 生成导入 payload。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.2.11**。
+**入口（v1.2.13）**：首页「立即试戴」为四步（含选款式）；款式详情「立即试戴」为三步（`styleId` 由 URL 带入）。甲型按短款/中长款/长款九款三分组选择；选款式页展示全部真实款式并固定「重新选甲型 + 下一步」在底部；结果页生成后可为目录款打 1-5 星。商家身份下可进入「商家中心 → 上传款式」批量上传图片（**选图前须完成微信隐私授权**，B 端页挂载 `privacy-popup`）；B 端上传经 **同商家 MD5/pHash 去重** 与 **VLM 非美甲图门禁**，C 端试戴参考图须 `ops.validateStyleRef` 通过。小红书热款（`styleSource: xhs-hot`，徽章「全网热款」）由 `ops.importXhsHotTop10` 导入：**热款榜**仅最新一批 TOP10（`listXhsHotStyles` `scope=rank`）；**款式库**保留全部历史批次（`scope=library`）。封面 C 端优先 `cloud://` fileID。本地可用 `node scripts/push-xhs-hot.js --latest --dry-run` 生成导入 payload。详见 [`CHANGELOG.md`](./CHANGELOG.md) **1.2.13** / **1.2.11**。
 
 ```
 选款式 → 选手照（相册 / Mock / 评测手照）

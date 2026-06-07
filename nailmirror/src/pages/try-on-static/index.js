@@ -19,6 +19,7 @@ function buildShapeGroups() {
 const featureFlags = require('../../config/feature-flags');
 const mockHand = require('../../config/mock-hand');
 const composeWaiting = require('../../utils/compose-waiting');
+const { messageForUploadCode } = require('../../utils/upload-validation');
 const { BRAND_LOGO } = require('../../config/constants');
 const { ESTIMATE_COMPOSE_SEC } = require('../../config/tryon-strategy');
 const ratingService = require('../../services/rating.service');
@@ -403,6 +404,19 @@ Page({
       const tempPath = await pickHandPhoto('album');
       wx.showLoading({ title: '上传参考图…', mask: true });
       const fileID = await cloudAdapter.uploadStyleRef(tempPath);
+      wx.showLoading({ title: '校验参考图…', mask: true });
+      const validation = await cloudUtil.callFunction('ops', { action: 'validateStyleRef', fileID });
+      if (!validation || !validation.ok) {
+        try {
+          await cloudUtil.deleteCloudFile(fileID);
+        } catch (delErr) { /* ignore cleanup failure */ }
+        wx.showModal({
+          title: '无法使用该图片',
+          content: messageForUploadCode(validation && validation.code, validation && validation.message),
+          showCancel: false
+        });
+        return;
+      }
       const id = 'custom-' + Date.now();
       const customStyle = {
         id,
