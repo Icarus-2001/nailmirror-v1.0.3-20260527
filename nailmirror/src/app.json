@@ -11,7 +11,8 @@
     "pages/me-history/index",
     "pages/me-favorite/index",
     "pages/me-membership/index",
-    "pages/merchant-revoked/index"
+    "pages/merchant-revoked/index",
+    "pages/style-offline/index"
   ],
   "subPackages": [
     {
