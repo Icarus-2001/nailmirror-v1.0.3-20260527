@@ -20,4 +20,21 @@ describe('HotDataService', () => {
     const r = await hotDataService.fetchTrend('法式极简');
     expect(r.points.length).toBe(7);
   });
+
+  test('buildSiteHotRanking 合并快照与本地款式字段', () => {
+    const built = hotDataService.buildSiteHotRanking({
+      rank_date: '2026-06-07',
+      updated_at: '2026-06-07T10:00:00.000Z',
+      items: [
+        { styleId: 'real-1', rank: 1, heat: 411 },
+        { styleId: 'unknown-style', rank: 2, heat: 100 },
+      ],
+    });
+    expect(built.rankType).toBe('site');
+    expect(built.items).toHaveLength(2);
+    expect(built.items[0].title).toBeTruthy();
+    expect(built.items[0].styleSource).toBe('platform');
+    expect(built.items[0].heat).toBe(411);
+    expect(built.updatedAt).toContain('站内热度 TOP10');
+  });
 });

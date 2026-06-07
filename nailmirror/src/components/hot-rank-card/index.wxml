@@ -5,12 +5,16 @@
   <view class="hrc__body">
     <view class="hrc__title-row">
       <view class="hrc__title">{{item.title || item.styleId}}</view>
-      <view wx:if="{{item.styleSource === 'xhs-hot'}}" class="hrc__badge">全网热款</view>
+      <view wx:if="{{item.styleSource === 'xhs-hot'}}" class="hrc__badge hrc__badge--xhs">全网热款</view>
+      <view wx:elif="{{item.styleSource === 'merchant-upload'}}" class="hrc__badge hrc__badge--merchant">来自商家</view>
+      <view wx:elif="{{item.styleSource === 'platform' || item.styleSource}}" class="hrc__badge hrc__badge--platform">平台特供</view>
     </view>
     <view class="hrc__meta">
       <text wx:if="{{item.color}}" class="hrc__tag">{{item.color}}</text>
       <text wx:if="{{item.design}}" class="hrc__tag">{{item.design}}</text>
     </view>
-    <view class="hrc__heat">🔥 {{item.heat}}</view>
+    <view class="hrc__heat {{item.styleSource === 'xhs-hot' ? 'hrc__heat--xhs' : 'hrc__heat--site'}}">
+      {{item.styleSource === 'xhs-hot' ? '📈' : '🔥'}} {{item.heat}}
+    </view>
   </view>
 </view>

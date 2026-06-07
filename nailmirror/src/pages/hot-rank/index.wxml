@@ -1,10 +1,27 @@
 <view class="hr np-container">
-  <view class="hr__head">
-    <view class="np-title">全网热款 TOP10</view>
-    <view class="np-subtitle">{{updatedAt}}</view>
+  <view class="hr__tabs">
+    <view
+      class="hr__tab {{activeTab === 'external' ? 'hr__tab--on' : ''}}"
+      data-tab="external"
+      bindtap="onTab"
+    >站外榜单</view>
+    <view
+      class="hr__tab {{activeTab === 'site' ? 'hr__tab--on' : ''}}"
+      data-tab="site"
+      bindtap="onTab"
+    >站内榜单</view>
   </view>
 
-  <block wx:for="{{items}}" wx:key="styleId" wx:for-index="idx">
-    <hot-rank-card rank="{{idx + 1}}" item="{{item}}"></hot-rank-card>
+  <view class="hr__head">
+    <view class="np-title">{{pageTitle}}</view>
+    <view class="np-subtitle" wx:if="{{updatedAt}}">{{updatedAt}}</view>
+  </view>
+
+  <view class="hr__notice" wx:if="{{notice}}">{{notice}}</view>
+
+  <block wx:if="{{items.length > 0}}" wx:for="{{items}}" wx:key="styleId" wx:for-index="idx">
+    <hot-rank-card rank="{{item.rank || idx + 1}}" item="{{item}}"></hot-rank-card>
   </block>
+
+  <empty-state wx:if="{{!loading && items.length === 0}}" text="暂无榜单数据" hint="{{activeTab === 'site' ? '每日 10 点自动更新' : '请稍后再试'}}"></empty-state>
 </view>

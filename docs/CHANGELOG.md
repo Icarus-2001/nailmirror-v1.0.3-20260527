@@ -1,5 +1,55 @@
 # 变更记录
 
+## 1.2.6 · 2026-06-07 · 热度榜单站外/站内双 Tab 与每日 10 点更新
+
+**小程序版本：`1.2.6`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**热度榜单增加「站外榜单 / 站内榜单」子 Tab；站内 Top10 每日 10:00 云端快照更新；须部署 `ops` 并上传定时触发器。**
+
+### 热度榜单双 Tab
+
+- **`pages/hot-rank`**：顶部横向子 Tab「站外榜单 | 站内榜单」，默认站外（与现入口一致）；切换时内存缓存，不重复请求。
+- **站外榜单**：沿用 xhs-hot TOP10（`hot-data.service` → `fetchRanking`）。
+- **站内榜单**：读取云端 `site_hot_rank` 快照 Top10；小字说明「每日 10 点更新，主要按【平台特供】和【来自商家】两类美甲款式的热度 Top10 排序」。
+- **`hot-rank-card`**：站外 📈 +「全网热款」；站内 🔥 +「平台特供」/「来自商家」徽章。
+
+### 云端站内榜单快照
+
+- **`refreshSiteHotRank`**：候选池 = 平台款 `real-1`…`25` + 云库 `merchant-upload` 激活款；按 `getStyleHeatScores` 降序取 Top10，写入集合 **`site_hot_rank`** 文档 `_id: latest`。
+- **`listSiteHotRank`**：C 端读取快照；无快照时冷启动同步刷新一次。
+- **定时触发器**：`ops/config.json` 配置 `0 0 10 * * * *`（北京时间每天 10:00）。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/refreshSiteHotRank.js`、`listSiteHotRank.js`、`data/platform-style-ids.js`
+- `cloudfunctions/ops/index.js`、`config.json`
+- `services/hot-data.service.js`
+- `pages/hot-rank/index.{js,wxml,wxss,json}`
+- `components/hot-rank-card/index.{wxml,wxss}`
+- `tests/cloudfunctions/refreshSiteHotRank.test.js`、`tests/services/hot-data.service.test.js`
+- `app.js`、`package.json`
+
+### 部署注意
+
+1. 微信开发者工具 → `nailmirror/src/` → 右键 **`cloudfunctions/ops`** → **上传并部署：云端安装依赖**
+2. **上传定时触发器（重要，网页控制台无此菜单）**：
+   - 展开 `cloudfunctions/ops/`
+   - 右键 **`config.json`** → **上传触发器**（若菜单无此项，先对 `config.json` 执行「云函数增量上传：更新文件」再上传触发器）
+   - 预期：每天 **10:00** 自动执行 `refreshSiteHotRank`
+3. **首次验证**：云函数测试 `{ "action": "refreshSiteHotRank" }` → 数据库 `site_hot_rank.latest` 有 Top10
+4. **`login` / `tryon` 本轮无改动**
+5. 小程序清除缓存 → 编译 → 「热度榜单」切换两 Tab 验收
+
+### 验证
+
+- 默认「站外榜单」与现网一致；「站内榜单」见说明小字 + Top10 + 更新时间
+- 云端测试 `listSiteHotRank` 返回 `items`；真机两 Tab 卡片可跳商详
+- 次日 10:00 后 `site_hot_rank.latest.updated_at` 刷新
+
+---
+
 ## 1.2.5 · 2026-06-07 · 收藏云端化、站内热度算法与试戴历史增强
 
 **小程序版本：`1.2.5`**（`app.globalData.version`）
@@ -23,9 +73,65 @@
 
 ### 站内热度算法
 
-- **`getStyleHeatScores`**（`ops`）：聚合近 30 天 `user_events`（`style_detail_view` UV 去重）、`user_favorites`（有效收藏）、`try_on_logs`（试戴完成，不去重），按公式计算平台/商家款热度；`xhs-hot` 全网热款不参与，仍用站外 `interaction_score`。
-- **公式**：基础分 = UV×3 + 收藏×30 + 试戴×50；转化率加成 = UV>0 时 (试戴/UV)×200；时间衰减 = e^(-0.023×天数)，天数取最近触达或 `created_at`，上限 30 天。
-- **`style.service.js`**：`ensureStyleHeatScores()` 10 分钟缓存；`list`/`get`/`search` 合并算法热度排序。
+云函数 **`ops` → `getStyleHeatScores`** 每次请求时全量扫描三张云表，按下列口径聚合后输出 `{ styleId: 热度整数 }`；C 端 `style.service` 拉取并覆盖展示（10 分钟内存缓存）。
+
+#### 适用范围
+
+| 款式类型 | `styleSource` | 是否参与本算法 | 列表展示的 `heat` 来源 |
+|---|---|---|---|
+| 平台特供 | `platform`（或未标，默认平台） | ✅ | 本算法计算值 |
+| 商家上传 | `merchant-upload` | ✅ | 本算法计算值 |
+| 全网热款 | `xhs-hot` | ❌ 跳过 | 导入时的站外 `interaction_score`，原样保留 |
+
+自定义参考图（`custom-` 开头 id）不计入试戴完成数（`logTryOn` 直接 skip）。
+
+#### 三个输入指标（行为窗口均为「近 30 天」）
+
+统计窗口：`now - 30×24h` 至 `now`。无 `user_id` 时记为 `guest`。
+
+| 指标 | 符号 | 云表 / 字段 | 计数口径 |
+|---|---|---|---|
+| **曝光 UV** | `UV` | `user_events`，`event_type = style_detail_view` | 同一 `style_id` 下，近 30 天内 **`user_id` 去重**后的用户数。触发场景：商详 `onLoad`（`extra.source: style_detail`）、试戴选款步点击卡片（`extra.source: tryon_style_step`）。同一用户多次曝光只计 1。 |
+| **收藏数** | `F` | `user_favorites`，`style_id` + `created_at` | 当前**仍存在于集合**的收藏记录，且 `created_at` 落在近 30 天内。取消收藏 = 文档删除，不再计入。 |
+| **试戴完成数** | `T` | `try_on_logs`，`style_id` + `tried_at` | 近 30 天内该款式的记录条数，**不去重**——每成功合成 1 次（`compose_success` 后 `logTryOn`）计 1。同一用户多次试戴同一款，每条日志各计 1。 |
+
+> 说明：UV / F / T 三个指标只统计近 30 天行为；但「最近触达时间」用于衰减时，会参考**全量历史**中该款式的最后一次曝光、试戴或收藏时间（见下文「天数」）。
+
+#### 计算公式（按款式逐条计算）
+
+```
+基础分     base      = UV × 3  +  F × 30  +  T × 50
+转化率加成 convBonus = UV > 0 ? (T / UV) × 200 : 0
+天数       days      = floor( min( 距今天数, 30 ) )
+时间衰减   decay     = e^( -0.023 × days )
+最终热度   heat      = round( (base + convBonus) × decay )
+```
+
+**「天数」怎么取：**
+
+1. 取该款式在以下三类行为中的**最近一次时间戳**（不限是否在近 30 天内）：
+   - `user_events.style_detail_view` 的 `timestamp`
+   - `try_on_logs` 的 `tried_at`
+   - `user_favorites` 的 `created_at`（当前仍有效的收藏）
+2. 若以上均无记录 → 用 `styles` 表中该款的 `created_at` / `createdAt`。
+3. `天数 = (now - 最近时间) / 1 天`，向下取整，**上限 30**。
+
+**权重含义（便于调参对齐）：** 单次试戴完成 ≈ 16.7 次曝光（50÷3）；单次收藏 ≈ 10 次曝光（30÷3）。转化率加成奖励「曝光后能转化为试戴」的款式；UV=0 时加成恒为 0，避免无曝光款靠试戴刷分。
+
+**算例：** 某平台款近 30 天 UV=10、F=2、T=5，最近触达为 3 天前：
+
+```
+base      = 10×3 + 2×30 + 5×50 = 340
+convBonus = (5/10)×200 = 100
+decay     = e^(-0.023×3) ≈ 0.935
+heat      = round((340+100)×0.935) = 411
+```
+
+#### C 端消费
+
+- **`style.service.js`**：`ensureStyleHeatScores()` 调 `ops`，结果缓存 **10 分钟**；`list` / `get` / `search` 将返回的 `heatScores[styleId]` 写入对应款式的 `heat` 字段，并按 `heat` 降序排序。
+- 云端不可用或请求失败时**静默降级**：保留款式对象上原有的 `heat` 字段，不报错、不阻塞列表。
+- `xhs-hot` 款在 `_applyHeatScores` 中被跳过，不参与覆盖。
 
 ### 热度展示区分
 

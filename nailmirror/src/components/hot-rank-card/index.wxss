@@ -11,7 +11,12 @@
 .hrc__body { flex: 1; min-width: 0; }
 .hrc__title-row { display: flex; align-items: center; gap: 10rpx; min-width: 0; }
 .hrc__title { font-size: 28rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
-.hrc__badge { flex-shrink: 0; padding: 2rpx 10rpx; border-radius: 999rpx; font-size: 18rpx; background: rgba(255,94,138,0.12); color: #ff5e8a; }
+.hrc__badge { flex-shrink: 0; padding: 2rpx 10rpx; border-radius: 999rpx; font-size: 18rpx; }
+.hrc__badge--xhs { background: rgba(255,94,138,0.12); color: #ff5e8a; }
+.hrc__badge--platform { background: rgba(155,108,255,0.12); color: #7c3aed; }
+.hrc__badge--merchant { background: rgba(155,108,255,0.9); color: #fff; }
 .hrc__meta { margin-top: 6rpx; display: flex; flex-wrap: wrap; gap: 8rpx; }
 .hrc__tag { font-size: 22rpx; color: var(--np-text-weak); }
-.hrc__heat { font-size: 24rpx; color: var(--np-text-weak); margin-top: 6rpx; }
+.hrc__heat { font-size: 24rpx; margin-top: 6rpx; font-weight: 500; }
+.hrc__heat--site { color: #c2410c; }
+.hrc__heat--xhs { color: #b7791f; }
