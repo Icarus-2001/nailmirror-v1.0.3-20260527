@@ -63,6 +63,11 @@ const { getStyleHeatScores }       = require('./handlers/getStyleHeatScores')
 const { refreshSiteHotRank }       = require('./handlers/refreshSiteHotRank')
 const { listSiteHotRank }          = require('./handlers/listSiteHotRank')
 const { validateStyleRef }         = require('./handlers/validateStyleRef')
+const { revokeMerchantQualification } = require('./handlers/revokeMerchantQualification')
+const { checkStyleAvailability } = require('./handlers/checkStyleAvailability')
+const { listMerchantOwnStyles }  = require('./handlers/listMerchantOwnStyles')
+const { updateMerchantStyleStatus } = require('./handlers/updateMerchantStyleStatus')
+const { deleteMerchantStyle }    = require('./handlers/deleteMerchantStyle')
 const { resolveOpenid }            = require('./utils/resolveOpenid')
 
 exports.main = async (event, context) => {
@@ -146,6 +151,28 @@ exports.main = async (event, context) => {
 
       case 'verifyMerchantPhone':
         return await verifyMerchantPhone({ openid: callerOpenid || event.openid, phone: event.phone })
+
+      case 'revokeMerchantQualification':
+        return await revokeMerchantQualification({ openid: callerOpenid || event.openid, phone: event.phone })
+
+      case 'checkStyleAvailability':
+        return await checkStyleAvailability({ styleId: event.styleId })
+
+      case 'listMerchantOwnStyles':
+        return await listMerchantOwnStyles({ openid: callerOpenid || event.openid })
+
+      case 'updateMerchantStyleStatus':
+        return await updateMerchantStyleStatus({
+          openid: callerOpenid || event.openid,
+          styleId: event.styleId,
+          is_active: event.is_active,
+        })
+
+      case 'deleteMerchantStyle':
+        return await deleteMerchantStyle({
+          openid: callerOpenid || event.openid,
+          styleId: event.styleId,
+        })
 
       // ── C端收藏（优先使用云函数上下文 OPENID，见 resolveOpenid）──────
       case 'addFavorite':

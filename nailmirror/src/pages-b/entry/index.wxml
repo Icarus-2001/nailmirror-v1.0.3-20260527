@@ -1,10 +1,11 @@
 <view class="be np-container">
   <view class="be__phone" wx:if="{{needPhoneVerify}}">
     <view class="be__phone-card">
-      <view class="be__phone-title">验证商家手机号</view>
-      <view class="be__phone-desc">为保障商家账号安全，进入商家中心前需验证认证时绑定的手机号。24 小时内验证通过可免重复核验。</view>
+      <view class="be__phone-title">{{phoneVerifyPurpose === 'revoke' ? '验证手机号以注销资质' : '验证商家手机号'}}</view>
+      <view class="be__phone-desc" wx:if="{{phoneVerifyPurpose === 'revoke'}}">请输入认证时绑定的手机号，验证通过后将立即注销商家资质。</view>
+      <view class="be__phone-desc" wx:else>为保障商家账号安全，进入商家中心前需验证认证时绑定的手机号。24 小时内验证通过可免重复核验。</view>
       <view class="be__phone-num" wx:if="{{phoneMasked}}">认证手机号：{{phoneMasked}}</view>
-      <view class="be__phone-hint">请输入上方认证手机号的完整 11 位号码进行验证。</view>
+      <view class="be__phone-hint">请输入上方认证手机号的完整 11 位号码。</view>
       <input
         class="be__phone-input"
         type="number"
@@ -14,11 +15,11 @@
         bindinput="onPhoneInput"
       />
       <button
-        class="be__phone-btn np-btn"
+        class="be__phone-btn np-btn {{phoneVerifyPurpose === 'revoke' ? 'be__phone-btn--danger' : ''}}"
         bindtap="onSubmitPhoneVerify"
         loading="{{verifying}}"
         disabled="{{verifying}}"
-      >确认验证</button>
+      >{{phoneVerifyPurpose === 'revoke' ? '确认注销' : '确认验证'}}</button>
     </view>
     <view class="be__phone-back" bindtap="onPhoneVerifyBack">返回</view>
   </view>
@@ -39,7 +40,7 @@
       </view>
       <view class="be__item" bindtap="onGoStyleUpload">
         <text class="be__icon">⬆️</text>
-        <text class="be__label">上传款式</text>
+        <text class="be__label">款式库管理</text>
         <text class="be__arrow">›</text>
       </view>
       <view class="be__item" bindtap="onGoContact">
@@ -53,6 +54,8 @@
         <text class="be__arrow">›</text>
       </view>
     </view>
+
+    <view class="be__revoke" bindtap="onTapRevoke">注销资质</view>
   </block>
 
   <privacy-popup />

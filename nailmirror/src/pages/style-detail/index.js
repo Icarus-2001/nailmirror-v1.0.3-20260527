@@ -73,6 +73,24 @@ Page({
         await this.loadMerchantContact(id);
       }
     } catch (e) {
+      if (cloudUtil.isCloudReady()) {
+        try {
+          const chk = await cloudUtil.callFunction('ops', {
+            action: 'checkStyleAvailability',
+            styleId: id,
+          });
+          if (chk && chk.reason === 'merchant_revoked') {
+            wx.redirectTo({ url: '/pages/merchant-revoked/index?id=' + id });
+            return;
+          }
+          if (chk && chk.reason === 'style_inactive') {
+            wx.redirectTo({ url: '/pages/style-offline/index?id=' + id });
+            return;
+          }
+        } catch (err) {
+          // fall through
+        }
+      }
       wx.showToast({ title: '款式不存在', icon: 'none' });
     }
   },

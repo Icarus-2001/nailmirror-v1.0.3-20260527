@@ -1,56 +1,128 @@
 <view class="su np-container">
   <view class="su__head">
     <view>
-      <view class="np-title">上传款式</view>
-      <view class="np-subtitle">从相册批量选择图片，1 张图生成 1 个款式</view>
+      <view class="np-title">款式库管理</view>
+      <view class="np-subtitle">查看、上传与管理商家自有款式</view>
     </view>
     <view class="su__badge">{{role === 'b' ? '商家身份' : '未切换'}}</view>
   </view>
 
-  <view class="su__panel">
-    <view class="su__stat">
-      <view class="su__stat-item">
-        <text class="su__stat-num">{{files.length}}</text>
-        <text class="su__stat-label">已选择</text>
-      </view>
-      <view class="su__stat-item">
-        <text class="su__stat-num">{{successCount}}</text>
-        <text class="su__stat-label">已入库</text>
-      </view>
-      <view class="su__stat-item">
-        <text class="su__stat-num">{{cachedCount}}</text>
-        <text class="su__stat-label">本地款式</text>
-      </view>
-    </view>
-
-    <view class="su__actions">
-      <view class="np-btn su__action" bindtap="onChooseImages">选择图片</view>
-      <view class="np-btn np-btn--ghost su__action" bindtap="onUpload">{{uploading ? '上传中' : '开始上传'}}</view>
-    </view>
+  <view class="su__tabs">
+    <view
+      class="su__tab {{activeTab === item.key ? 'su__tab--on' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      data-tab="{{item.key}}"
+      bindtap="onTabTap"
+    >{{item.label}}</view>
   </view>
 
-  <view class="su__list" wx:if="{{files.length}}">
-    <view class="su__row su__row--{{item.status}}" wx:for="{{files}}" wx:key="id">
-      <image class="su__thumb" src="{{item.localPath}}" mode="aspectFill"></image>
-      <view class="su__meta">
-        <view class="su__name">{{item.style.title || item.name}}</view>
-        <view class="su__tags" wx:if="{{item.style && item.style.displayTags && item.style.displayTags.length}}">
-          <text class="np-tag" wx:for="{{item.style.displayTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+  <!-- Tab1 查看款式 -->
+  <block wx:if="{{activeTab === 'view'}}">
+    <view class="su__loading" wx:if="{{ownLoading}}">加载中…</view>
+    <view class="su__style-list" wx:elif="{{ownStyles.length}}">
+      <view class="su__style-card" wx:for="{{ownStyles}}" wx:key="id">
+        <image class="su__style-cover" src="{{item.coverUrl || item.imageUrl}}" mode="aspectFill"></image>
+        <view class="su__style-meta">
+          <view class="su__style-title">{{item.title}}</view>
+          <view class="su__tags" wx:if="{{item.displayTags && item.displayTags.length}}">
+            <text class="np-tag" wx:for="{{item.displayTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+          <view class="su__status-badge su__status-badge--{{item.isActive !== false ? 'on' : 'off'}}">
+            {{item.isActive !== false ? '已上线' : '已下架'}}
+          </view>
         </view>
-        <view class="su__error" wx:if="{{item.error}}">{{item.error}}</view>
+        <view
+          class="su__reactivate"
+          wx:if="{{item.isActive === false}}"
+          data-id="{{item.id}}"
+          bindtap="onReactivate"
+        >重新上架</view>
       </view>
-      <view class="su__status">{{item.statusText}}</view>
     </view>
-  </view>
+    <empty-state wx:else text="还没有上传款式" hint="切换到「上传款式」Tab 开始添加"></empty-state>
+  </block>
 
-  <empty-state wx:if="{{!files.length}}" text="还没有选择图片" hint="一次最多选择 9 张，每张小于 10MB"></empty-state>
+  <!-- Tab2 上传款式 -->
+  <block wx:if="{{activeTab === 'upload'}}">
+    <view class="su__panel">
+      <view class="su__stat">
+        <view class="su__stat-item">
+          <text class="su__stat-num">{{files.length}}</text>
+          <text class="su__stat-label">已选择</text>
+        </view>
+        <view class="su__stat-item">
+          <text class="su__stat-num">{{successCount}}</text>
+          <text class="su__stat-label">已入库</text>
+        </view>
+        <view class="su__stat-item">
+          <text class="su__stat-num">{{cachedCount}}</text>
+          <text class="su__stat-label">已上线</text>
+        </view>
+      </view>
 
-  <view class="su__footer" wx:if="{{successCount}}">
-    <view class="np-btn np-btn--block" bindtap="onGoLibrary">查看款式库</view>
-  </view>
-  <view class="su__footer" wx:if="{{files.length && !uploading}}">
-    <view class="np-btn np-btn--ghost np-btn--block" bindtap="onClear">清空本次选择</view>
-  </view>
+      <view class="su__actions">
+        <view class="np-btn su__action" bindtap="onChooseImages">选择图片</view>
+        <view class="np-btn np-btn--ghost su__action" bindtap="onUpload">{{uploading ? '上传中' : '开始上传'}}</view>
+      </view>
+    </view>
+
+    <view class="su__list" wx:if="{{files.length}}">
+      <view class="su__row su__row--{{item.status}}" wx:for="{{files}}" wx:key="id">
+        <image class="su__thumb" src="{{item.localPath}}" mode="aspectFill"></image>
+        <view class="su__meta">
+          <view class="su__name">{{item.style.title || item.name}}</view>
+          <view class="su__tags" wx:if="{{item.style && item.style.displayTags && item.style.displayTags.length}}">
+            <text class="np-tag" wx:for="{{item.style.displayTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+          <view class="su__error" wx:if="{{item.error}}">{{item.error}}</view>
+        </view>
+        <view class="su__status">{{item.statusText}}</view>
+      </view>
+    </view>
+
+    <empty-state wx:if="{{!files.length}}" text="还没有选择图片" hint="一次最多选择 9 张，每张小于 10MB"></empty-state>
+
+    <view class="su__footer" wx:if="{{successCount}}">
+      <view class="np-btn np-btn--block" bindtap="onGoViewTab">查看我的款式</view>
+    </view>
+    <view class="su__footer" wx:if="{{files.length && !uploading}}">
+      <view class="np-btn np-btn--ghost np-btn--block" bindtap="onClear">清空本次选择</view>
+    </view>
+  </block>
+
+  <!-- Tab3 下架与删除 -->
+  <block wx:if="{{activeTab === 'manage'}}">
+    <view class="su__manage-hint">下架后 C 端款式库立即不可见；彻底删除不可恢复。</view>
+    <view class="su__loading" wx:if="{{ownLoading}}">加载中…</view>
+    <view class="su__manage-list" wx:elif="{{ownStyles.length}}">
+      <view class="su__manage-card" wx:for="{{ownStyles}}" wx:key="id">
+        <image class="su__thumb" src="{{item.coverUrl || item.imageUrl}}" mode="aspectFill"></image>
+        <view class="su__meta">
+          <view class="su__name">{{item.title}}</view>
+          <view class="su__status-badge su__status-badge--{{item.isActive !== false ? 'on' : 'off'}}">
+            {{item.isActive !== false ? '已上线' : '已下架'}}
+          </view>
+        </view>
+        <view class="su__manage-actions">
+          <view
+            class="su__manage-btn su__manage-btn--warn"
+            wx:if="{{item.isActive !== false}}"
+            data-id="{{item.id}}"
+            data-title="{{item.title}}"
+            bindtap="onDeactivate"
+          >下架</view>
+          <view
+            class="su__manage-btn su__manage-btn--danger"
+            data-id="{{item.id}}"
+            data-title="{{item.title}}"
+            bindtap="onDeleteStyle"
+          >删除</view>
+        </view>
+      </view>
+    </view>
+    <empty-state wx:else text="还没有可管理的款式" hint="请先上传款式"></empty-state>
+  </block>
 
   <privacy-popup />
 </view>

@@ -12,10 +12,44 @@
 - `ops` 云函数与 B 端云数据库由协作者负责；优先做不阻塞主试戴链路的 C 端修复。
 - **云开发操作说明（强制）**：凡涉及微信云开发（云函数部署/更新、环境变量、云数据库、云存储、云端测试等），每次交付或答疑时须用中文给出**详细、可逐步照做**的操作步骤（在哪点哪个按钮、选哪个环境、预期看到什么结果、失败时怎么排查）；不要只说「上传部署就行」而不说明是否还需云端测试、小程序端验证、数据库核对等。
 - **CHANGELOG 写入时机**：只有用户**明确要求**写 CHANGELOG 时才能写；功能未验收前不主动写 CHANGELOG/docs，用户验证通过且明确说要写时再补。
+- **PR 与版本号**：**一个 PR 对应一个 CHANGELOG 版本**；功能未验收、用户未确认前**不要主动提 PR**；**禁止 Agent 自动合并 PR 到 main**（须用户/协作者 review 后手动合并）。
+
+### 版本发布 Git SOP（强制，防 CHANGELOG/版本冲突）
+
+**根因教训（1.2.14→1.2.16）**：并行开 PR 且都改「版本三件套」`docs/CHANGELOG.md`、`nailmirror/src/app.js`、`nailmirror/src/package.json`，或上一版未合 `main` 就提下一版，会导致 GitHub 报 `CONFLICTING`；带冲突强行合并或网页盲目 Resolve 会埋雷。
+
+**标准流程（每版重复）**：
+
+1. **等上一版 PR 已 Squash merge 到 `main`** → `git fetch origin && git checkout main && git pull origin main`。
+2. **从最新 `main` 切分支**：`git checkout -b feature/release-1.2.x`（勿从旧功能分支续开下一版）。
+3. **开发 + 本地验收** → 用户明确要求后再写 CHANGELOG 顶条 + bump `app.js`/`package.json` 版本号（三件套只在本 PR 改一次）。
+4. **提 PR**：`gh pr create --base main`；PR 正文附部署步骤与 Test plan。
+5. **团队 Squash merge**（Agent 不代合）；合入后下一版再从步骤 1 开始。
+
+**禁止**：同时开放两个都会改版本三件套 PR；在 `#N` 未合 `main` 时把 `#N+1` 叠在同一分支或带重复上一版提交；未 rebase/整理就提 PR。
+
+**已冲突时的修复（优先此方案，避免 force push）**：
+
+```bash
+git fetch origin
+git checkout <本版分支>
+git log --oneline origin/main..HEAD          # 记下仅属本版的 commit hash
+git reset --hard origin/main
+git cherry-pick <本版 feat hash>
+git cherry-pick <本版 changelog bump hash>    # 若有
+git push -u origin HEAD:feature/release-1.2.x   # 新分支名，普通 push
+gh pr create ...                             # 或关闭旧 PR、开新 PR
+```
+
+- CHANGELOG 冲突决议：**保留 `main` 已有各版本段**，仅在**最顶部**追加本版 `## x.y.z`。
+- `app.js` / `package.json`：取**本 PR 目标版本号**。
+- **避免 `git push --force`**：优先推新分支；仅当必须覆盖自己刚 rebase 过的同名分支时，才用 `git push --force-with-lease`，且须确认无他人基于该分支开发。
+- **当前版本规划（2026-06-07）**：**1.2.14** = 已合 main（#38）；**1.2.15** = 已合 main（#39）；**1.2.16** = 已合 main（#41 款式库管理三 Tab）。**下一版**须从最新 `main` 切 `feature/release-1.2.x`，走上方 SOP。
 - **B 端商家上传款式**：`merchant-style.service` 调 `ops.uploadMerchantStyles` **必须传 `merchantId`（`userStore.openid`）**；云存储路径固定 `merchant/styles/`，勿删改；修 C 端/收藏/热度等其它功能时勿顺带移除该传参。
 - **ops 身份解析**：B/C 端写库类 action 统一用 `resolveOpenid`（`getWXContext().OPENID`），勿单独依赖 `context.FROM_OPENID`。
-- **B 端待办（分 PR 依次实现）**：① 已认证商家入口手机号二次核验（微信 `getPhoneNumber` 比对 `merchants.phone`，24h 有效）— 进行中/见 `feature/merchant-phone-verify-gate`；② 商家主页【注销资质】（复用手机核验 → `merchants.status=revoked`、款式立即 `is_active=false`、热款榜 T+1 移除、 interim 提示页）；③【上传款式】改名为【款式库管理】三 Tab（查看款式 / 上传款式 / 下架与删除，下架可重上架，删除不可逆，热款榜 T+1 与下架提示页）。
-- **商家手机号核验**：首期不用短信验证码（需企业主体+腾讯云模板审核）；用微信手机号快捷验证 + 云端比对认证手机号；`ops` 须开通 `phonenumber.getPhoneNumber` openapi 并重新部署。
+- **B 端待办（分 PR 依次实现）**：① 商家手机号二次核验 — **已合 main（1.2.14）**；② 商家【注销资质】— **已合 main（1.2.15）**；③【款式库管理】三 Tab — **已合 main（1.2.16）**。
+- **商家手机号核验**：不用短信；**1.2.14 起**为手动输入认证手机号 + 云端比对（已摆脱 `getPhoneNumber`）。
+- **注销资质部署**：除小程序编译外，**必须**在共享环境 `cloud1-d2g3df4y16873034b` 重新部署 `ops`（含 `revokeMerchantQualification`）；仅上传小程序代码而未部署云函数会报「未知 action」。
 
 ## 已学习的工作区事实
 
@@ -24,7 +58,7 @@
 - **同步 main**：协作者 PR 合入 `main` 后先 `git fetch origin` → `git checkout main` → `git pull origin main`；若在功能分支继续开发再 `merge`/`rebase origin/main`；在功能分支上 `git pull` 只更新该分支，**不会**自动带入 `main` 新提交。
 - 共享云环境 ID：`cloud1-d2g3df4y16873034b`（见 `nailmirror/src/config/cloud-env.js`）；队友部署到同一环境即可共享云函数、数据库与环境变量，无需本地同步文件。
 - 款式与标签：25 款在 `nailmirror/src/mock/styles.real.js`（`scripts/import-styles.js`）；封闭词表 `docs/美甲标签与标准词表.md`（8 色系、设计、甲型、风格），VLM 打标经 `config/tag-vocabulary.js` + `--vlm --retag`；未 retag 时默认标签可能轮换。
-- **版本号**：小程序产品版 SemVer `1.1.x` / `1.2.x`（`app.globalData.version` 当前 **1.2.13**）；仓库目录名 `nailmirror-v1.6-*` 为里程碑代号，**不等于**小程序版本号。
+- **版本号**：小程序产品版 SemVer `1.1.x` / `1.2.x`（`main` 当前 **1.2.16**）；仓库目录名 `nailmirror-v1.6-*` 为里程碑代号，**不等于**小程序版本号。
 - **款式库筛选**：`filter-drawer` 支持 `styleSources`（platform / merchant-upload / xhs-hot）与 `sortBy`+`sortOrder`（默认 `heat desc`）；`style.service.sortStyles` 统一 list/search 排序。
 - 试戴稳定策略 **`0531-stable`**：见 `docs/TRYON_0531稳定出图策略.md` 与 `config/tryon-strategy.js`；万相 2.7 默认 `wan2.7-image-pro`，可选 `wan2.7-image` 标准版（`SHOW_WAN_MODEL_PICKER` 对比；**勿改 Pro 策略**，标准版单独调参）；≥3 甲时 `mergeNailsToBboxList` 为全部指甲 **union 单紧框**；`nailsForWan27Bbox` 与 VLM/标签 prompt（`tryon-prompt.js`）分离；`ping` 返回 `tryonStrategy`。
 - `tryon` 鉴权：客户端 `imageUrl`/`imageBase64` 默认拒绝，除非 `TRYON_ALLOW_URL=1`；内部调用（如 `submitTryonJob` → `analyzeNails`）须传 `_internalUrl: true`。

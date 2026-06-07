@@ -1,5 +1,137 @@
 # 变更记录
 
+## 1.2.16 · 2026-06-07 · 款式库管理三 Tab
+
+**小程序版本：`1.2.16`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**B 端「上传款式」改为「款式库管理」三 Tab：查看/上传/下架删除；C 端下架款与热榜 interim 显示「款式已下架」页。**
+
+### 款式库管理（B 端）
+
+- **`pages-b/entry`**：菜单「上传款式」→ **「款式库管理」**。
+- **`pages-b/style-upload`** 三 Tab：**查看款式**（含已上线/已下架徽章、重新上架）、**上传款式**（原逻辑不变）、**下架与删除**（下架确认 / 彻底删除二次确认）。
+- **`merchant-style.service`**：`listOwnStyles`、`setOwnStyleActive`、`deleteOwnStyle`；操作后刷新 C 端商家款缓存。
+
+### 云端 ops
+
+- **`listMerchantOwnStyles`**：商家名下全部 `merchant-upload` 款（含 `is_active=false`）。
+- **`updateMerchantStyleStatus`**：`{ styleId, is_active }` 上下架，写 `deactivated_at`；不删评分/试戴/热度数据。
+- **`deleteMerchantStyle`**：不可逆删除 `styles` 并级联清理 `style_ratings` / `try_on_logs` / `user_favorites` / `user_events`。
+- **平台联动**：`listMerchantStyles` 仅 `is_active=true` → 款式库立即不可见；热款榜 T+1 自然掉榜。
+
+### C 端 interim
+
+- **`checkStyleAvailability`** 扩展 `style_inactive`（下架款、已删但仍在热榜快照）。
+- **`pages/style-offline`**：「款式已下架」提示页；`style-detail` 对 `style_inactive` 跳转。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{listMerchantOwnStyles,updateMerchantStyleStatus,deleteMerchantStyle,checkStyleAvailability}.js`、`utils/merchantStyleOwnership.js`、`index.js`
+- `pages-b/style-upload/*`、`pages-b/entry/index.wxml`、`pages/style-offline/*`、`pages/style-detail/index.js`
+- `services/merchant-style.service.js`、`app.js`、`app.json`、`package.json`
+- `tests/cloudfunctions/{listMerchantOwnStyles,updateMerchantStyleStatus,deleteMerchantStyle,checkStyleAvailability}.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含三个新 action + 扩展 `checkStyleAvailability`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.16`**。
+
+### 验证
+
+- 商家中心 → 款式库管理 → 三 Tab 可切换；Tab2 上传与改前一致。
+- Tab1 可见状态徽章；下架款可重新上架。
+- Tab3 下架 → C 端款式库立即不见；热榜点击 →「款式已下架」页。
+- Tab3 彻底删除 → 二次确认 → 数据清除。
+- `npm test -- --testPathPattern="listMerchantOwnStyles|updateMerchantStyleStatus|deleteMerchantStyle|checkStyleAvailability"` 通过。
+
+---
+
+## 1.2.15 · 2026-06-07 · 商家注销资质
+
+**小程序版本：`1.2.15`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家中心新增「注销资质」：手机号验证后注销身份，名下款式立即从款式库下架；热款榜 T+1 移除， interim 显示「商家已注销」页。**
+
+### 商家注销资质
+
+- **`pages-b/entry`**：商家中心底部「注销资质」→ 确认弹窗 → 复用手动输入认证手机号验证 → 确认注销。
+- **`ops.revokeMerchantQualification`**：`merchants.status=revoked`，名下 `merchant-upload` 款式 `is_active=false`（款式库立即不可见），`users.role=c`。
+- **`ops.checkStyleAvailability`**：商详兜底——榜单快照中仍可点击的已注销商家款 → 跳转 `pages/merchant-revoked`（「商家已注销」提示页）。
+- **热款榜 T+1**：`refreshSiteHotRank` 仅候选 `is_active=true` 商家款，次日 10:00 更新后自动移除。
+- **重新入驻**：`verifyMerchant` 对已 `revoked` 记录恢复 `status=approved`；`uploadMerchantStyles` 拦截已注销商家上传。
+- **`utils/ops-error.js`**：云端 `未知 action` 时提示须部署 `ops`（避免仅上传小程序未部署云函数）。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/{revokeMerchantQualification,checkStyleAvailability}.js`、`verifyMerchant.js`、`uploadMerchantStyles.js`、`index.js`
+- `pages-b/entry/index.{js,wxml,wxss}`、`pages/merchant-revoked/*`、`pages/style-detail/index.js`
+- `services/merchant-style.service.js`、`utils/ops-error.js`、`app.js`、`app.json`
+- `tests/cloudfunctions/{revokeMerchantQualification,checkStyleAvailability}.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（含 `revokeMerchantQualification`、`checkStyleAvailability`）：微信开发者工具 → `cloudfunctions/ops` → **上传并部署：云端安装依赖**。
+2. 环境：`cloud1-d2g3df4y16873034b`；部署后可用云端测试 `{ "action": "revokeMerchantQualification", "openid": "...", "phone": "..." }` 验证。
+3. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.15`**。
+
+### 验证
+
+- 商家中心 → 注销资质 → 正确手机号 → 注销成功 → 回到普通用户。
+- 款式库不再显示该商家款式。
+- 站内热款榜若仍可见该款，点击 →「商家已注销」页。
+- 再次「商家经营入口」→ 走资质验证；重新认证后可入驻。
+- `npm test -- --testPathPattern="revokeMerchantQualification|checkStyleAvailability"` 通过。
+
+---
+
+## 1.2.14 · 2026-06-07 · 商家手机号手动核验与主包修复
+
+**小程序版本：`1.2.14`**（`app.globalData.version`）
+
+### 一句话（版本说明可用）
+
+**商家手机号二次核验改为手动输入完整号码比对（摆脱微信 getPhoneNumber）；修复款式库 upload-validation 主包依赖。**
+
+### 商家手机号手动核验（替代 getPhoneNumber）
+
+- **背景**：体验版/真机上 `getPhoneNumber` 常失败（主体资质、API 限制等），1.2.12 微信快捷验证无法稳定完成。
+- **`pages-b/entry`**：展示脱敏认证号，商家输入完整 11 位手机号 →「确认验证」；模拟器与真机均可完成。
+- **`ops.verifyMerchantPhone`**：入参改为 `{ openid, phone }`，云端与 `merchants.phone` 比对，写 `last_phone_verified_at`；24h 内免重复核验逻辑不变。
+- **`merchant-entry.service`**：门禁未确认 `phoneVerified` 时一律进入核验 UI，避免云端异常时静默放行。
+
+### 主包依赖图补丁（#36）
+
+- **`app.js`**：显式 `require('./utils/upload-validation')`，修复 1.2.13 后款式库报 `module upload-validation.js is not defined`。
+
+### 涉及文件
+
+- `cloudfunctions/ops/handlers/verifyMerchantPhone.js`、`ops/index.js`
+- `pages-b/entry/index.{js,wxml,wxss}`
+- `services/merchant-entry.service.js`
+- `app.js`、`package.json`
+- `tests/cloudfunctions/verifyMerchantPhone.test.js`
+
+### 部署注意
+
+1. **须重新部署 `ops` 云函数**（`verifyMerchantPhone` 改为接收 `phone`）：微信开发者工具 → `ops` → **上传并部署：云端安装依赖**。
+2. 小程序：清缓存 → 重新编译 → 体验版版本号 **`1.2.14`**。
+3. 不再依赖 `phonenumber.getPhoneNumber` openapi；核验在模拟器与真机均可测。
+
+### 验证
+
+- 已认证商家 → 商家经营入口 → 输入正确认证手机号 → 进入商家中心。
+- 输入错误号码 →「手机号与认证资料不一致」。
+- 24h 内已核验 → 直接进入商家中心。
+- 款式库、热度榜单等主包页面正常打开。
+- `npm test -- --testPathPattern="verifyMerchantPhone|getMerchantPhoneGate"` 通过。
+
+---
+
 ## 1.2.13 · 2026-06-07 · 上传美甲图门禁与商家去重
 
 **小程序版本：`1.2.13`**（`app.globalData.version`）
